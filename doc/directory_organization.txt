@@ -1,0 +1,26 @@
+incl
+  |- model
+  |- controller
+  |- framework
+
+pimpl
+  |- model
+  |- controller
+  |- framework
+
+src
+  |- model
+  |- controller
+  |- framework
+
+##################
+incl - header files
+pimpl - private implementation files
+src - implementation files
+
+##################
+models	: contains classes or components that represent the data and business logic of the application. 
+
+controllers : contains classes or components that handle user interactions, receive input from the user or external systems, and update the Model accordingly. Controllers act as intermediaries between the user (or external systems) and the Model, orchestrating the flow of data and controlling the application's behavior based on user input or external events.
+
+framework : contains common data structures or components that are used throughout the application. Utility/helper classes can be located here.

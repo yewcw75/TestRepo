@@ -1,0 +1,18 @@
+#ifndef RRPLANNER_LIB_GLOBAL_H
+#define RRPLANNER_LIB_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(RRTPLANNER_LIB_LIBRARY)
+#  define RRTPLANNER_LIB_EXPORT Q_DECL_EXPORT
+#else
+#  define RRTPLANNER_LIB_EXPORT Q_DECL_IMPORT
+#endif
+
+#define RRTPLANNER_BEGIN_NAMESPACE namespace rrtplanner{
+#define RRTPLANNER_END_NAMESPACE };
+
+#define RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE namespace framework{
+#define RRTPLANNER_FRAMEWORK_END_NAMESPACE };
+
+#endif // RRPLANNER_LIB_GLOBAL_H
