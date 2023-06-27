@@ -154,9 +154,9 @@ QVector<Waypt> Plan::wayptList() const
         it != mp_pimpl->m_segmentList.end();
         ++it){
         if(it == mp_pimpl->m_segmentList.begin()){
-            res.append(it->nodePrev());
+            res.append(it->wayptPrev());
         }
-        res.append(it->nodeNext());
+        res.append(it->wayptNext());
     }
     return(res);
 }

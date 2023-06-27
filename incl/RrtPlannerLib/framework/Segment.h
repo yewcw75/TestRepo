@@ -18,8 +18,8 @@ public:
     enum class Field{
         NONE      = 0,
         ID        = 1 << 0,
-        NODE_PREV = 1 << 1,
-        NODE_NEXT = 1 << 2,
+        WAYPT_PREV = 1 << 1,
+        WAYPT_NEXT = 1 << 2,
         TVEC      = 1 << 3,
         NVEC      = 1 << 4,
         LENGTH    = 1 << 5,
@@ -31,22 +31,22 @@ public:
 
 public:
     Segment();
-    Segment(const Waypt& nodePrev, const Waypt& nodeNext, int id);
+    Segment(const Waypt& wayptPrev, const Waypt& wayptNext, int id);
     virtual ~Segment();
     Segment(const Segment& other);
     Segment& operator=(const Segment& other);
 
-    void set(const Waypt& nodePrev, const Waypt& nodeNext, int id);
+    void set(const Waypt& wayptPrev, const Waypt& wayptNext, int id);
 
     void setId(int id);
     int id() const;
-    void setNodePrev(const Waypt& nodePrev); //previous node of segment
-    Waypt nodePrev() const; //previous node of segment
-    void setNodeNext(const Waypt& nodeNext); //next node of segment
-    Waypt nodeNext() const; //next node of segment
+    void setWayptPrev(const Waypt& wayptPrev); //previous waypt of segment
+    Waypt wayptPrev() const; //previous waypt of segment
+    void setWayptNext(const Waypt& wayptNext); //next waypt of segment
+    Waypt wayptNext() const; //next waypt of segment
 
-    //automatically calculated once both nodePrev and nodeNext are set
-    Vector_NE tVec() const; //[m][m] tangent unit vector fron nodePrev to nodeNext
+    //automatically calculated once both wayptPrev and wayptNext are set
+    Vector_NE tVec() const; //[m][m] tangent unit vector fron wayptPrev to wayptNext
     Vector_NE nVec() const; //[m][m] unit vector normal to tVec. tVec x nVec = positive (down-dir)
     float length() const; //[m]
 

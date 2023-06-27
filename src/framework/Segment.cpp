@@ -18,8 +18,8 @@ public:
     {}
     SegmentPrivate(const SegmentPrivate& other)
         : QSharedData(other),
-          m_nodePrev(other.m_nodePrev),
-          m_nodeNext(other.m_nodeNext),
+          m_wayptPrev(other.m_wayptPrev),
+          m_wayptNext(other.m_wayptNext),
           m_tVec(other.m_tVec),
           m_nVec(other.m_nVec),
           m_bVecPrev(other.m_bVecPrev),
@@ -33,8 +33,8 @@ public:
     void calculateBisector(const Segment& seg1, const Segment& seg2, Vector_NE& bVec);
 
 public:
-    Waypt m_nodePrev{};
-    Waypt m_nodeNext{};
+    Waypt m_wayptPrev{};
+    Waypt m_wayptNext{};
     Vector_NE m_tVec{};
     Vector_NE m_nVec{};
     Vector_NE m_bVecPrev{};
@@ -47,11 +47,11 @@ public:
 //----------
 void SegmentPrivate::checkAndSetSegmentAttributes()
 {
-    if(m_fieldFlags.testFlag(Segment::Field::NODE_PREV) && \
-            m_fieldFlags.testFlag(Segment::Field::NODE_NEXT))
+    if(m_fieldFlags.testFlag(Segment::Field::WAYPT_PREV) && \
+            m_fieldFlags.testFlag(Segment::Field::WAYPT_NEXT))
     {
         //tVec and length
-        Vector_NE vecPrev2Next = m_nodePrev.vectorTo(m_nodeNext);
+        Vector_NE vecPrev2Next = m_wayptPrev.vectorTo(m_wayptNext);
         m_length = GeometryHelper::lengthVector(vecPrev2Next);
         m_fieldFlags.setFlag(Segment::Field::LENGTH);
         if(m_length > TOL_SMALL){
@@ -100,10 +100,10 @@ Segment::Segment()
 }
 
 //----------
-Segment::Segment(const Waypt& nodePrev, const Waypt& nodeNext, int id)
+Segment::Segment(const Waypt& wayptPrev, const Waypt& wayptNext, int id)
     :mp_pimpl(new SegmentPrivate)
 {
-    set(nodePrev, nodeNext, id);
+    set(wayptPrev, wayptNext, id);
 }
 
 //----------
@@ -129,11 +129,11 @@ Segment& Segment::operator=(const Segment& other)
 }
 
 //----------
-void Segment::set(const Waypt& nodePrev, const Waypt& nodeNext, int id)
+void Segment::set(const Waypt& wayptPrev, const Waypt& wayptNext, int id)
 {
     setId(id);
-    setNodePrev(nodePrev);
-    setNodeNext(nodeNext);
+    setWayptPrev(wayptPrev);
+    setWayptNext(wayptNext);
     return;
 }
 
@@ -152,33 +152,33 @@ int Segment::id() const
 }
 
 //----------
-void Segment::setNodePrev(const Waypt& nodePrev)
+void Segment::setWayptPrev(const Waypt& wayptPrev)
 {
-    mp_pimpl->m_nodePrev = nodePrev;
-    mp_pimpl->m_fieldFlags.setFlag(Field::NODE_PREV);
+    mp_pimpl->m_wayptPrev = wayptPrev;
+    mp_pimpl->m_fieldFlags.setFlag(Field::WAYPT_PREV);
     mp_pimpl->checkAndSetSegmentAttributes();
     return;
 }
 
 //----------
-Waypt Segment::nodePrev() const
+Waypt Segment::wayptPrev() const
 {
-    return(mp_pimpl->m_nodePrev);
+    return(mp_pimpl->m_wayptPrev);
 }
 
 //----------
-void Segment::setNodeNext(const Waypt& nodeNext)
+void Segment::setWayptNext(const Waypt& wayptNext)
 {
-    mp_pimpl->m_nodeNext = nodeNext;
-    mp_pimpl->m_fieldFlags.setFlag(Field::NODE_NEXT);
+    mp_pimpl->m_wayptNext = wayptNext;
+    mp_pimpl->m_fieldFlags.setFlag(Field::WAYPT_NEXT);
     mp_pimpl->checkAndSetSegmentAttributes();
     return;
 }
 
 //----------
-Waypt Segment::nodeNext() const
+Waypt Segment::wayptNext() const
 {
-    return(mp_pimpl->m_nodeNext);
+    return(mp_pimpl->m_wayptNext);
 }
 
 //----------

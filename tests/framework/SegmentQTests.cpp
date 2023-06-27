@@ -29,10 +29,10 @@ void SegmentQTests::cleanUp()
 //----------
 void SegmentQTests::verify(const Segment& segment,
             int id,
-            float northing_nodePrev,
-            float easting_nodePrev,
-            float northing_nodeNext,
-            float easting_nodeNext,
+            float northing_wayptPrev,
+            float easting_wayptPrev,
+            float northing_wayptNext,
+            float easting_wayptNext,
             float northing_res_tVec,
             float easting_res_tVec,
             float northing_res_nVec,
@@ -43,12 +43,12 @@ void SegmentQTests::verify(const Segment& segment,
     Vector_NE nVec = segment.nVec();
     float length = segment.length();
 
-    //check nodes are set correctly
+    //check waypts are set correctly
     QCOMPARE(segment.id(), id);
-    QCOMPARE(segment.nodePrev().northing(), northing_nodePrev);
-    QCOMPARE(segment.nodePrev().easting(), easting_nodePrev);
-    QCOMPARE(segment.nodeNext().northing(), northing_nodeNext);
-    QCOMPARE(segment.nodeNext().easting(), easting_nodeNext);
+    QCOMPARE(segment.wayptPrev().northing(), northing_wayptPrev);
+    QCOMPARE(segment.wayptPrev().easting(), easting_wayptPrev);
+    QCOMPARE(segment.wayptNext().northing(), northing_wayptNext);
+    QCOMPARE(segment.wayptNext().easting(), easting_wayptNext);
 
     //check derived attributes are correct
     QVERIFY(qFuzzyCompare(tVec.get<IDX_NORTHING>(), northing_res_tVec));
@@ -59,8 +59,8 @@ void SegmentQTests::verify(const Segment& segment,
 
     //check field flags
     QVERIFY(segment.getFieldFlags().testFlag(Segment::Field::ID));
-    QVERIFY(segment.getFieldFlags().testFlag(Segment::Field::NODE_PREV));
-    QVERIFY(segment.getFieldFlags().testFlag(Segment::Field::NODE_NEXT));
+    QVERIFY(segment.getFieldFlags().testFlag(Segment::Field::WAYPT_PREV));
+    QVERIFY(segment.getFieldFlags().testFlag(Segment::Field::WAYPT_NEXT));
     QVERIFY(segment.getFieldFlags().testFlag(Segment::Field::TVEC));
     QVERIFY(segment.getFieldFlags().testFlag(Segment::Field::NVEC));
     QVERIFY(segment.getFieldFlags().testFlag(Segment::Field::LENGTH));
@@ -72,10 +72,10 @@ void SegmentQTests::verify(const Segment& segment,
 void SegmentQTests::verify_set_segment_data()
 {
     QTest::addColumn<int>("id");
-    QTest::addColumn<float>("northing_nodePrev");
-    QTest::addColumn<float>("easting_nodePrev");
-    QTest::addColumn<float>("northing_nodeNext");
-    QTest::addColumn<float>("easting_nodeNext");
+    QTest::addColumn<float>("northing_wayptPrev");
+    QTest::addColumn<float>("easting_wayptPrev");
+    QTest::addColumn<float>("northing_wayptNext");
+    QTest::addColumn<float>("easting_wayptNext");
     QTest::addColumn<float>("northing_res_tVec");
     QTest::addColumn<float>("easting_res_tVec");
     QTest::addColumn<float>("northing_res_nVec");
@@ -99,10 +99,10 @@ void SegmentQTests::verify_set_segment()
     setup();
 
     QFETCH(int, id);
-    QFETCH(float, northing_nodePrev);
-    QFETCH(float, easting_nodePrev);
-    QFETCH(float, northing_nodeNext);
-    QFETCH(float, easting_nodeNext);
+    QFETCH(float, northing_wayptPrev);
+    QFETCH(float, easting_wayptPrev);
+    QFETCH(float, northing_wayptNext);
+    QFETCH(float, easting_wayptNext);
     QFETCH(float, northing_res_tVec);
     QFETCH(float, easting_res_tVec);
     QFETCH(float, northing_res_nVec);
@@ -110,26 +110,26 @@ void SegmentQTests::verify_set_segment()
     QFETCH(float, segLength_res);
 
     //verify set segment
-    Waypt nodePrev(northing_nodePrev, easting_nodePrev);
-    Waypt nodeNext(northing_nodeNext, easting_nodeNext);
+    Waypt wayptPrev(northing_wayptPrev, easting_wayptPrev);
+    Waypt wayptNext(northing_wayptNext, easting_wayptNext);
     Segment segment1;
     QVERIFY(segment1.getFieldFlags().testFlag(Segment::Field::NONE));
-    segment1.setNodePrev(nodePrev);
-    segment1.setNodeNext(nodeNext);
+    segment1.setWayptPrev(wayptPrev);
+    segment1.setWayptNext(wayptNext);
     segment1.setId(id);
 
-    verify(segment1, id, northing_nodePrev, easting_nodePrev, northing_nodeNext, easting_nodeNext, \
+    verify(segment1, id, northing_wayptPrev, easting_wayptPrev, northing_wayptNext, easting_wayptNext, \
                 northing_res_tVec, easting_res_tVec, northing_res_nVec, easting_res_nVec, segLength_res);
 
     //verify set method
     Segment segment2;
-    segment2.set(nodePrev, nodeNext, id);
-    verify(segment2, id, northing_nodePrev, easting_nodePrev, northing_nodeNext, easting_nodeNext, \
+    segment2.set(wayptPrev, wayptNext, id);
+    verify(segment2, id, northing_wayptPrev, easting_wayptPrev, northing_wayptNext, easting_wayptNext, \
                 northing_res_tVec, easting_res_tVec, northing_res_nVec, easting_res_nVec, segLength_res);
 
     //verify constructor
-    Segment segment3(nodePrev, nodeNext, id);
-    verify(segment3, id, northing_nodePrev, easting_nodePrev, northing_nodeNext, easting_nodeNext, \
+    Segment segment3(wayptPrev, wayptNext, id);
+    verify(segment3, id, northing_wayptPrev, easting_wayptPrev, northing_wayptNext, easting_wayptNext, \
                 northing_res_tVec, easting_res_tVec, northing_res_nVec, easting_res_nVec, segLength_res);
 }
 
