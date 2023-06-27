@@ -17,26 +17,6 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 #############################
-# for opencoveragecpp
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MD /Zi /D_DEBUG /DUNICODE /D_UNICODE /bigobj /EHsc /RTC1")
-#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /DEBUG /PROFILE")
-
-# for llvm
-set(TO_PROFILE_CODE FALSE)
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(TO_PROFILE_CODE TRUE)
-endif()
-
-
-message("TO_PROFILE_CODE: " ${TO_PROFILE_CODE})
-if(${TO_PROFILE_CODE})
-    message("LLVM coverage instrumentation flags added")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
-    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping -fprofile-list=${CMAKE_CURRENT_SOURCE_DIR}/func_to_profile.list")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-instr-generate")
-endif()
-
-#############################
 # find dependencies
 find_package(ament_cmake QUIET)
 message("ament_cmake_FOUND = " ${ament_cmake_FOUND})
@@ -44,6 +24,10 @@ message("ament_cmake_FOUND = " ${ament_cmake_FOUND})
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Network Widgets)
 message("QT_VERSION_MAJOR = " ${QT_VERSION_MAJOR})
+
+set(Boost_USE_STATIC_LIBS ON)
+find_package(Boost REQUIRED)
+message("Boost_INCLUDE_DIRS = " ${Boost_INCLUDE_DIRS} )
 
 #############################
 # Set up AUTOMOC and some sensible defaults for runtime execution
@@ -61,23 +45,31 @@ include(GNUInstallDirs)
 #############################
 #add project files to our exe/lib
 add_library(${PROJECT_NAME} SHARED
-  incl/RrtPlannerLibGlobal.h
+  incl/${PROJECT_NAME}/RrtPlannerLibGlobal.h
+  incl/${PROJECT_NAME}/framework/FrameworkDefines.h
+  incl/${PROJECT_NAME}/framework/GeometryHelper.h
+  src/framework/GeometryHelper.cpp
+  incl/${PROJECT_NAME}/framework/Waypt.h
+  src/framework/Waypt.cpp
+  incl/${PROJECT_NAME}/framework/Segment.h
+  src/framework/Segment.cpp
+  incl/${PROJECT_NAME}/framework/Plan.h
+  src/framework/Plan.cpp
+  incl/${PROJECT_NAME}/framework/PlanHelper.h
+  src/framework/PlanHelper.cpp
 )
 
 #############################
 #include directories
 target_include_directories(${PROJECT_NAME}
   PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/incl/framework>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/incl/models>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/incl/controllers>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/framework>  # Relative install include path
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/models>  # Relative install include path
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/controllers>  # Relative install include path
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/incl>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>  # Relative install include path
   PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/pimpl/framework>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/pimpl/models>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/pimpl/controllers>
+    $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
 )
 
 #############################
@@ -103,7 +95,6 @@ else()
         Qt::Gui
         Qt::Network
         Qt::Widgets
-        TgLib
     )
 endif()
 
@@ -116,23 +107,34 @@ include(install) #run install.cmake located in CMAKE_MODULE_PATH (set on top)
 #When building a reusable library, some information needs to be exported
 #for downstream packages to easily use it.
 if(${ament_cmake_FOUND})
-    #ament_export_targets(${PROJECT_NAME}Targets HAS_LIBRARY_TARGET)
+    ament_export_targets(${PROJECT_NAME}Targets HAS_LIBRARY_TARGET)
 
     #for ament_cmake to locate this lib's dependencies
-    #ament_export_dependencies(Qt${QT_VERSION_MAJOR} Boost)
+    ament_export_dependencies(Qt${QT_VERSION_MAJOR} Boost)
 endif()
 #############################
 #Deploy qt libs
-if(${QT_VERSION_MAJOR} STRLESS 6)
-    # Include Qt deployment helper function
-    include(windeployqt)
-    windeployqt(${PROJECT_NAME})
-else()
-    qt_generate_deploy_app_script(
-        TARGET ${PROJECT_NAME}
-        FILENAME_VARIABLE deploy_script
-        NO_UNSUPPORTED_PLATFORM_ERROR
-    )
-    install(SCRIPT ${deploy_script})
+#if(${QT_VERSION_MAJOR} STRLESS 6)
+#    # Include Qt deployment helper function
+#    include(windeployqt)
+#    windeployqt(${PROJECT_NAME})
+#else()
+#    qt_generate_deploy_app_script(
+#        TARGET ${PROJECT_NAME}
+#        FILENAME_VARIABLE deploy_script
+#        NO_UNSUPPORTED_PLATFORM_ERROR
+#    )
+#    install(SCRIPT ${deploy_script})
+#endif()
+
+#############################
+message("BUILD_TESTING = " ${BUILD_TESTING})
+if(BUILD_TESTING)
+    include(buildtest)
+endif()
+
+#############################
+if(${ament_cmake_FOUND})
+    ament_package()
 endif()
 

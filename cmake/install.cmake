@@ -8,7 +8,7 @@ install(
 
 #copy headers to install dir
 install(
-  DIRECTORY incl/
+  DIRECTORY incl/${PROJECT_NAME}
   DESTINATION include/${PROJECT_NAME})
 
 #install *Targets.cmake
