@@ -37,7 +37,23 @@ public:
      */
     static VerifyPlanResult verifyPlanInput(const QVector<Waypt>& wayptList);
 
-    //static bool findNearestEdgeEvent(const Plan& plan, float crossTrackHorizon, side, float eps_dx);
+    /**
+     * @brief findNearestEdgeEvent Finds the nearest edge event, dxNearest, on the specified side,
+     * and also indices of segments with edge event at dxNearest.
+     * @param plan Input plan to check.
+     * @param crossTrackHorizon [m] Maximum cross track distance to check for edge event.
+     * @param side +1.0: stbd, -1.0 port.
+     * @param eps_dx [m] cross track range to group edge events.
+     * @param[out] dxNearest [m] Cross track of the nearest edge event.
+     * @param[out] eventSegIdxList List containing indices of segments with edge event at dxNearest.
+     * @return bool to indicate if any edge event is found.
+     */
+    static bool findNearestEdgeEvent(const Plan& plan,
+                                     float crossTrackHorizon,
+                                     float side,
+                                     float eps_dx,
+                                     float& dxNearest,
+                                     QVector<int>& eventSegIdxList);
 };
 
 

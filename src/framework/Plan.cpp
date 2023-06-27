@@ -100,9 +100,27 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
         for(int idx = 1; idx < nWaypt; ++idx){
             Waypt wayptNext = wayptList.at(idx);
             Segment segment(wayptPrev, wayptNext, idx - 1);
+
+            //bisector
+            if(idx == 1){ //now is first segment
+                segment.setbVecPrev(segment.nVec());
+            }
+            else{
+                Segment& segmentPrev = mp_pimpl->m_segmentList.last();
+                segment.setbVecPrev(segmentPrev);
+                segmentPrev.setbVecNext(segment.bVecPrev());
+            }
+
+            if(idx == nWaypt - 1){ //now is last segment
+                segment.setbVecNext(segment.nVec());
+            }
+
+            //add segment
             mp_pimpl->m_segmentList.append(segment);
             mp_pimpl->m_length += segment.length(); //accumulate length for plan
-            wayptPrev = wayptNext; //for next iteration
+
+            //for next iteration
+            wayptPrev = wayptNext;
         }
         mp_pimpl->m_fieldFlags.setFlag(Field::SEGMENT_LIST);
         mp_pimpl->m_fieldFlags.setFlag(Field::LENGTH);

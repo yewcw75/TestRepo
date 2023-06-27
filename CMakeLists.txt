@@ -49,6 +49,8 @@ add_library(${PROJECT_NAME} SHARED
   incl/${PROJECT_NAME}/framework/FrameworkDefines.h
   incl/${PROJECT_NAME}/framework/GeometryHelper.h
   src/framework/GeometryHelper.cpp
+  incl/${PROJECT_NAME}/framework/LinearAlgebraHelper.h
+  src/framework/LinearAlgebraHelper.cpp
   incl/${PROJECT_NAME}/framework/Waypt.h
   src/framework/Waypt.cpp
   incl/${PROJECT_NAME}/framework/Segment.h
