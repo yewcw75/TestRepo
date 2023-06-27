@@ -26,7 +26,8 @@ public:
           m_bVecNext(other.m_bVecNext),
           m_fieldFlags(other.m_fieldFlags),
           m_length(other.m_length),
-          m_id(other.m_id)
+          m_id(other.m_id),
+          m_isZeroLengthSegment(other.m_isZeroLengthSegment)
     {}
 
     void checkAndSetSegmentAttributes();
@@ -42,13 +43,18 @@ public:
     Segment::FieldFlags m_fieldFlags{};
     float m_length{};
     int m_id{-1};
+    bool m_isZeroLengthSegment{};
 };
 
 //----------
 void SegmentPrivate::checkAndSetSegmentAttributes()
 {
-    if(m_fieldFlags.testFlag(Segment::Field::WAYPT_PREV) && \
-            m_fieldFlags.testFlag(Segment::Field::WAYPT_NEXT))
+    if(m_isZeroLengthSegment){
+        m_length = 0.0;
+        m_fieldFlags.setFlag(Segment::Field::LENGTH);
+    }
+    else if(m_fieldFlags.testFlag(Segment::Field::WAYPT_PREV) && \
+        m_fieldFlags.testFlag(Segment::Field::WAYPT_NEXT))
     {
         //tVec and length
         Vector_NE vecPrev2Next = m_wayptPrev.vectorTo(m_wayptNext);
@@ -100,10 +106,10 @@ Segment::Segment()
 }
 
 //----------
-Segment::Segment(const Waypt& wayptPrev, const Waypt& wayptNext, int id)
+Segment::Segment(const Waypt& wayptPrev, const Waypt& wayptNext, int id, bool isZeroLengthSegment)
     :mp_pimpl(new SegmentPrivate)
 {
-    set(wayptPrev, wayptNext, id);
+    set(wayptPrev, wayptNext, id, isZeroLengthSegment);
 }
 
 //----------
@@ -129,9 +135,15 @@ Segment& Segment::operator=(const Segment& other)
 }
 
 //----------
-void Segment::set(const Waypt& wayptPrev, const Waypt& wayptNext, int id)
+void Segment::set(const Waypt& wayptPrev, const Waypt& wayptNext, int id, bool isZeroLengthSegment)
 {
     setId(id);
+    mp_pimpl->m_isZeroLengthSegment = isZeroLengthSegment;
+    if(isZeroLengthSegment){
+        Q_ASSERT(wayptPrev.easting() - wayptNext.easting() < TOL_SMALL && \
+                 wayptPrev.northing() - wayptNext.northing() < TOL_SMALL && \
+                 wayptPrev.lon0_deg() - wayptNext.lon0_deg() < TOL_SMALL);
+    }
     setWayptPrev(wayptPrev);
     setWayptNext(wayptNext);
     return;

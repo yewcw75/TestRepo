@@ -7,6 +7,7 @@
 
 #include <RrtPlannerLib/RrtPlannerLibGlobal.h>
 #include <RrtPlannerLib/framework/Waypt.h>
+#include <RrtPlannerLib/framework/Plan.h>
 #include <QObject>
 
 RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
@@ -35,6 +36,8 @@ public:
      * @return bool to indicate if plan is feasible.
      */
     static VerifyPlanResult verifyPlanInput(const QVector<Waypt>& wayptList);
+
+    //static bool findNearestEdgeEvent(const Plan& plan, float crossTrackHorizon, side, float eps_dx);
 };
 
 

@@ -12,6 +12,7 @@
 #define IDX_LON 1 //idx of lon element in Coord_LatLon
 
 #define TOL_SMALL 1e-6
+#define EPS_DX 1e-3
 
 RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 

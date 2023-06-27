@@ -31,12 +31,12 @@ public:
 
 public:
     Segment();
-    Segment(const Waypt& wayptPrev, const Waypt& wayptNext, int id);
+    Segment(const Waypt& wayptPrev, const Waypt& wayptNext, int id, bool isZeroLengthSegment = false);
     virtual ~Segment();
     Segment(const Segment& other);
     Segment& operator=(const Segment& other);
 
-    void set(const Waypt& wayptPrev, const Waypt& wayptNext, int id);
+    void set(const Waypt& wayptPrev, const Waypt& wayptNext, int id, bool isZeroLengthSegment = false);
 
     void setId(int id);
     int id() const;
