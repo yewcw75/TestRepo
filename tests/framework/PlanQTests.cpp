@@ -62,8 +62,19 @@ void PlanQTests::verify_set_plan_data()
     QVector<Waypt> wayptList2;
     propertyFlags = Plan::Property::IS_NOMINAL;
     wayptList2.append(Waypt(0, 0, 103, 0));
-    QTest::newRow("Test 1") << (int) 1 << (QVector<Waypt>)wayptList2 << \
-                               (float)4828.42712475 << (float)10.0 << (int)propertyFlags << (bool)false;
+    QTest::newRow("Test 2") << (int) 1 << (QVector<Waypt>)wayptList2 << \
+                               (float)0.0 << (float)-10.0 << (int)propertyFlags << (bool)false;
+
+    QVector<Waypt> wayptList3;
+    wayptList3.append(Waypt(0, 0, 103, 0));
+    wayptList3.append(Waypt(1000, 1000, 103, 1));
+    wayptList3.append(Waypt(950, 1500, 103, 1)); //go back a little
+    wayptList3.append(Waypt(2000, 1500, 103, 2));
+    wayptList3.append(Waypt(3000, 0, 103, 3));
+    wayptList3.append(Waypt(4000, 0, 103, 3));
+    propertyFlags = Plan::Property::NONE;
+    QTest::newRow("Test 3") << (int) 1 << (QVector<Waypt>)wayptList3 << \
+                               (float)0.0 /*does not matter, expected not used*/ << (float)10.0 << (int)propertyFlags << (bool)false;
     return;
 }
 
