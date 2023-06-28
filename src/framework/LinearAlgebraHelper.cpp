@@ -1,3 +1,4 @@
+#include "RrtPlannerLib/framework/FrameworkDefines.h"
 #include <RrtPlannerLib/framework/LinearAlgebraHelper.h>
 #include <QtGlobal>
 #include <boost/numeric/ublas/lu.hpp>
@@ -19,10 +20,44 @@ LinearAlgebraHelper::~LinearAlgebraHelper()
 }
 
 //----------
-bool LinearAlgebraHelper::solve(const boost::numeric::ublas::matrix<float>& M,
-                  const boost::numeric::ublas::vector<float>& y,
-                  float tol_small,
-                  bnu::vector<float>& x)
+bnu::vector<float> LinearAlgebraHelper::to_bnu_vector(const Bgm_Point& vec)
+{
+    bnu::vector<float> ret(2);
+    ret[0] = vec.get<0>();
+    ret[1] = vec.get<1>();
+    return(ret);
+}
+
+//----------
+Bgm_Point LinearAlgebraHelper::to_bgm_point(const bnu::vector<float>& vec)
+{
+    Bgm_Point ret;
+    ret.set<0>(vec[0]);
+    ret.set<1>(vec[1]);
+    return(ret);
+}
+
+//----------
+bnu::matrix<float> LinearAlgebraHelper::concatenate_col_vectors(const bnu::vector<float>& v1,
+                                                      const bnu::vector<float>& v2)
+{
+    Q_ASSERT(v1.size() == v2.size());
+    int nRow = v1.size();
+
+    bnu::matrix<float> ret(nRow, 2);
+    for(int i = 0; i < nRow; ++i){
+        ret(i, 0) = v1(i);
+        ret(i, 1) = v2(i);
+    }
+    return(ret);
+}
+
+//----------
+bool LinearAlgebraHelper::solve(const bnu::matrix<float>& M, //invertible square matrix, [NxN]
+                                const bnu::vector<float>& y, //[Nx1]
+                                float tol_small, //for checking if ok to 1/det(M)
+                                bnu::vector<float>& x //[Nx1]
+                                )
 {
     bool res = true;
 
@@ -50,8 +85,8 @@ bool LinearAlgebraHelper::solve(const boost::numeric::ublas::matrix<float>& M,
         boost::numeric::ublas::matrix<float> M2 = M;
         bnu::permutation_matrix<std::size_t> permutation(M2.size1());
 
-        bool is_invertible = bnu::lu_factorize(M2, permutation);
-        if (is_invertible){
+        int result = bnu::lu_factorize(M2, permutation); //res = 0 if M2 is not singular
+        if (result == 0){
             // Compute the inverse of the matrix
             bnu::matrix<float> M2_inv(M2.size1(), M2.size2());
             bnu::identity_matrix<float> I(M2.size1());
