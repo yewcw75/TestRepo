@@ -30,11 +30,11 @@ PlanHelper::VerifyPlanResult PlanHelper::verifyPlanInput(const QVector<Waypt>& w
         //check if any segment goes in a reverse direction
         Coord_NE wayptPrev = wayptList.at(0).coord_const_ref();
         Coord_NE wayptLast = wayptList.at(nWaypt-1).coord_const_ref();
-        Vector_NE vecFirstToLast = GeometryHelper::subtractVector(wayptLast, wayptPrev);
+        Vector_NE vecFirstToLast = GeometryHelper::subtract_vector(wayptLast, wayptPrev);
         for(int idx = 1; idx < nWaypt; ++idx){ //loop from 2nd waypt onwards
             Coord_NE wayptNext = wayptList.at(idx).coord_const_ref();
-            Vector_NE vecPrevToNext = GeometryHelper::subtractVector(wayptNext, wayptPrev);
-            float dotPdt = GeometryHelper::dotProductVector(vecPrevToNext, vecFirstToLast);
+            Vector_NE vecPrevToNext = GeometryHelper::subtract_vector(wayptNext, wayptPrev);
+            float dotPdt = GeometryHelper::dot_product(vecPrevToNext, vecFirstToLast);
             if(dotPdt < 0.0){
                 res = VerifyPlanResult::VERIFY_PLAN_ERR_REVERSE_DIR;
                 break;

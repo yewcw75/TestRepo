@@ -175,7 +175,7 @@ Waypt::FieldFlags Waypt::getFieldFlags() const
 //----------
 Vector_NE Waypt::vectorTo(const Waypt& otherWaypt) const
 {
-    Vector_NE v = GeometryHelper::subtractPoint(otherWaypt.coord_const_ref(), this->coord_const_ref());
+    Vector_NE v = GeometryHelper::subtract_point(otherWaypt.coord_const_ref(), this->coord_const_ref());
     return(v);
 }
 

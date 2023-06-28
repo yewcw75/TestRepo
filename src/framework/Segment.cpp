@@ -58,10 +58,10 @@ void SegmentPrivate::checkAndSetSegmentAttributes()
     {
         //tVec and length
         Vector_NE vecPrev2Next = m_wayptPrev.vectorTo(m_wayptNext);
-        m_length = GeometryHelper::lengthVector(vecPrev2Next);
+        m_length = GeometryHelper::norm2(vecPrev2Next);
         m_fieldFlags.setFlag(Segment::Field::LENGTH);
         if(m_length > TOL_SMALL){
-            m_tVec = GeometryHelper::scalar_multiplyVector(1/m_length, vecPrev2Next);
+            m_tVec = GeometryHelper::multiply_value(vecPrev2Next, 1/m_length);
             m_fieldFlags.setFlag(Segment::Field::TVEC);
 
             //nVec
@@ -83,11 +83,10 @@ void SegmentPrivate::calculateBisector(const Segment& seg1, const Segment& seg2,
     Q_ASSERT(seg1.getFieldFlags().testFlag(Segment::Field::NVEC));
     Q_ASSERT(seg2.getFieldFlags().testFlag(Segment::Field::NVEC));
 
-    Vector_NE v = GeometryHelper::addVector(seg1.nVec(), seg2.nVec());
-    double length_v = GeometryHelper::lengthVector(v);
+    Vector_NE v = GeometryHelper::add_vector(seg1.nVec(), seg2.nVec());
+    double length_v = GeometryHelper::norm2(v);
     if(length_v > TOL_SMALL){
-        bVec = GeometryHelper::scalar_multiplyVector(1/length_v, v);
-        bg::multiply_value(v, 1/length_v);
+        bVec = GeometryHelper::multiply_value(v, 1/length_v);
     }
     else{
         //left-hand perp vector of b (tvec)
