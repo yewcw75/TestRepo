@@ -44,16 +44,16 @@ public:
      * @param crossTrackHorizon [m] Maximum cross track distance to check for edge event.
      * @param side +1.0: stbd, -1.0 port.
      * @param eps_dx [m] cross track range to group edge events.
-     * @param[out] dxNearest [m] Cross track of the nearest edge event.
-     * @param[out] eventSegIdxList List containing indices of segments with edge event at dxNearest.
+     * @param[out] dxNearest_out [m] Cross track of the nearest edge event.
+     * @param[out] eventSegIdxList_out List containing indices of segments with edge event at dxNearest.
      * @return bool to indicate if any edge event is found.
      */
     static bool findNearestEdgeEvent(const Plan& plan,
                                      float crossTrackHorizon,
                                      float side,
                                      float eps_dx,
-                                     float& dxNearest,
-                                     QVector<int>& eventSegIdxList);
+                                     float& dxNearest_out,
+                                     QVector<int>& eventSegIdxList_out);
 };
 
 

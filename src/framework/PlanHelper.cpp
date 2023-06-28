@@ -1,7 +1,10 @@
 #include <RrtPlannerLib/framework/PlanHelper.h>
 #include <RrtPlannerLib/framework/FrameworkDefines.h>
 #include <RrtPlannerLib/framework/GeometryHelper.h>
+#include <RrtPlannerLib/framework/LinearAlgebraHelper.h>
 #include <limits>
+
+namespace bnu = boost::numeric::ublas;
 
 RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 
@@ -50,55 +53,62 @@ bool PlanHelper::findNearestEdgeEvent(const Plan& plan,
                                      float crossTrackHorizon,
                                      float side,
                                      float eps_dx,
-                                     float& dxNearest,
-                                     QVector<int>& eventSegIdxList)
+                                     float& dxNearest_out,
+                                     QVector<int>& eventSegIdxList_out)
 {
     bool found = false;
-  /*
-    eventSegIdxList.clear();
-    int nSeg = plan.nSegment();
+    QVector<int> eventSegIdxList;
+    float dxNearest = std::numeric_limits<float>::max(); //init dx
 
-    float dx = std::numeric_limits<float>::max(); //init dx
+    const QVector<Segment>& segmentList = plan.segmentList();
+    int nSeg = segmentList.size();
 
     //edge event will need at least 2 segments
     if(nSeg > 1){
         //check event for each segment
+        for(int i = 0; i < nSeg; ++i){
+            const Segment& currSeg = segmentList.at(i);
+            bnu::vector<float> tVec = LinearAlgebraHelper::to_bnu_vector(currSeg.tVec());
+            bnu::vector<float> nVec = LinearAlgebraHelper::to_bnu_vector(currSeg.nVec());
+            bnu::vector<float> bVecPrev = LinearAlgebraHelper::to_bnu_vector(currSeg.bVecPrev());
+            bnu::vector<float> bVecNext = LinearAlgebraHelper::to_bnu_vector(currSeg.bVecNext());
+            bnu::vector<float> wayptPrev = LinearAlgebraHelper::to_bnu_vector(currSeg.wayptPrev().coord_const_ref());
+            bnu::vector<float> wayptNext = LinearAlgebraHelper::to_bnu_vector(currSeg.wayptNext().coord_const_ref());
+            bnu::matrix M = LinearAlgebraHelper::concatenate_col_vectors(bVecPrev, -1.0*bVecNext);
+            bnu::vector<float> v = wayptNext - wayptPrev;
+            bnu::vector<float> d;
+            bool ok = LinearAlgebraHelper::solve(M, v, TOL_SMALL, d);
+            if(ok){
+                bnu::vector<float> posEvent = wayptNext + d[1]*bVecNext;
+                bnu::matrix M2 = LinearAlgebraHelper::concatenate_col_vectors(tVec, nVec);
+                bnu::vector<float> v2 = posEvent - wayptPrev;
+                bnu::vector<float> d2;
+                bool ok2 = LinearAlgebraHelper::solve(M2, v2, TOL_SMALL, d2);
+                if(ok2){
+                    float dx = side * d2[1]; //for port side, cast the problem to stbd side
+                    if(dx > 0 && plan.crossTrack() + dx <= crossTrackHorizon){
+                       if( dxNearest - dx >  eps_dx){ //=> dx is smaller than dxNearest
+                           dxNearest = dx;
+                           eventSegIdxList.clear();
+                           eventSegIdxList.append(i);
+                           found = true;
+                       }
+                       else if (abs(dxNearest - dx) <= eps_dx){  //=> curr event within close proximity of previous nearest
+                           eventSegIdxList.append(i);
+                       }
+                    }
+                } //if(ok2)
+            } //if(ok)
+
+        }
+    } //if(nSeg > 1)
+    dxNearest = side * dxNearest;
+
+    if(found){ //assign output
+        dxNearest_out = dxNearest;
+        eventSegIdxList_out = eventSegIdxList;
     }
-
-    //-----
-     %check event for each segment
-     for idxSeg = 1 : nSeg
-         seg = plan.segList(idxSeg);
-         M = [seg.bvecPrev, -seg.bvecNext];
-         v = seg.nodeNext -  seg.nodePrev;
-         [d, ok] = SolveLinearSyst(M, v, 1e-6);
-         if(ok)
-             posEvent = seg.nodeNext + d(2) * seg.bvecNext;
-             M2 = [seg.tvec, seg.nvec];
-             v2 = posEvent - seg.nodePrev;
-             [d2, ok2] = SolveLinearSyst(M2, v2, 1e-6);
-             if(ok2)
-                 dx = side * d2(2); %for port side, cast the problem to stbd side
-                 if(dx > 0 && plan.crossTrack + dx <= crossTrackHorizon)
-                    if(dxNearest - dx) >  eps_dx %=> dx is smaller than dxNearest
-                        dxNearest = dx;
-                        nEventSeg = 1;
-                        eventSegIdxList(nEventSeg) = idxSeg;
-                        found = 1;
-                    elseif abs(dxNearest - dx) <= eps_dx %=> curr event within close proximity of previous nearest
-                        nEventSeg = nEventSeg + 1;
-                        eventSegIdxList(nEventSeg) = idxSeg;
-                    end
-                 end
-             end
-         end
-     end
-
-     dxNearest = side * dx;
-     eventSegIdxList = eventSegIdxList(1:nEventSeg);
-     //-----
-*/
-     return(found);
+    return(found);
 }
 
 //----------
