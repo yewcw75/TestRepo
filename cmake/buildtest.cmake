@@ -24,6 +24,8 @@ add_executable(${PROJECT_NAME}QTests
     tests/framework/SegmentQTests.cpp
     tests/framework/PlanQTests.h
     tests/framework/PlanQTests.cpp
+    tests/framework/LinearAlgebraHelperQTests.h
+    tests/framework/LinearAlgebraHelperQTests.cpp
     )
 
 target_include_directories(${PROJECT_NAME}QTests PRIVATE
