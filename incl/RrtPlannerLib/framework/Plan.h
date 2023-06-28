@@ -49,7 +49,7 @@ public:
     int nSegment() const; //no. of segments
     int nWaypt() const; //no. of waypts ( = nSegment + 1)
     QVector<Waypt> wayptList() const; //get the waypt list of plan
-    QVector<Segment> segmentList() const; //get the segment list of plan
+    const QVector<Segment>& segmentList() const; //get the segment list of plan
 
     float length() const; //[m] total plan length
 
@@ -60,10 +60,10 @@ public:
     bool testProperty(const Property& property) const;
 
     void setPropertyFlags(const PropertyFlags& flags);
-    PropertyFlags propertyFlags() const;
+    const PropertyFlags& propertyFlags() const;
 
     //presence flags of fields
-    FieldFlags getFieldFlags() const;
+    const FieldFlags& getFieldFlags() const;
 
 private:
     void appendSegment(const Segment& segment);

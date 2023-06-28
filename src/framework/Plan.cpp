@@ -130,22 +130,6 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
 }
 
 //----------
-Plan::FieldFlags Plan::getFieldFlags() const
-{
-    return(mp_pimpl->m_fieldFlags);
-}
-
-//----------
-void Plan::appendSegment(const Segment& segment)
-{
-    mp_pimpl->m_segmentList.append(segment);
-    mp_pimpl->m_length += segment.length(); //accumulate length for plan
-    mp_pimpl->m_fieldFlags.setFlag(Field::SEGMENT_LIST);
-    mp_pimpl->m_fieldFlags.setFlag(Field::LENGTH);
-    return;
-}
-
-//----------
 int Plan::id() const
 {
     return(mp_pimpl->m_id);
@@ -164,6 +148,11 @@ int Plan::nWaypt() const
 }
 
 //----------
+/**
+ * Developer notes:
+ * - Note that a local QVector<Waypt> res is used to store the waypts of the plan.
+ * - Do not change to return by reference (i.e. return const QVector<Waypt>&) as res will be invalid after this function returns.
+ */
 QVector<Waypt> Plan::wayptList() const
 {
     QVector<Waypt> res;
@@ -180,7 +169,7 @@ QVector<Waypt> Plan::wayptList() const
 }
 
 //----------
-QVector<Segment> Plan::segmentList() const
+const QVector<Segment>& Plan::segmentList() const
 {
     return(mp_pimpl->m_segmentList);
 }
@@ -228,9 +217,25 @@ void Plan::setPropertyFlags(const PropertyFlags& flags)
 }
 
 //----------
-Plan::PropertyFlags Plan::propertyFlags() const
+const Plan::PropertyFlags& Plan::propertyFlags() const
 {
     return(mp_pimpl->m_propertyFlags);
+}
+
+//----------
+const Plan::FieldFlags& Plan::getFieldFlags() const
+{
+    return(mp_pimpl->m_fieldFlags);
+}
+
+//----------
+void Plan::appendSegment(const Segment& segment)
+{
+    mp_pimpl->m_segmentList.append(segment);
+    mp_pimpl->m_length += segment.length(); //accumulate length for plan
+    mp_pimpl->m_fieldFlags.setFlag(Field::SEGMENT_LIST);
+    mp_pimpl->m_fieldFlags.setFlag(Field::LENGTH);
+    return;
 }
 
 //----------

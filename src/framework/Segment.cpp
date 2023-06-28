@@ -172,7 +172,7 @@ void Segment::setWayptPrev(const Waypt& wayptPrev)
 }
 
 //----------
-Waypt Segment::wayptPrev() const
+const Waypt& Segment::wayptPrev() const
 {
     return(mp_pimpl->m_wayptPrev);
 }
@@ -187,19 +187,19 @@ void Segment::setWayptNext(const Waypt& wayptNext)
 }
 
 //----------
-Waypt Segment::wayptNext() const
+const Waypt& Segment::wayptNext() const
 {
     return(mp_pimpl->m_wayptNext);
 }
 
 //----------
-Vector_NE Segment::tVec() const
+const Vector_NE& Segment::tVec() const
 {
     return(mp_pimpl->m_tVec);
 }
 
 //----------
-Vector_NE Segment::nVec() const
+const Vector_NE& Segment::nVec() const
 {
     return(mp_pimpl->m_nVec);
 }
@@ -230,7 +230,7 @@ void Segment::setbVecPrev(const Segment& segmentPrev)
 }
 
 //----------
-Vector_NE Segment::bVecPrev() const
+const Vector_NE& Segment::bVecPrev() const
 {
     return(mp_pimpl->m_bVecPrev);
 }
@@ -255,13 +255,13 @@ void Segment::setbVecNext(const Segment& segmentNext)
 }
 
 //----------
-Vector_NE Segment::bVecNext() const
+const Vector_NE& Segment::bVecNext() const
 {
     return(mp_pimpl->m_bVecNext);
 }
 
 //----------
-Segment::FieldFlags Segment::getFieldFlags() const
+const Segment::FieldFlags& Segment::getFieldFlags() const
 {
     return(mp_pimpl->m_fieldFlags);
 }
