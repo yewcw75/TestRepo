@@ -1,6 +1,5 @@
-#include <RrtPlannerLib/framework/FrameworkDefines.h>
 #include <RrtPlannerLib/framework/Segment.h>
-#include <RrtPlannerLib/framework/GeometryHelper.h>
+#include <RrtPlannerLib/framework/VectorFHelper.h>
 #include <boost/geometry.hpp>
 #include <QSharedData>
 #include <QtGlobal>
@@ -13,7 +12,12 @@ class SegmentPrivate: public QSharedData
 public:
     SegmentPrivate()
         :QSharedData()
-    {}
+    {
+        m_tVec.resize(DIM_COORD);
+        m_nVec.resize(DIM_COORD);
+        m_bVecPrev.resize(DIM_COORD);
+        m_bVecNext.resize(DIM_COORD);
+    }
     ~SegmentPrivate()
     {}
     SegmentPrivate(const SegmentPrivate& other)
@@ -31,15 +35,15 @@ public:
     {}
 
     void checkAndSetSegmentAttributes();
-    void calculateBisector(const Segment& seg1, const Segment& seg2, Vector_NE& bVec);
+    void calculateBisector(const Segment& seg1, const Segment& seg2, VectorF& bVec);
 
 public:
-    Waypt m_wayptPrev{};
-    Waypt m_wayptNext{};
-    Vector_NE m_tVec{};
-    Vector_NE m_nVec{};
-    Vector_NE m_bVecPrev{};
-    Vector_NE m_bVecNext{};
+    Waypt m_wayptPrev;
+    Waypt m_wayptNext;
+    VectorF m_tVec;
+    VectorF m_nVec;
+    VectorF m_bVecPrev;
+    VectorF m_bVecNext;
     Segment::FieldFlags m_fieldFlags{};
     float m_length{};
     int m_id{-1};
@@ -57,17 +61,17 @@ void SegmentPrivate::checkAndSetSegmentAttributes()
         m_fieldFlags.testFlag(Segment::Field::WAYPT_NEXT))
     {
         //tVec and length
-        Vector_NE vecPrev2Next = m_wayptPrev.vectorTo(m_wayptNext);
-        m_length = GeometryHelper::norm2(vecPrev2Next);
+        VectorF vecPrev2Next = VectorFHelper::subtract_vector(m_wayptNext.coord_const_ref(), m_wayptPrev.coord_const_ref());
+        m_length = VectorFHelper::norm2(vecPrev2Next);
         m_fieldFlags.setFlag(Segment::Field::LENGTH);
         if(m_length > TOL_SMALL){
-            m_tVec = GeometryHelper::multiply_value(vecPrev2Next, 1/m_length);
+            m_tVec = VectorFHelper::multiply_value(vecPrev2Next, 1/m_length);
             m_fieldFlags.setFlag(Segment::Field::TVEC);
 
             //nVec
             if(DIM_COORD == 2){
-                m_nVec.set<IDX_NORTHING>(-m_tVec.get<IDX_EASTING>());
-                m_nVec.set<IDX_EASTING>(m_tVec.get<IDX_NORTHING>());
+                m_nVec[IDX_NORTHING] = -m_tVec[IDX_EASTING];
+                m_nVec[IDX_EASTING] = m_tVec[IDX_NORTHING];
                 m_fieldFlags.setFlag(Segment::Field::NVEC);
             }
             else if(DIM_COORD > 2){
@@ -78,20 +82,20 @@ void SegmentPrivate::checkAndSetSegmentAttributes()
 }
 
 //----------
-void SegmentPrivate::calculateBisector(const Segment& seg1, const Segment& seg2, Vector_NE& bVec)
+void SegmentPrivate::calculateBisector(const Segment& seg1, const Segment& seg2, VectorF& bVec)
 {
     Q_ASSERT(seg1.getFieldFlags().testFlag(Segment::Field::NVEC));
     Q_ASSERT(seg2.getFieldFlags().testFlag(Segment::Field::NVEC));
 
-    Vector_NE v = GeometryHelper::add_vector(seg1.nVec(), seg2.nVec());
-    double length_v = GeometryHelper::norm2(v);
+    VectorF v = VectorFHelper::add_vector(seg1.nVec(), seg2.nVec());
+    double length_v = VectorFHelper::norm2(v);
     if(length_v > TOL_SMALL){
-        bVec = GeometryHelper::multiply_value(v, 1/length_v);
+        bVec = VectorFHelper::multiply_value(v, 1/length_v);
     }
     else{
         //left-hand perp vector of b (tvec)
-        bVec.set<IDX_NORTHING>(seg2.nVec().get<IDX_EASTING>());
-        bVec.set<IDX_EASTING>(-seg2.nVec().get<IDX_NORTHING>());
+        bVec[IDX_NORTHING] = seg2.nVec()[IDX_EASTING];
+        bVec[IDX_EASTING] = -seg2.nVec()[IDX_NORTHING];
     }
     return;
 }
@@ -193,13 +197,13 @@ const Waypt& Segment::wayptNext() const
 }
 
 //----------
-const Vector_NE& Segment::tVec() const
+const VectorF& Segment::tVec() const
 {
     return(mp_pimpl->m_tVec);
 }
 
 //----------
-const Vector_NE& Segment::nVec() const
+const VectorF& Segment::nVec() const
 {
     return(mp_pimpl->m_nVec);
 }
@@ -211,10 +215,10 @@ float Segment::length() const
 }
 
 //----------
-void Segment::setbVecPrev(const Vector_NE& bVecPrev)
+void Segment::setbVecPrev(const VectorF& bVecPrev)
 {
-    float normSquare = bg::dot_product(bVecPrev, bVecPrev);
-    Q_ASSERT(qFuzzyCompare(normSquare, (float)1.0));
+    float norm2 = VectorFHelper::norm2(bVecPrev);
+    Q_ASSERT(qFuzzyCompare(norm2, (float)1.0));
 
     mp_pimpl->m_bVecPrev = bVecPrev;
     mp_pimpl->m_fieldFlags.setFlag(Field::BVEC_PREV);
@@ -230,16 +234,16 @@ void Segment::setbVecPrev(const Segment& segmentPrev)
 }
 
 //----------
-const Vector_NE& Segment::bVecPrev() const
+const VectorF& Segment::bVecPrev() const
 {
     return(mp_pimpl->m_bVecPrev);
 }
 
 //----------
-void Segment::setbVecNext(const Vector_NE& bVecNext)
+void Segment::setbVecNext(const VectorF& bVecNext)
 {
-    float normSquare = bg::dot_product(bVecNext, bVecNext);
-    Q_ASSERT(qFuzzyCompare(normSquare, (float)1.0));
+    float norm2 = VectorFHelper::norm2(bVecNext);
+    Q_ASSERT(qFuzzyCompare(norm2, (float)1.0));
 
     mp_pimpl->m_bVecNext = bVecNext;
     mp_pimpl->m_fieldFlags.setFlag(Field::BVEC_NEXT);
@@ -255,7 +259,7 @@ void Segment::setbVecNext(const Segment& segmentNext)
 }
 
 //----------
-const Vector_NE& Segment::bVecNext() const
+const VectorF& Segment::bVecNext() const
 {
     return(mp_pimpl->m_bVecNext);
 }

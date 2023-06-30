@@ -47,10 +47,12 @@ include(GNUInstallDirs)
 add_library(${PROJECT_NAME} SHARED
   incl/${PROJECT_NAME}/RrtPlannerLibGlobal.h
   incl/${PROJECT_NAME}/framework/FrameworkDefines.h
-  incl/${PROJECT_NAME}/framework/GeometryHelper.h
-  src/framework/GeometryHelper.cpp
-  incl/${PROJECT_NAME}/framework/LinearAlgebraHelper.h
-  src/framework/LinearAlgebraHelper.cpp
+  incl/${PROJECT_NAME}/framework/VectorFHelper.h
+  src/framework/VectorFHelper.cpp
+  incl/${PROJECT_NAME}/framework/UblasHelper.h
+  src/framework/UblasHelper.cpp
+  incl/${PROJECT_NAME}/framework/VectorF.h
+  src/framework/VectorF.cpp
   incl/${PROJECT_NAME}/framework/Waypt.h
   src/framework/Waypt.cpp
   incl/${PROJECT_NAME}/framework/Segment.h

@@ -56,7 +56,6 @@ public:
                                      QVector<int>& eventSegIdxList_out);
 };
 
-
 RRTPLANNER_FRAMEWORK_END_NAMESPACE
 
 #endif

@@ -18,14 +18,18 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
 add_executable(${PROJECT_NAME}QTests
     tests/main.cpp
+    tests/framework/VectorFQTests.h
+    tests/framework/VectorFQTests.cpp
     tests/framework/WayptQTests.h
     tests/framework/WayptQTests.cpp
     tests/framework/SegmentQTests.h
     tests/framework/SegmentQTests.cpp
     tests/framework/PlanQTests.h
     tests/framework/PlanQTests.cpp
-    tests/framework/LinearAlgebraHelperQTests.h
-    tests/framework/LinearAlgebraHelperQTests.cpp
+    tests/framework/PlanHelperQTests.h
+    tests/framework/PlanHelperQTests.cpp
+    tests/framework/UblasHelperQTests.h
+    tests/framework/UblasHelperQTests.cpp
     )
 
 target_include_directories(${PROJECT_NAME}QTests PRIVATE

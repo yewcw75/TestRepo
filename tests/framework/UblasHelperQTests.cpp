@@ -1,4 +1,4 @@
-#include "LinearAlgebraHelperQTests.h"
+#include "UblasHelperQTests.h"
 #include <QtTest/QtTest>
 #include <QtGlobal>
 #include <iostream>
@@ -6,19 +6,19 @@
 namespace bnu = boost::numeric::ublas;
 
 //----------
-LinearAlgebraHelperQTests::LinearAlgebraHelperQTests()
+UblasHelperQTests::UblasHelperQTests()
 {
 
 }
 
 //----------
-LinearAlgebraHelperQTests::~LinearAlgebraHelperQTests()
+UblasHelperQTests::~UblasHelperQTests()
 {
 
 }
 
 //----------
-void LinearAlgebraHelperQTests::verify_solve_data()
+void UblasHelperQTests::verify_solve_data()
 {
     using matrixF = bnu::matrix<float>;
     using vectorF = bnu::vector<float>;
@@ -64,7 +64,7 @@ void LinearAlgebraHelperQTests::verify_solve_data()
 }
 
 //----------
-void LinearAlgebraHelperQTests::verify_solve()
+void UblasHelperQTests::verify_solve()
 {
     using matrixF = bnu::matrix<float>;
     using vectorF = bnu::vector<float>;
@@ -75,7 +75,7 @@ void LinearAlgebraHelperQTests::verify_solve()
     QFETCH(bool, res_expect);
 
     vectorF x;
-    bool res = LinearAlgebraHelper::solve(M, y, 1e-6, x);
+    bool res = UblasHelper::solve(M, y, 1e-6, x);
 
     QCOMPARE(res, res_expect);
     for(int i = 0; i < (int)x.size(); ++i){
@@ -86,36 +86,38 @@ void LinearAlgebraHelperQTests::verify_solve()
 }
 
 //----------
-void LinearAlgebraHelperQTests::verify_to_bnu_vector()
+/*
+void UblasHelperQTests::verify_to_bnu_vector()
 {
     float northing = -3.5, easting = 5.5;
     Bgm_Point vec{northing, easting};
-    bnu::vector<float> bnu_vec = LinearAlgebraHelper::to_bnu_vector(vec);
+    bnu::vector<float> bnu_vec = UblasHelper::to_bnu_vector(vec);
     QCOMPARE(bnu_vec[0], northing);
     QCOMPARE(bnu_vec[1], easting);
     return;
 }
-
+*/
 //----------
-void LinearAlgebraHelperQTests::verify_to_bgm_vector()
+/*
+void UblasHelperQTests::verify_to_bgm_vector()
 {
     float northing = -3.5, easting = 5.5;
     bnu::vector<float> bnu_vec(2);
     bnu_vec[0] = northing; bnu_vec[1] = easting;
-    Bgm_Point point = LinearAlgebraHelper::to_bgm_point(bnu_vec);
+    Bgm_Point point = UblasHelper::to_bgm_point(bnu_vec);
     QCOMPARE(point.get<0>(), northing);
     QCOMPARE(point.get<1>(), easting);
     return;
 }
-
+*/
 //----------
-void LinearAlgebraHelperQTests::verify_concatenate_col_vectors()
+void UblasHelperQTests::verify_concatenate_col_vectors()
 {
     float a = 1.0, b = 2.0, c = 3.0, d = 4.0;
     bnu::vector<float> v1(2), v2(2);
     v1[0] = a, v1[1] = b;
     v2[0] = c, v2[1] = d;
-    bnu::matrix<float> M = LinearAlgebraHelper::concatenate_col_vectors(v1, v2);
+    bnu::matrix<float> M = UblasHelper::concatenate_col_vectors(v1, v2);
     QCOMPARE(M.size1(), 2);
     QCOMPARE(M.size2(), 2);
     QCOMPARE(M(0,0), a);

@@ -1,5 +1,5 @@
 #include "RrtPlannerLib/framework/FrameworkDefines.h"
-#include <RrtPlannerLib/framework/LinearAlgebraHelper.h>
+#include <RrtPlannerLib/framework/UblasHelper.h>
 #include <QtGlobal>
 #include <boost/numeric/ublas/lu.hpp>
 
@@ -8,37 +8,19 @@ namespace bnu = boost::numeric::ublas;
 RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 
 //----------
-LinearAlgebraHelper::LinearAlgebraHelper()
+UblasHelper::UblasHelper()
 {
 
 }
 
 //----------
-LinearAlgebraHelper::~LinearAlgebraHelper()
+UblasHelper::~UblasHelper()
 {
 
 }
 
 //----------
-bnu::vector<float> LinearAlgebraHelper::to_bnu_vector(const Bgm_Point& vec)
-{
-    bnu::vector<float> ret(2);
-    ret[0] = vec.get<0>();
-    ret[1] = vec.get<1>();
-    return(ret);
-}
-
-//----------
-Bgm_Point LinearAlgebraHelper::to_bgm_point(const bnu::vector<float>& vec)
-{
-    Bgm_Point ret;
-    ret.set<0>(vec[0]);
-    ret.set<1>(vec[1]);
-    return(ret);
-}
-
-//----------
-bnu::matrix<float> LinearAlgebraHelper::concatenate_col_vectors(const bnu::vector<float>& v1,
+bnu::matrix<float> UblasHelper::concatenate_col_vectors(const bnu::vector<float>& v1,
                                                       const bnu::vector<float>& v2)
 {
     Q_ASSERT(v1.size() == v2.size());
@@ -53,7 +35,7 @@ bnu::matrix<float> LinearAlgebraHelper::concatenate_col_vectors(const bnu::vecto
 }
 
 //----------
-bool LinearAlgebraHelper::solve(const bnu::matrix<float>& M, //invertible square matrix, [NxN]
+bool UblasHelper::solve(const bnu::matrix<float>& M, //invertible square matrix, [NxN]
                                 const bnu::vector<float>& y, //[Nx1]
                                 float tol_small, //for checking if ok to 1/det(M)
                                 bnu::vector<float>& x //[Nx1]

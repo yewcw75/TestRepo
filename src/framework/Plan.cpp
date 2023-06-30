@@ -30,7 +30,7 @@ public:
     Plan::FieldFlags m_fieldFlags{};
     float m_length{}; //[m]
     float m_crossTrack{}; //[m]
-    int m_id;
+    int m_id{};
 };
 
 //##########################

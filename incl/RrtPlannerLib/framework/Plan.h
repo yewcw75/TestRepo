@@ -1,8 +1,15 @@
+/**
+ * @file Plan
+ * Defines Plan class to store a list Segments.
+ * The cross-track distance wrt a nominal plan and some additional flags can also be set in a Plan class.
+ *
+ * @author: ycw
+ * @date: 20230630
+ */
 #ifndef RRTPLANNER_LIB_PLAN_H
 #define RRTPLANNER_LIB_PLAN_H
 
 #include <RrtPlannerLib/RrtPlannerLibGlobal.h>
-#include <RrtPlannerLib/framework/FrameworkDefines.h>
 #include <RrtPlannerLib/framework/Waypt.h>
 #include <RrtPlannerLib/framework/Segment.h>
 #include <QSharedDataPointer>
@@ -24,7 +31,7 @@ public:
         PROPERTY_FLAGS  = 1 << 5
     };
     Q_FLAG(Field) //Q_ENUM is also called in Q_FLAG()
-    Q_DECLARE_FLAGS(FieldFlags, Field) //FieldFlags to indicate fields that had been set
+    Q_DECLARE_FLAGS(FieldFlags, Field) //FieldFlags to keep track of fields that had been set
 
     enum class Property{
         NONE            = 0,

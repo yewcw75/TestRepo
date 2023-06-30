@@ -1,3 +1,15 @@
+/**
+ * @file Segment.h
+ * Segment class to store segments of a plan.
+ *
+ * Each segment contains a WayptPrev and a WayptNext, from which a tangent vector along the segment, tVec, and also
+ * a normal vector to the segment, nVec, can be determined.
+ *
+ * Each segment can also store the bisectors wrt to its preceding and following segments, bVecPrev and bVecNext respectively.
+ *
+ * @author: ycw
+ * @date 20230630
+ */
 #ifndef RRTPLANNER_LIB_SEGMENT_H
 #define RRTPLANNER_LIB_SEGMENT_H
 
@@ -27,7 +39,7 @@ public:
         BVEC_NEXT   = 1 << 7
     };
     Q_FLAG(Field) //Q_ENUM is also called in Q_FLAG()
-    Q_DECLARE_FLAGS(FieldFlags, Field) //FieldFlags to indicate fields that had been set
+    Q_DECLARE_FLAGS(FieldFlags, Field) //FieldFlags to keep track of fields that had been set
 
 public:
     Segment();
@@ -46,18 +58,18 @@ public:
     const Waypt& wayptNext() const; //next waypt of segment
 
     //automatically calculated once both wayptPrev and wayptNext are set
-    const Vector_NE& tVec() const; //[m][m] tangent unit vector fron wayptPrev to wayptNext
-    const Vector_NE& nVec() const; //[m][m] unit vector normal to tVec. tVec x nVec = positive (down-dir)
+    const VectorF& tVec() const; //[m][m] tangent unit vector fron wayptPrev to wayptNext
+    const VectorF& nVec() const; //[m][m] unit vector normal to tVec. tVec x nVec = positive (down-dir)
     float length() const; //[m]
 
     //set bisectors
-    void setbVecPrev(const Vector_NE& bVecPrev);
+    void setbVecPrev(const VectorF& bVecPrev);
     void setbVecPrev(const Segment& segmentPrev); //set bisector with a previous segment
-    const Vector_NE& bVecPrev() const; //[m][m] bisector with previous segment.
+    const VectorF& bVecPrev() const; //[m][m] bisector with previous segment.
 
-    void setbVecNext(const Vector_NE& bVecNext);
+    void setbVecNext(const VectorF& bVecNext);
     void setbVecNext(const Segment& segmentNext); //set bisector with a next segment.
-    const Vector_NE& bVecNext() const; //[m][m] bisector with next segment
+    const VectorF& bVecNext() const; //[m][m] bisector with next segment
 
     //presence flags of fields
     const FieldFlags& getFieldFlags() const;

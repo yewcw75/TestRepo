@@ -39,8 +39,8 @@ void SegmentQTests::verify(const Segment& segment,
             float easting_res_nVec,
             float segLength_res)
 {
-    Vector_NE tVec = segment.tVec();
-    Vector_NE nVec = segment.nVec();
+    VectorF tVec = segment.tVec();
+    VectorF nVec = segment.nVec();
     float length = segment.length();
 
     //check waypts are set correctly
@@ -51,10 +51,10 @@ void SegmentQTests::verify(const Segment& segment,
     QCOMPARE(segment.wayptNext().easting(), easting_wayptNext);
 
     //check derived attributes are correct
-    QVERIFY(qFuzzyCompare(tVec.get<IDX_NORTHING>(), northing_res_tVec));
-    QVERIFY(qFuzzyCompare(tVec.get<IDX_EASTING>(), easting_res_tVec));
-    QVERIFY(qFuzzyCompare(nVec.get<IDX_NORTHING>(), northing_res_nVec));
-    QVERIFY(qFuzzyCompare(nVec.get<IDX_EASTING>(), easting_res_nVec));
+    QVERIFY(qFuzzyCompare(tVec[IDX_NORTHING], northing_res_tVec));
+    QVERIFY(qFuzzyCompare(tVec[IDX_EASTING], easting_res_tVec));
+    QVERIFY(qFuzzyCompare(nVec[IDX_NORTHING], northing_res_nVec));
+    QVERIFY(qFuzzyCompare(nVec[IDX_EASTING], easting_res_nVec));
     QVERIFY(qFuzzyCompare(length, segLength_res));
 
     //check field flags
@@ -149,21 +149,21 @@ void SegmentQTests::verify_set_bisector()
     segment1.setbVecNext(segment2);
     QVERIFY(segment1.getFieldFlags().testFlag(Segment::Field::BVEC_NEXT));
 
-    Vector_NE bVecPrev = segment1.bVecPrev();
-    QVERIFY(qFuzzyCompare(bVecPrev.get<IDX_NORTHING>(), (float)(-0.38268343)));
-    QVERIFY(qFuzzyCompare(bVecPrev.get<IDX_EASTING>(), (float)0.92387953));
+    VectorF bVecPrev = segment1.bVecPrev();
+    QVERIFY(qFuzzyCompare(bVecPrev[IDX_NORTHING], (float)(-0.38268343)));
+    QVERIFY(qFuzzyCompare(bVecPrev[IDX_EASTING], (float)0.92387953));
 
-    Vector_NE bVecNext = segment1.bVecNext();
-    QVERIFY(qFuzzyCompare(bVecNext.get<IDX_NORTHING>(), (float)0.38268343));
-    QVERIFY(qFuzzyCompare(bVecNext.get<IDX_EASTING>(), (float)0.92387953));
+    VectorF bVecNext = segment1.bVecNext();
+    QVERIFY(qFuzzyCompare(bVecNext[IDX_NORTHING], (float)0.38268343));
+    QVERIFY(qFuzzyCompare(bVecNext[IDX_EASTING], (float)0.92387953));
 }
 
 //----------
 void SegmentQTests::verify_set_bisector_2()
 {
     Segment segment(Waypt(0, 0), Waypt(1000, 1000), 0);
-    Vector_NE bVecPrev(0.38268343, 0.92387953);
-    Vector_NE bVecNext(-0.44721360, 0.89442719);
+    VectorF bVecPrev{0.38268343, 0.92387953};
+    VectorF bVecNext{-0.44721360, 0.89442719};
 
     QVERIFY(segment.getFieldFlags().testFlag(Segment::Field::BVEC_PREV) == false);
     QVERIFY(segment.getFieldFlags().testFlag(Segment::Field::BVEC_NEXT) == false);
@@ -173,12 +173,12 @@ void SegmentQTests::verify_set_bisector_2()
     segment.setbVecNext(bVecNext);
     QVERIFY(segment.getFieldFlags().testFlag(Segment::Field::BVEC_NEXT));
 
-    Vector_NE bVecPrev_res = segment.bVecPrev();
-    QVERIFY(qFuzzyCompare(bVecPrev_res.get<IDX_NORTHING>(), (float)0.38268343));
-    QVERIFY(qFuzzyCompare(bVecPrev_res.get<IDX_EASTING>(), (float)0.92387953));
+    VectorF bVecPrev_res = segment.bVecPrev();
+    QVERIFY(qFuzzyCompare(bVecPrev_res[IDX_NORTHING], (float)0.38268343));
+    QVERIFY(qFuzzyCompare(bVecPrev_res[IDX_EASTING], (float)0.92387953));
 
-    Vector_NE bVecNext_res = segment.bVecNext();
-    QVERIFY(qFuzzyCompare(bVecNext_res.get<IDX_NORTHING>(), (float)(-0.44721360)));
-    QVERIFY(qFuzzyCompare(bVecNext_res.get<IDX_EASTING>(), (float)0.89442719));
+    VectorF bVecNext_res = segment.bVecNext();
+    QVERIFY(qFuzzyCompare(bVecNext_res[IDX_NORTHING], (float)(-0.44721360)));
+    QVERIFY(qFuzzyCompare(bVecNext_res[IDX_EASTING], (float)0.89442719));
 
 }

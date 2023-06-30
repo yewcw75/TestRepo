@@ -47,7 +47,7 @@ void PlanQTests::verify_set_plan_data()
     QTest::addColumn<float>("crossTrack");
     QTest::addColumn<int>("propertyFlagsVal");
     QTest::addColumn<bool>("setOk");
-    QTest::addColumn<QVector<Vector_NE>>("bVecList");
+    QTest::addColumn<QVector<VectorF>>("bVecList");
 
     QVector<Waypt> wayptList;
     wayptList.append(Waypt(0, 0, 103, 0));
@@ -56,12 +56,12 @@ void PlanQTests::verify_set_plan_data()
     wayptList.append(Waypt(3000, 0, 103, 3));
     wayptList.append(Waypt(4000, 0, 103, 3));
 
-    QVector<Vector_NE> bVecList;
-    bVecList.append(Coord_NE{-0.707107, 0.707107});
-    bVecList.append(Coord_NE{-0.382683, 0.923880});
-    bVecList.append(Coord_NE{0.382683, 0.923880});
-    bVecList.append(Coord_NE{0.382683, 0.923880});
-    bVecList.append(Coord_NE{0.0, 1.0});
+    QVector<VectorF> bVecList;
+    bVecList.append(VectorF{-0.707107, 0.707107});
+    bVecList.append(VectorF{-0.382683, 0.923880});
+    bVecList.append(VectorF{0.382683, 0.923880});
+    bVecList.append(VectorF{0.382683, 0.923880});
+    bVecList.append(VectorF{0.0, 1.0});
 
     Plan::PropertyFlags propertyFlags = Plan::Property::IS_LIMIT;
     QTest::newRow("Test 1") << (int) 1 << (QVector<Waypt>)wayptList << \
@@ -100,7 +100,7 @@ void PlanQTests::verify_set_plan()
     QFETCH(float, crossTrack);
     QFETCH(int, propertyFlagsVal);
     QFETCH(bool, setOk);
-    QFETCH(QVector<Vector_NE>, bVecList);
+    QFETCH(QVector<VectorF>, bVecList);
 
     //set plan
     Plan plan;
@@ -135,10 +135,10 @@ void PlanQTests::verify_set_plan()
         QCOMPARE(segmentList_res.size() + 1, bVecList.size());
         for(int i = 0; i < segmentList_res.size(); ++i){
             const Segment& currSegment = segmentList_res.at(i);
-            QVERIFY(qFuzzyCompare(currSegment.bVecPrev().get<IDX_NORTHING>(), bVecList.at(i).get<IDX_NORTHING>()));
-            QVERIFY(qFuzzyCompare(currSegment.bVecPrev().get<IDX_EASTING>(), bVecList.at(i).get<IDX_EASTING>()));
-            QVERIFY(qFuzzyCompare(currSegment.bVecNext().get<IDX_NORTHING>(), bVecList.at(i+1).get<IDX_NORTHING>()));
-            QVERIFY(qFuzzyCompare(currSegment.bVecNext().get<IDX_EASTING>(), bVecList.at(i+1).get<IDX_EASTING>()));
+            QVERIFY(qFuzzyCompare(currSegment.bVecPrev()[IDX_NORTHING], bVecList.at(i)[IDX_NORTHING]));
+            QVERIFY(qFuzzyCompare(currSegment.bVecPrev()[IDX_EASTING], bVecList.at(i)[IDX_EASTING]));
+            QVERIFY(qFuzzyCompare(currSegment.bVecNext()[IDX_NORTHING], bVecList.at(i+1)[IDX_NORTHING]));
+            QVERIFY(qFuzzyCompare(currSegment.bVecNext()[IDX_EASTING], bVecList.at(i+1)[IDX_EASTING]));
         }
 
         //verify field flags

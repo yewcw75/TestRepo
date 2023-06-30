@@ -1,7 +1,7 @@
 #include <RrtPlannerLib/framework/PlanHelper.h>
 #include <RrtPlannerLib/framework/FrameworkDefines.h>
-#include <RrtPlannerLib/framework/GeometryHelper.h>
-#include <RrtPlannerLib/framework/LinearAlgebraHelper.h>
+#include <RrtPlannerLib/framework/VectorFHelper.h>
+#include <RrtPlannerLib/framework/UblasHelper.h>
 #include <limits>
 
 namespace bnu = boost::numeric::ublas;
@@ -31,13 +31,13 @@ PlanHelper::VerifyPlanResult PlanHelper::verifyPlanInput(const QVector<Waypt>& w
 
     if(res ==  VerifyPlanResult::VERIFY_PLAN_OK){
         //check if any segment goes in a reverse direction
-        Coord_NE wayptPrev = wayptList.at(0).coord_const_ref();
-        Coord_NE wayptLast = wayptList.at(nWaypt-1).coord_const_ref();
-        Vector_NE vecFirstToLast = GeometryHelper::subtract_vector(wayptLast, wayptPrev);
+        VectorF wayptPrev = wayptList.at(0).coord_const_ref();
+        VectorF wayptLast = wayptList.at(nWaypt-1).coord_const_ref();
+        VectorF vecFirstToLast = VectorFHelper::subtract_vector(wayptLast, wayptPrev);
         for(int idx = 1; idx < nWaypt; ++idx){ //loop from 2nd waypt onwards
-            Coord_NE wayptNext = wayptList.at(idx).coord_const_ref();
-            Vector_NE vecPrevToNext = GeometryHelper::subtract_vector(wayptNext, wayptPrev);
-            float dotPdt = GeometryHelper::dot_product(vecPrevToNext, vecFirstToLast);
+            VectorF wayptNext = wayptList.at(idx).coord_const_ref();
+            VectorF vecPrevToNext = VectorFHelper::subtract_vector(wayptNext, wayptPrev);
+            float dotPdt = VectorFHelper::dot_product(vecPrevToNext, vecFirstToLast);
             if(dotPdt < 0.0){
                 res = VerifyPlanResult::VERIFY_PLAN_ERR_REVERSE_DIR;
                 break;
@@ -68,22 +68,24 @@ bool PlanHelper::findNearestEdgeEvent(const Plan& plan,
         //check event for each segment
         for(int i = 0; i < nSeg; ++i){
             const Segment& currSeg = segmentList.at(i);
-            bnu::vector<float> tVec = LinearAlgebraHelper::to_bnu_vector(currSeg.tVec());
-            bnu::vector<float> nVec = LinearAlgebraHelper::to_bnu_vector(currSeg.nVec());
-            bnu::vector<float> bVecPrev = LinearAlgebraHelper::to_bnu_vector(currSeg.bVecPrev());
-            bnu::vector<float> bVecNext = LinearAlgebraHelper::to_bnu_vector(currSeg.bVecNext());
-            bnu::vector<float> wayptPrev = LinearAlgebraHelper::to_bnu_vector(currSeg.wayptPrev().coord_const_ref());
-            bnu::vector<float> wayptNext = LinearAlgebraHelper::to_bnu_vector(currSeg.wayptNext().coord_const_ref());
-            bnu::matrix M = LinearAlgebraHelper::concatenate_col_vectors(bVecPrev, -1.0*bVecNext);
-            bnu::vector<float> v = wayptNext - wayptPrev;
+            const VectorF& tVec = currSeg.tVec();
+            const VectorF& nVec = currSeg.nVec();
+            const VectorF& bVecPrev = currSeg.bVecPrev();
+            const VectorF& bVecNext = currSeg.bVecNext();
+            const VectorF& wayptPrev = currSeg.wayptPrev().coord_const_ref();
+            const VectorF& wayptNext = currSeg.wayptNext().coord_const_ref();
+            bnu::matrix M = UblasHelper::concatenate_col_vectors(bVecPrev.data_const_ref(),
+                                                                         -1.0 * bVecNext.data_const_ref());
+            bnu::vector<float> v = VectorFHelper::subtract_vector(wayptNext, wayptPrev).data_const_ref();
             bnu::vector<float> d;
-            bool ok = LinearAlgebraHelper::solve(M, v, TOL_SMALL, d);
+            bool ok = UblasHelper::solve(M, v, TOL_SMALL, d);
             if(ok){
-                bnu::vector<float> posEvent = wayptNext + d[1]*bVecNext;
-                bnu::matrix M2 = LinearAlgebraHelper::concatenate_col_vectors(tVec, nVec);
-                bnu::vector<float> v2 = posEvent - wayptPrev;
+                bnu::vector<float> posEvent = wayptNext.data_const_ref() + d[1]*bVecNext.data_const_ref();
+                bnu::matrix M2 = UblasHelper::concatenate_col_vectors(tVec.data_const_ref(),
+                                                                              nVec.data_const_ref());
+                bnu::vector<float> v2 = posEvent - wayptPrev.data_const_ref();
                 bnu::vector<float> d2;
-                bool ok2 = LinearAlgebraHelper::solve(M2, v2, TOL_SMALL, d2);
+                bool ok2 = UblasHelper::solve(M2, v2, TOL_SMALL, d2);
                 if(ok2){
                     float dx = side * d2[1]; //for port side, cast the problem to stbd side
                     if(dx > 0 && plan.crossTrack() + dx <= crossTrackHorizon){

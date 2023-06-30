@@ -74,7 +74,7 @@ void WayptQTests::verify_set_params()
     verify(waypt2, northing, easting, lon0, id);
 
     //test setter
-    Coord_NE coord{northing, easting};
+    VectorF coord{northing, easting};
     Waypt waypt3;
     waypt3.set(coord, lon0, id);
     verify(waypt3, northing, easting, lon0, id);
@@ -118,9 +118,9 @@ void WayptQTests::verify_setters()
     waypt.setId(id);
     verify(waypt, northing, easting, lon0, id);
 
-    Coord_NE coord = waypt.coord_const_ref();
-    QCOMPARE(coord.get<IDX_NORTHING>(), northing);
-    QCOMPARE(coord.get<IDX_EASTING>(), easting);
+    VectorF coord = waypt.coord_const_ref();
+    QCOMPARE(coord[IDX_NORTHING], northing);
+    QCOMPARE(coord[IDX_EASTING], easting);
 
     return;
 }
