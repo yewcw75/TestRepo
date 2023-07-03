@@ -172,5 +172,14 @@ Waypt::FieldFlags Waypt::getFieldFlags() const
     return(mp_pimpl->m_fieldFlags);
 }
 
+//----------
+QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::Waypt &data)
+{
+    QDebugStateSaver saver(debug);
+    debug.nospace() << "Waypt id: " << data.id() << "Coord [m]: " << data.coord_const_ref() << \
+                       "lon0 [deg]; " << data.lon0_deg();
+    return debug;
+}
+
 RRTPLANNER_FRAMEWORK_END_NAMESPACE
 

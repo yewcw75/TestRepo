@@ -75,7 +75,7 @@ void SegmentPrivate::checkAndSetSegmentAttributes()
                 m_fieldFlags.setFlag(Segment::Field::NVEC);
             }
             else if(DIM_COORD > 2){
-                Q_ASSERT(0); //to be handled
+                qFatal("[SegmentPrivate::checkAndSetSegmentAttributes()] DIM_COORD > 2 could not handled yet.");
             }
         }
     }
@@ -84,8 +84,13 @@ void SegmentPrivate::checkAndSetSegmentAttributes()
 //----------
 void SegmentPrivate::calculateBisector(const Segment& seg1, const Segment& seg2, VectorF& bVec)
 {
-    Q_ASSERT(seg1.getFieldFlags().testFlag(Segment::Field::NVEC));
-    Q_ASSERT(seg2.getFieldFlags().testFlag(Segment::Field::NVEC));
+    bool nVecSet_seg1 = seg1.getFieldFlags().testFlag(Segment::Field::NVEC);
+    bool nVecSet_seg2 = seg2.getFieldFlags().testFlag(Segment::Field::NVEC);
+    bool nVecSet = nVecSet_seg1 && nVecSet_seg2;
+    if(!nVecSet){
+        qWarning() << "[SegmentPrivate::calculateBisector(const Segment& seg1, const Segment& seg2, VectorF& bVec)] " << \
+                      "nVec of seg1 or seg2 should be set prior to calling this method!";
+    }
 
     VectorF v = VectorFHelper::add_vector(seg1.nVec(), seg2.nVec());
     double length_v = VectorFHelper::norm2(v);
@@ -143,9 +148,13 @@ void Segment::set(const Waypt& wayptPrev, const Waypt& wayptNext, int id, bool i
     setId(id);
     mp_pimpl->m_isZeroLengthSegment = isZeroLengthSegment;
     if(isZeroLengthSegment){
-        Q_ASSERT(wayptPrev.easting() - wayptNext.easting() < TOL_SMALL && \
+        bool ok = (wayptPrev.easting() - wayptNext.easting() < TOL_SMALL && \
                  wayptPrev.northing() - wayptNext.northing() < TOL_SMALL && \
                  wayptPrev.lon0_deg() - wayptNext.lon0_deg() < TOL_SMALL);
+        if(!ok){
+            qWarning() << \
+            "[Segment::set(const Waypt&, const Waypt&, int, bool)] specified to be a zero-segment but wayptPrev and wayptNext are not at the same pt.";
+        }
     }
     setWayptPrev(wayptPrev);
     setWayptNext(wayptNext);
@@ -218,7 +227,9 @@ float Segment::length() const
 void Segment::setbVecPrev(const VectorF& bVecPrev)
 {
     float norm2 = VectorFHelper::norm2(bVecPrev);
-    Q_ASSERT(qFuzzyCompare(norm2, (float)1.0));
+    if(!qFuzzyCompare(norm2, (float)1.0)){
+        qWarning() << "[Segment::setbVecPrev(const VectorF& bVecPrev)] bVecPres is not a unit vector as expected.";
+    }
 
     mp_pimpl->m_bVecPrev = bVecPrev;
     mp_pimpl->m_fieldFlags.setFlag(Field::BVEC_PREV);
@@ -243,7 +254,9 @@ const VectorF& Segment::bVecPrev() const
 void Segment::setbVecNext(const VectorF& bVecNext)
 {
     float norm2 = VectorFHelper::norm2(bVecNext);
-    Q_ASSERT(qFuzzyCompare(norm2, (float)1.0));
+    if(!qFuzzyCompare(norm2, (float)1.0)){
+        qWarning() << "[setbVecNext(const VectorF& bVecNext)] bVecNext should be a unit vector!";
+    }
 
     mp_pimpl->m_bVecNext = bVecNext;
     mp_pimpl->m_fieldFlags.setFlag(Field::BVEC_NEXT);
@@ -269,7 +282,22 @@ const Segment::FieldFlags& Segment::getFieldFlags() const
 {
     return(mp_pimpl->m_fieldFlags);
 }
+
 //----------
+void Segment::setTVec(const VectorF& tVec)
+{
+    mp_pimpl->m_tVec = tVec;
+    mp_pimpl->m_fieldFlags.setFlag(Field::TVEC);
+    return;
+}
+
+//----------
+void Segment::setNVec(const VectorF& nVec)
+{
+    mp_pimpl->m_nVec = nVec;
+    mp_pimpl->m_fieldFlags.setFlag(Field::NVEC);
+    return;
+}
 
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

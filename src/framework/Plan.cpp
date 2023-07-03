@@ -3,6 +3,8 @@
 #include <QSharedData>
 #include <QVector>
 #include <QMetaEnum>
+#include <QString>
+#include <QtGlobal>
 
 RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 
@@ -77,29 +79,44 @@ void Plan::clearPlan()
 
 //----------
 bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
-                   int id, //plan id
-                   QString* resultsDesc //optional QString ptr to return description of results
-                   )
+             const QVector<int>& segIdList, //segment id to assign. Vector size expected to be (wayptList.size() - 1)
+             QString* resultsDesc //optional QString ptr to return description of results
+             )
 {
+    QVector<int> segIdList2Use(segIdList); //make a non-const copy for local use
 
-    int nWaypt = wayptList.size();
-    PlanHelper::VerifyPlanResult res = PlanHelper::verifyPlanInput(wayptList);
-    bool res_ok = (res == PlanHelper::VerifyPlanResult::VERIFY_PLAN_OK);
-
-    if(resultsDesc){ //write results description if given pointer is not null
-        *resultsDesc = QMetaEnum::fromType<PlanHelper::VerifyPlanResult>().key(static_cast<int>(res));
+    //if segIdList is not provided, we auto generate here
+    if(segIdList2Use.size() == 0){
+        for(int i = 0; i < wayptList.size() -1 ; ++i){
+            segIdList2Use.append(i);
+        }
     }
 
-    //set plan is verify plan is ok
-    if(res_ok){
-        mp_pimpl->m_id = id;
-        mp_pimpl->m_fieldFlags.setFlag(Field::ID);
+    //Check nWaypts and nSegIdList are correct
+    int nWaypt = wayptList.size();
+    int nSegIdList = segIdList2Use.size();
 
+    bool res_ok = nWaypt-1 == nSegIdList;
+    if(resultsDesc){ //write results description if given pointer is not null
+        *resultsDesc = QString("[Plan::setPlan] Verify nWaypt-1 == nSegIdList: %1.").arg(res_ok);
+    }
+
+    //Check waypt plan is feasible
+    if(res_ok){
+        PlanHelper::VerifyPlanResult res = PlanHelper::verifyPlanInput(wayptList);
+        res_ok = (res == PlanHelper::VerifyPlanResult::VERIFY_PLAN_OK);
+        if(resultsDesc){ //write results description if given pointer is not null
+            *resultsDesc = QString(" Verify waypoints: ") + QMetaEnum::fromType<PlanHelper::VerifyPlanResult>().key(static_cast<int>(res));
+        }
+    }
+
+    //start to build plan if verify plan is ok
+    if(res_ok){
         //form segment and append to segment list
         Waypt wayptPrev = wayptList.at(0);
         for(int idx = 1; idx < nWaypt; ++idx){
             Waypt wayptNext = wayptList.at(idx);
-            Segment segment(wayptPrev, wayptNext, idx - 1);
+            Segment segment(wayptPrev, wayptNext, segIdList2Use.at(idx - 1));
 
             //bisector
             if(idx == 1){ //now is first segment
@@ -127,6 +144,38 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
     }
 
     return(res_ok);
+}
+
+//----------
+bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
+             const QVector<int>& segIdList, //segment id to assign. Vector size expected to be (wayptList.size() - 1)
+             int id, //plan id.
+             QString* resultsDesc //optional QString ptr to return description of results
+             )
+{
+    bool res_ok = setPlan(wayptList, segIdList, resultsDesc);
+    if(res_ok){
+        setId(id);
+    }
+    return(res_ok);
+
+}
+
+//----------
+bool  Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
+             int id, //plan id.
+             QString* resultsDesc//optional QString ptr to return description of results
+             )
+{
+    return(setPlan(wayptList,  QVector<int>(), id, resultsDesc));
+}
+
+//----------
+void Plan::setId(int id)
+{
+    mp_pimpl->m_id = id;
+    mp_pimpl->m_fieldFlags.setFlag(Field::ID);
+    return;
 }
 
 //----------

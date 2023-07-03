@@ -2,6 +2,8 @@
 #include <RrtPlannerLib/framework/FrameworkDefines.h>
 #include <RrtPlannerLib/framework/VectorFHelper.h>
 #include <RrtPlannerLib/framework/UblasHelper.h>
+#include <QtGlobal>
+#include <QDebug>
 #include <limits>
 
 namespace bnu = boost::numeric::ublas;
@@ -111,6 +113,103 @@ bool PlanHelper::findNearestEdgeEvent(const Plan& plan,
         eventSegIdxList_out = eventSegIdxList;
     }
     return(found);
+}
+
+//----------
+/**
+ * @note Developer's note: In matlab version, k_event is used to keep track of the segment index found in eventSegIdxList
+ * that we are now looking out for while processing the current input plan's segment.
+ * Here, we simply check if the current segment index is contained in eventSegIdxList using QVector::contains() methos.
+ * Not expected to be an intensive computation process since eventSegIdxList is not expected to be a super long list.
+ *
+ */
+Plan PlanHelper::getCrossTrackPlan(const Plan& plan,
+                                  float crossTrackHorizon,
+                                  float dx,
+                                  const QVector<int>& eventSegIdxList,
+                                  float tol_small,
+                                  bool* results_out
+                                  )
+{
+    if(crossTrackHorizon < 0){
+        crossTrackHorizon = abs(crossTrackHorizon);
+        qWarning() << "[PlanHelper::getCrossTrackPlan] input crossTrackHorizon is negative but should be positive value. Using the absolute value.";
+    }
+
+    int nEventSeg = eventSegIdxList.size();
+    const QVector<Segment>& segList = plan.segmentList();
+    int nSeg = segList.size();
+
+    Plan planOut; //plan to return
+
+    if(nEventSeg < nSeg) {//if no. of segments with events is smaller the number of seg => new plan is not just one point
+        QVector<Waypt> wayptList_planOut;
+        QVector<int> segIdList_planOut;
+        //loop thru ref plan's segment and start building
+        for (int idxSeg = 0; idxSeg < nSeg; ++idxSeg){
+            //if curr segment has event, dun proceed to form segment
+            if(eventSegIdxList.contains(idxSeg)){
+                continue;
+            }
+
+            const Segment& currSeg = segList.at(idxSeg);
+            if(wayptList_planOut.isEmpty()){
+                Waypt wayptPrev(currSeg.wayptPrev());
+                wayptPrev.setCoord(findOffsetWaypt(currSeg.wayptPrev().coord_const_ref(), currSeg.nVec(), currSeg.bVecPrev(), dx, tol_small));
+                wayptList_planOut.append(wayptPrev);
+            }
+            Waypt wayptNext(currSeg.wayptNext());
+            wayptNext.set(findOffsetWaypt(currSeg.wayptNext().coord_const_ref(), currSeg.nVec(), currSeg.bVecNext(), dx, tol_small));
+            wayptList_planOut.append(wayptNext);
+            segIdList_planOut.append(idxSeg);
+        } //for idxSeg = 1: nSeg
+
+        //set planOut
+        QString resDesc;
+        bool setOk = planOut.setPlan(wayptList_planOut, segIdList_planOut, &resDesc);
+        if(results_out){
+            *results_out = setOk;
+        }
+        qInfo() << "[PlanHelper::getCrossTrackPlan] set plan results: " << resDesc;
+
+
+        planOut.setProperty(Plan::Property::IS_LIMIT, abs(planOut.crossTrack()) >= crossTrackHorizon);
+    }
+    else { //new plan is a point
+        const Segment& firstSeg = segList.first();
+        const Segment& lastSeg = segList.last();
+
+        VectorF coord_offset = findOffsetWaypt(firstSeg.wayptPrev().coord_const_ref(), firstSeg.nVec(), firstSeg.bVecPrev(), dx, tol_small);
+        Waypt wayptPrev(lastSeg.wayptPrev());
+        wayptPrev.setCoord(coord_offset);
+        Waypt wayptNext(lastSeg.wayptNext());
+        wayptNext.setCoord(coord_offset);
+        Segment newSeg(wayptPrev, wayptNext, lastSeg.id(), true);
+
+        planOut.appendSegment(newSeg);
+        planOut.setProperty(Plan::Property::IS_LIMIT);
+    }
+    planOut.setCrossTrack(plan.crossTrack() + dx);
+    return(planOut);
+}
+
+//----------
+VectorF PlanHelper::findOffsetWaypt(const VectorF& pt,
+                                    const VectorF& nVec,
+                                    const VectorF& bVec,
+                                    float dx, //crosstrack to offset
+                                    float tol_small
+                                    )
+{
+    //solve scalar, a, using relation: dot(a.bvec, nvec) = dx => a = dx/dot(bvec, nvec)
+    float dotPdt = VectorFHelper::dot_product(bVec, nVec);
+    bool ok = abs(dotPdt) >= tol_small;
+    if(!ok){
+        qFatal("[PlanHelper::findOffsetWaypt] Division by zero error");
+    }
+    float  a = dx/dotPdt;
+    VectorF res = VectorFHelper::add_vector(pt, VectorFHelper::multiply_value(bVec, a)); //pt + a * bVec
+    return(res);
 }
 
 //----------

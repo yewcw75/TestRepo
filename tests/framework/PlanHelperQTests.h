@@ -21,6 +21,8 @@ private:
 private slots:
     void verify_findNearestEdgeEventdata_data();
     void verify_findNearestEdgeEventdata();
+    void verify_getCrossTrackPlan_data();
+    void verify_getCrossTrackPlan();
 };
 
 #endif

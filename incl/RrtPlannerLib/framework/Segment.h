@@ -24,6 +24,7 @@ RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 class SegmentPrivate;
 class RRTPLANNER_LIB_EXPORT Segment
 {
+    friend class PlanHelper;
     Q_GADGET //needed for Q_FLAG macro
 
 public:
@@ -57,7 +58,7 @@ public:
     void setWayptNext(const Waypt& wayptNext); //next waypt of segment
     const Waypt& wayptNext() const; //next waypt of segment
 
-    //automatically calculated once both wayptPrev and wayptNext are set
+    //Note: Both tVec and nVec will be automatically calculated upon setting of both wayptPrev and wayptNext.
     const VectorF& tVec() const; //[m][m] tangent unit vector fron wayptPrev to wayptNext
     const VectorF& nVec() const; //[m][m] unit vector normal to tVec. tVec x nVec = positive (down-dir)
     float length() const; //[m]
@@ -73,6 +74,10 @@ public:
 
     //presence flags of fields
     const FieldFlags& getFieldFlags() const;
+
+protected:
+    void setTVec(const VectorF& tVec);  //[m][m] tangent unit vector fron wayptPrev to wayptNext
+    void setNVec(const VectorF& nVec);  //[m][m] unit vector normal to tVec. tVec x nVec = positive (down-dir)
 
 private:
     QSharedDataPointer<SegmentPrivate> mp_pimpl;

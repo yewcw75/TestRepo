@@ -20,6 +20,8 @@ RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 class PlanPrivate;
 class RRTPLANNER_LIB_EXPORT Plan
 {
+    friend class PlanHelper;
+
     Q_GADGET
 public:
     enum class Field{
@@ -49,9 +51,19 @@ public:
 
     void clearPlan(); //clear plan and reset all parameters and property flags
     bool setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
-                 int id, //plan id
+                 const QVector<int>& segIdList = QVector<int>(), //segment id to assign. Vector size expected to be (wayptList.size() - 1)
                  QString* resultsDesc = nullptr //optional QString ptr to return description of results
                  );
+    bool setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
+                 const QVector<int>& segIdList, //segment id to assign. Vector size expected to be (wayptList.size() - 1)
+                 int id, //plan id.
+                 QString* resultsDesc = nullptr //optional QString ptr to return description of results
+                 );
+    bool setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
+                 int id, //plan id.
+                 QString* resultsDesc = nullptr //optional QString ptr to return description of results
+                 ); //segment id will be automatically assigned from [0, wayList.size() -1]
+    void setId(int id);
     int id() const; //plan id
     int nSegment() const; //no. of segments
     int nWaypt() const; //no. of waypts ( = nSegment + 1)
@@ -72,7 +84,7 @@ public:
     //presence flags of fields
     const FieldFlags& getFieldFlags() const;
 
-private:
+protected:
     void appendSegment(const Segment& segment);
 
 private:

@@ -43,6 +43,7 @@ void PlanQTests::verify_set_plan_data()
 {
     QTest::addColumn<int>("id");
     QTest::addColumn<QVector<Waypt>>("wayptList");
+    QTest::addColumn<QVector<int>>("segIdList");
     QTest::addColumn<float>("planLength");
     QTest::addColumn<float>("crossTrack");
     QTest::addColumn<int>("propertyFlagsVal");
@@ -64,14 +65,22 @@ void PlanQTests::verify_set_plan_data()
     bVecList.append(VectorF{0.0, 1.0});
 
     Plan::PropertyFlags propertyFlags = Plan::Property::IS_LIMIT;
-    QTest::newRow("Test 1") << (int) 1 << (QVector<Waypt>)wayptList << \
+    QTest::newRow("Test 1A (empty SegIdList)") << (int) 1 << (QVector<Waypt>)wayptList << QVector<int>() << \
                                (float)4828.42712475 << (float)10.0 << (int)propertyFlags << (bool)true << \
+                               bVecList;
+
+    QTest::newRow("Test 1B (specified SegIdList)") << (int) 1 << (QVector<Waypt>)wayptList << QVector<int>{11, 22, 33, 44} << \
+                               (float)4828.42712475 << (float)10.0 << (int)propertyFlags << (bool)true << \
+                               bVecList;
+
+    QTest::newRow("Test 1C (specified SegIdList with wrong length)") << (int) 1 << (QVector<Waypt>)wayptList << QVector<int>{11, 22, 33, 44, 55} << \
+                               (float)4828.42712475 << (float)10.0 << (int)propertyFlags << (bool)false << \
                                bVecList;
 
     QVector<Waypt> wayptList2;
     propertyFlags = Plan::Property::IS_NOMINAL;
     wayptList2.append(Waypt(0, 0, 103, 0));
-    QTest::newRow("Test 2") << (int) 1 << (QVector<Waypt>)wayptList2 << \
+    QTest::newRow("Test 2") << (int) 1 << (QVector<Waypt>)wayptList2 << QVector<int>() <<\
                                (float)0.0 << (float)-10.0 << (int)propertyFlags << (bool)false << \
                                bVecList /*does not matter*/;
 
@@ -83,7 +92,7 @@ void PlanQTests::verify_set_plan_data()
     wayptList3.append(Waypt(3000, 0, 103, 3));
     wayptList3.append(Waypt(4000, 0, 103, 3));
     propertyFlags = Plan::Property::NONE;
-    QTest::newRow("Test 3") << (int) 1 << (QVector<Waypt>)wayptList3 << \
+    QTest::newRow("Test 3") << (int) 1 << (QVector<Waypt>)wayptList3 << QVector<int>() <<\
                                (float)0.0 /*does not matter, expected not used*/ << (float)10.0 << (int)propertyFlags << (bool)false << \
                                bVecList /*does not matter*/;
     return;
@@ -96,6 +105,7 @@ void PlanQTests::verify_set_plan()
 
     QFETCH(int, id);
     QFETCH(QVector<Waypt>, wayptList);
+    QFETCH(QVector<int>, segIdList);
     QFETCH(float, planLength);
     QFETCH(float, crossTrack);
     QFETCH(int, propertyFlagsVal);
@@ -106,7 +116,7 @@ void PlanQTests::verify_set_plan()
     Plan plan;
     QString resString;
     QVERIFY(plan.getFieldFlags().testFlag(Plan::Field::NONE));
-    bool res = plan.setPlan(wayptList, id, &resString);
+    bool res = plan.setPlan(wayptList, segIdList, id, &resString);
     qInfo() << "[PlanQTests::verify_set_plan()]" << resString;
     QCOMPARE(res, setOk);
 
@@ -151,6 +161,16 @@ void PlanQTests::verify_set_plan()
         QVERIFY(qFuzzyCompare(plan.length(), planLength));
         QCOMPARE(plan.nWaypt(), wayptList.size());
         QCOMPARE(plan.nSegment(), wayptList.size() - 1);
+
+        //verify segment id are set correctly
+        for(int i = 0; i < plan.segmentList().size(); ++i){
+            if(segIdList.size() == 0){
+                QCOMPARE(plan.segmentList().at(i).id(), i);
+            }
+            else{
+                QCOMPARE(plan.segmentList().at(i).id(), segIdList.at(i));
+            }
+        }
     }
     else{
         //verify field flags
