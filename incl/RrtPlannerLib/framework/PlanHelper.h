@@ -69,7 +69,7 @@ public:
     //if side >= 0, nominal plan will be appended first, followed by successive ellmap plans on stbd.
     //return false if error occurred.
     //results_descr results description
-    static bool buildSuccessiveEllMap(const QSharedPointer<Plan> p_planNominal, //nominal plan
+    static bool buildSingleSideEllMaps(const QSharedPointer<Plan> p_planNominal, //nominal plan
                                 double side, //-1.0 : port side, 1.0 : stbd side
                                 double crossTrackHorizon, //[m] always a positive variable
                                 QList<QSharedPointer<Plan>>& planList, //planList to prepend/append

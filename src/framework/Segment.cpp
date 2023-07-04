@@ -32,8 +32,7 @@ public:
           m_bVecNext(other.m_bVecNext),
           m_length(other.m_length),
           m_lengthCumulative(other.m_lengthCumulative),
-          m_id(other.m_id),
-          m_isZeroLengthSegment(other.m_isZeroLengthSegment)
+          m_id(other.m_id)
     {}
     void calculateBisector(const Segment& seg1, const Segment& seg2, VectorF& bVec);
 
@@ -47,7 +46,6 @@ public:
     double m_length{};
     double m_lengthCumulative{};
     int m_id{-1};
-    bool m_isZeroLengthSegment{};
 };
 
 //----------
@@ -75,10 +73,10 @@ Segment::Segment()
 }
 
 //----------
-Segment::Segment(const Waypt& wayptPrev, const Waypt& wayptNext, int id, bool isZeroLengthSegment)
+Segment::Segment(const Waypt& wayptPrev, const Waypt& wayptNext, int id)
     :mp_pimpl(new SegmentPrivate)
 {
-    set(wayptPrev, wayptNext, id, isZeroLengthSegment);
+    set(wayptPrev, wayptNext, id);
 }
 
 //----------
@@ -104,19 +102,9 @@ Segment& Segment::operator=(const Segment& other)
 }
 
 //----------
-void Segment::set(const Waypt& wayptPrev, const Waypt& wayptNext, int id, bool isZeroLengthSegment)
+void Segment::set(const Waypt& wayptPrev, const Waypt& wayptNext, int id)
 {
     setId(id);
-    mp_pimpl->m_isZeroLengthSegment = isZeroLengthSegment;
-    if(isZeroLengthSegment){
-        bool ok = (wayptPrev.easting() - wayptNext.easting() < TOL_SMALL && \
-                 wayptPrev.northing() - wayptNext.northing() < TOL_SMALL && \
-                 wayptPrev.lon0_deg() - wayptNext.lon0_deg() < TOL_SMALL);
-        if(!ok){
-            qWarning() << \
-            "[Segment::set(const Waypt&, const Waypt&, int, bool)] specified to be a zero-segment but wayptPrev and wayptNext are not at the same pt.";
-        }
-    }
     setWayptPrev(wayptPrev);
     setWayptNext(wayptNext);
     return;
@@ -133,19 +121,6 @@ void Segment::setId(int id)
 int Segment::id() const
 {
     return(mp_pimpl->m_id);
-}
-
-//----------
-void Segment::setIsZeroLengthSegment(bool isZeroLengthSegment)
-{
-    mp_pimpl->m_isZeroLengthSegment = isZeroLengthSegment;
-    return;
-}
-
-//----------
-bool Segment::isZeroLengthSegment() const
-{
-    return(mp_pimpl->m_isZeroLengthSegment);
 }
 
 //----------
@@ -282,28 +257,34 @@ const VectorF& Segment::bVecNext() const
 //----------
 void Segment::setSegmentAttributes()
 {
-    if(mp_pimpl->m_isZeroLengthSegment){
-        mp_pimpl->m_length = 0.0;
-    }
-    else{
-        //tVec and length
-        VectorF vecPrev2Next = VectorFHelper::subtract_vector(mp_pimpl->m_wayptNext.coord_const_ref(),
-                                                              mp_pimpl->m_wayptPrev.coord_const_ref());
-        mp_pimpl->m_length = VectorFHelper::norm2(vecPrev2Next);
-        if(mp_pimpl->m_length > TOL_SMALL){
-            mp_pimpl->m_tVec = VectorFHelper::multiply_value(vecPrev2Next, 1/mp_pimpl->m_length);
+    //tVec and length
+    VectorF vecPrev2Next = VectorFHelper::subtract_vector(mp_pimpl->m_wayptNext.coord_const_ref(),
+                                                          mp_pimpl->m_wayptPrev.coord_const_ref());
+    mp_pimpl->m_length = VectorFHelper::norm2(vecPrev2Next);
+    if(mp_pimpl->m_length > TOL_SMALL){
+        mp_pimpl->m_tVec = VectorFHelper::multiply_value(vecPrev2Next, 1/mp_pimpl->m_length);
 
-            //nVec
-            if(DIM_COORD == 2){
-                mp_pimpl->m_nVec[IDX_NORTHING] = -mp_pimpl->m_tVec[IDX_EASTING];
-                mp_pimpl->m_nVec[IDX_EASTING] = mp_pimpl->m_tVec[IDX_NORTHING];
-            }
-            else if(DIM_COORD > 2){
-                qFatal("[Segment::setSegmentAttributes()] DIM_COORD > 2 could not handled yet.");
-            }
+        //nVec
+        if(DIM_COORD == 2){
+            mp_pimpl->m_nVec[IDX_NORTHING] = -mp_pimpl->m_tVec[IDX_EASTING];
+            mp_pimpl->m_nVec[IDX_EASTING] = mp_pimpl->m_tVec[IDX_NORTHING];
+        }
+        else if(DIM_COORD > 2){
+            qFatal("[Segment::setSegmentAttributes()] DIM_COORD > 2 could not handled yet.");
         }
     }
     return;
+}
+
+//----------
+QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::Segment &data)
+{
+    QDebugStateSaver saver(debug);
+    debug.nospace() << "\n===============" << "\nSegment id: " << data.id() << "\n===============\n  WayptPrev: " << data.wayptPrev() << \
+                       "\n  WayptNext: " << data.wayptNext() << "\n  Length: " << data.length() << \
+                       "\n  LengthCumulative: " << data.lengthCumulative();
+
+    return debug;
 }
 
 

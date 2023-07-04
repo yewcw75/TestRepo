@@ -30,6 +30,8 @@ add_executable(${PROJECT_NAME}QTests
     tests/framework/PlanHelperQTests.cpp
     tests/framework/UblasHelperQTests.h
     tests/framework/UblasHelperQTests.cpp
+    tests/framework/EllMapQTests.h
+    tests/framework/EllMapQTests.cpp
     )
 
 target_include_directories(${PROJECT_NAME}QTests PRIVATE

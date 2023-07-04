@@ -20,14 +20,12 @@ public:
     WayptPrivate(const WayptPrivate& other)
         : QSharedData(other),
           m_coord(other.m_coord),
-          m_fieldFlags(other.m_fieldFlags),
           m_lon0_deg(other.m_lon0_deg),
           m_id(other.m_id)
     {}
 
 public:
     VectorF m_coord;
-    Waypt::FieldFlags m_fieldFlags{};
     double m_lon0_deg{};
     int m_id{-1};
 };
@@ -101,7 +99,6 @@ void Waypt::set(const VectorF& coord, double lon0_deg, int id)
 void Waypt::setNorthing(double northing_m)
 {
     mp_pimpl->m_coord[IDX_NORTHING] = northing_m;
-    mp_pimpl->m_fieldFlags.setFlag(Waypt::Field::NORTHING);
     return;
 }
 
@@ -114,7 +111,6 @@ double Waypt::northing() const
 void Waypt::setEasting(double easting_m)
 {
     mp_pimpl->m_coord[IDX_EASTING] = easting_m;
-    mp_pimpl->m_fieldFlags.setFlag(Waypt::Field::EASTING);
     return;
 }
 
@@ -128,7 +124,6 @@ double Waypt::easting() const
 void Waypt::setId(int id)
 {
     mp_pimpl->m_id = id;
-    mp_pimpl->m_fieldFlags.setFlag(Waypt::Field::ID);
     return;
 }
 
@@ -142,7 +137,6 @@ int Waypt::id() const
 void Waypt::setLon0(double lon0_deg)
 {
     mp_pimpl->m_lon0_deg = lon0_deg;
-    mp_pimpl->m_fieldFlags.setFlag(Waypt::Field::LON0);
     return;
 }
 
@@ -156,8 +150,6 @@ double Waypt::lon0_deg() const
 void Waypt::setCoord(const VectorF& coord)
 {
     mp_pimpl->m_coord = coord;
-    mp_pimpl->m_fieldFlags.setFlag(Waypt::Field::NORTHING);
-    mp_pimpl->m_fieldFlags.setFlag(Waypt::Field::EASTING);
     return;
 }
 
@@ -168,17 +160,10 @@ const VectorF& Waypt::coord_const_ref() const
 }
 
 //----------
-Waypt::FieldFlags Waypt::getFieldFlags() const
-{
-    return(mp_pimpl->m_fieldFlags);
-}
-
-//----------
 QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::Waypt &data)
 {
     QDebugStateSaver saver(debug);
-    debug.nospace() << "Waypt id: " << data.id() << ", Coord: " << data.coord_const_ref() << "m"\
-                       ", lon0: " << data.lon0_deg() << "deg";
+    debug.nospace() << "Id = " << data.id() << ", Coord = " << data.coord_const_ref() << "m, Lon0 = " << data.lon0_deg() << "deg";
     return debug;
 }
 

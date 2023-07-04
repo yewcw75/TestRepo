@@ -1,4 +1,5 @@
 #include "PlanHelperQTests.h"
+#include <RrtPlannerLib/framework/FrameworkDefines.h>
 #include <RrtPlannerLib/framework/Plan.h>
 #include <RrtPlannerLib/framework/PlanHelper.h>
 #include <RrtPlannerLib/framework/Waypt.h>
@@ -130,9 +131,141 @@ void PlanHelperQTests::verify_getCrossTrackPlan()
 
     QCOMPARE(wayptList.size(), wayptList_expect.size());
     for(int i = 0; i < wayptList.size(); ++i){
-        qInfo() << "Results >> " << wayptList.at(i) << "vs Expected >> " << wayptList_expect.at(i);
+        //qInfo() << "Results >> " << wayptList.at(i) << "vs Expected >> " << wayptList_expect.at(i);
         QVERIFY(UtilHelper::compare(wayptList.at(i).northing(), wayptList_expect.at(i).northing()));
         QVERIFY(UtilHelper::compare(wayptList.at(i).easting(), wayptList_expect.at(i).easting()));
     }
     return;
+}
+
+//----------
+void PlanHelperQTests::verify_pushPlan()
+{
+    QSharedPointer<Plan> p_plan1(new Plan), p_plan2(new Plan), p_plan3(new Plan);
+    p_plan1->setId(1); p_plan2->setId(2); p_plan3->setId(3);
+    QList<QSharedPointer<Plan>> planList{p_plan2};
+    PlanHelper::pushPlan(p_plan1, -1.0, planList);
+    PlanHelper::pushPlan(p_plan3, 1.0, planList);
+
+    QCOMPARE(planList.at(0)->id(), 1);
+    QCOMPARE(planList.at(1)->id(), 2);
+    QCOMPARE(planList.at(2)->id(), 3);
+}
+
+//----------
+void PlanHelperQTests::verify_buildSingleSideEllMaps_data()
+{
+    QTest::addColumn<Plan>("plan");
+    QTest::addColumn<double>("side");
+    QTest::addColumn<double>("crossTrackHorizon");
+    QTest::addColumn<QVector<Plan>>("planList_expected");
+
+    Plan plan;
+    plan.setPlan(QVector<Waypt>{Waypt{0.0, 0.0},
+                                Waypt{1000.0, 1000.0},
+                                Waypt{2000.0, 1000.0},
+                                Waypt{3000.0, 0.0},
+                                Waypt{4000.0, 0.0}},
+                 1);
+
+    plan.setProperty(Plan::Property::IS_NOMINAL);
+
+    //port side
+    QVector<Plan> planList;
+    Plan planTmp;
+    planTmp.setPlan(QVector<Waypt>{Waypt{1232.2330470, -1767.7669530},
+                                   Waypt{1232.2330470, -1767.7669530},
+                                   Waypt{1232.2330470, -1767.7669530},
+                                   Waypt{1964.4660941, -2500.0000000},
+                                   Waypt{4000.0000000, -2500.0000000}}, -1);
+    planTmp.setCrossTrack(-2500.0000000);
+    planTmp.setProperty(Plan::Property::IS_LIMIT);
+    planList.push_back(planTmp);
+
+    planTmp.setPlan(QVector<Waypt>{Waypt{1500.0000000, -1500.0000000},
+                                   Waypt{1500.0000000, -1500.0000000},
+                                   Waypt{1500.0000000, -1500.0000000},
+                                   Waypt{2121.3203436, -2121.3203436},
+                                   Waypt{4000.0000000, -2121.3203436}}, -1);
+    planTmp.setCrossTrack(-2121.3203436);
+    planTmp.setProperty(Plan::Property::IS_LIMIT, false);
+    planList.push_back(planTmp);
+
+    planTmp.setPlan(QVector<Waypt>{Waypt{853.5533906, -853.5533906},
+                                   Waypt{1500.0000000, -207.1067812},
+                                   Waypt{1500.0000000, -207.1067812},
+                                   Waypt{2500.0000000, -1207.1067812},
+                                   Waypt{4000.0000000, -1207.1067812}}, -1);
+    planTmp.setCrossTrack(-1207.1067812);
+    planTmp.setProperty(Plan::Property::IS_LIMIT, false);
+    planList.push_back(planTmp);
+
+    QTest::newRow("Test 1") << plan << -1.0 << 2500.0 << planList;
+
+    //stbd side
+    planList.clear();
+    planList.push_back(plan);
+
+    planTmp.setPlan(QVector<Waypt>{Waypt{-1707.1067812, 1707.1067812},
+                                   Waypt{-0.0000000, 3414.2135624},
+                                   Waypt{3000.0000000, 3414.2135624},
+                                   Waypt{4000.0000000, 2414.2135624},
+                                   Waypt{4000.0000000, 2414.2135624}}, -1);
+    planTmp.setCrossTrack(2414.2135624);
+    planTmp.setProperty(Plan::Property::IS_LIMIT, false);
+    planList.push_back(planTmp);
+
+    planTmp.setPlan(QVector<Waypt>{Waypt{-1767.7669530, 1767.7669530},
+                                   Waypt{-35.5339059, 3500.0000000},
+                                   Waypt{3035.5339059, 3500.0000000},
+                                   Waypt{4060.6601718, 2474.8737342},
+                                   Waypt{4060.6601718, 2474.8737342}}, -1);
+    planTmp.setCrossTrack(2500.0000000);
+    planTmp.setProperty(Plan::Property::IS_LIMIT);
+    planList.push_back(planTmp);
+
+    QTest::newRow("Test 2") << plan << 1.0 << 2500.0 << planList;
+    return;
+}
+
+//----------
+void PlanHelperQTests::verify_buildSingleSideEllMaps()
+{
+    QFETCH(Plan, plan);
+    QFETCH(double, side);
+    QFETCH(double, crossTrackHorizon);
+    QFETCH(QVector<Plan>, planList_expected);
+
+    QList<QSharedPointer<Plan>> planList;
+    QString results_desc;
+    bool result = PlanHelper::buildSingleSideEllMaps(QSharedPointer<Plan>(new Plan(plan)), //nominal plan
+                                    side, //-1.0 : port side, 1.0 : stbd side
+                                    crossTrackHorizon, //[m] always a positive variable
+                                    planList, //planList to prepend/append
+                                    &results_desc);
+
+    //qInfo() << "PlanHelper::buildSingleSideEllMaps results: " << results_desc;
+    QVERIFY(result);
+    QCOMPARE(planList.size(), planList_expected.size());
+    for(int i = 0; i < planList.size(); ++i){
+        //qInfo() << "RESULTS : " << *planList.at(i);
+        //qInfo() << "EXPECTED: " << planList_expected.at(i);
+        QCOMPARE(planList.at(i)->nSegment(), planList_expected.at(i).nSegment());
+        QVERIFY(UtilHelper::compare(planList.at(i)->crossTrack(), planList_expected.at(i).crossTrack()));
+        QVERIFY(UtilHelper::compare(planList.at(i)->length(), planList_expected.at(i).length()));
+        for(int j = 0; j < planList.at(i)->nSegment(); ++j){
+            const Segment& seg = planList.at(i)->segmentList().at(j);
+            const Segment& seg_expected = planList_expected.at(i).segmentList().at(j);
+            QVERIFY(UtilHelper::compare(seg.wayptPrev().easting(), seg_expected.wayptPrev().easting()));
+            QVERIFY(UtilHelper::compare(seg.wayptPrev().northing(), seg_expected.wayptPrev().northing()));
+            QVERIFY(UtilHelper::compare(seg.wayptNext().easting(), seg_expected.wayptNext().easting()));
+            QVERIFY(UtilHelper::compare(seg.wayptNext().northing(), seg_expected.wayptNext().northing()));
+            QVERIFY(UtilHelper::compare(seg.tVec().at(IDX_NORTHING), seg_expected.tVec().at(IDX_NORTHING)));
+            QVERIFY(UtilHelper::compare(seg.tVec().at(IDX_EASTING), seg_expected.tVec().at(IDX_EASTING)));
+            QVERIFY(UtilHelper::compare(seg.nVec().at(IDX_NORTHING), seg_expected.nVec().at(IDX_NORTHING)));
+            QVERIFY(UtilHelper::compare(seg.nVec().at(IDX_EASTING), seg_expected.nVec().at(IDX_EASTING)));
+            QVERIFY(UtilHelper::compare(seg.length(), seg_expected.length()));
+            QVERIFY(UtilHelper::compare(seg.lengthCumulative(), seg_expected.lengthCumulative()));
+        }
+    }
 }

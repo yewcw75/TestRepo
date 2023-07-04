@@ -14,7 +14,6 @@
 #include <RrtPlannerLib/RrtPlannerLibGlobal.h>
 #include <RrtPlannerLib/framework/VectorF.h>
 #include <QSharedDataPointer>
-#include <QObject>
 
 RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 
@@ -25,21 +24,6 @@ class WayptPrivate;
  */
 class RRTPLANNER_LIB_EXPORT Waypt
 {
-    Q_GADGET //needed for Q_FLAG macro
-public:
-    /**
-     * @brief The Field enum defines the different fields of a Waypt object.
-     */
-    enum class Field{
-        NONE      = 0,
-        ID        = 1 << 0,
-        NORTHING  = 1 << 1,
-        EASTING   = 1 << 2,
-        LON0      = 1 << 3,
-    };
-    Q_FLAG(Field) //Q_ENUM is also called in Q_FLAG()
-    Q_DECLARE_FLAGS(FieldFlags, Field) //FieldFlags to keep track of fields that had been set
-
 public:
     /**
      * @brief Default constructor.
@@ -158,20 +142,12 @@ public:
      */
     const VectorF& coord_const_ref() const;
 
-    /**
-     * @brief Returns the presence flags of the fields that have been set in the waypoint.
-     * @return The FieldFlags indicating the set fields.
-     */
-    FieldFlags getFieldFlags() const;
-
     // Overloading the << operator
     friend RRTPLANNER_LIB_EXPORT QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::Waypt &data);
 
 private:
     QSharedDataPointer<WayptPrivate> mp_pimpl;
 };
-
-Q_DECLARE_OPERATORS_FOR_FLAGS(Waypt::FieldFlags)
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE
 

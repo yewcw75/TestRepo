@@ -35,11 +35,6 @@ void WayptQTests::verify(Waypt waypt, double northing, double easting, double lo
     QCOMPARE(waypt.easting(), easting);
     QCOMPARE(waypt.lon0_deg(), lon0);
     QCOMPARE(waypt.id(), id);
-
-    QVERIFY(waypt.getFieldFlags().testFlag(Waypt::Field::NORTHING));
-    QVERIFY(waypt.getFieldFlags().testFlag(Waypt::Field::EASTING));
-    QVERIFY(waypt.getFieldFlags().testFlag(Waypt::Field::LON0));
-    QVERIFY(waypt.getFieldFlags().testFlag(Waypt::Field::ID));
     return;
 }
 
@@ -114,7 +109,6 @@ void WayptQTests::verify_setters()
     QFETCH(int, id);
 
     Waypt waypt;
-    QVERIFY(waypt.getFieldFlags().testFlag(Waypt::Field::NONE));
     waypt.setNorthing(northing);
     waypt.setEasting(easting);
     waypt.setLon0(lon0);
@@ -160,10 +154,8 @@ void WayptQTests::verify_copy()
 
     Waypt wayptCopy(waypt);
     verify(wayptCopy, northing, easting, lon0, id);
-    QCOMPARE(wayptCopy.getFieldFlags(), waypt.getFieldFlags());
 
     Waypt wayptCopy2 = waypt;
     verify(wayptCopy2, northing, easting, lon0, id);
-    QCOMPARE(wayptCopy2.getFieldFlags(), waypt.getFieldFlags());
 }
 

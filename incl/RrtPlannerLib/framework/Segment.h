@@ -25,19 +25,16 @@ class RRTPLANNER_LIB_EXPORT Segment
 {
 public:
     Segment();
-    Segment(const Waypt& wayptPrev, const Waypt& wayptNext, int id, bool isZeroLengthSegment = false);
+    Segment(const Waypt& wayptPrev, const Waypt& wayptNext, int id);
     virtual ~Segment();
     Segment(const Segment& other);
     Segment& operator=(const Segment& other);
 
 
-    void set(const Waypt& wayptPrev, const Waypt& wayptNext, int id, bool isZeroLengthSegment = false);
+    void set(const Waypt& wayptPrev, const Waypt& wayptNext, int id);
 
     void setId(int id);
     int id() const;
-
-    void setIsZeroLengthSegment(bool isZeroLengthSegment);
-    bool isZeroLengthSegment() const;
 
     void setWayptPrev(const Waypt& wayptPrev); //set previous waypt of segment.
     const Waypt& wayptPrev() const; //previous waypt of segment    
@@ -65,9 +62,10 @@ public:
     const VectorF& bVecNext() const; //[m][m] bisector with next segment
 
     //Set segment length, tVec and nVec.
-    //If isZeroLengthSegment is true, only the segment length will be set.
-    //Important: call this method only after wayptPrev and wayptNext had been set.
     void setSegmentAttributes();
+
+    // Overloading the << operator
+    friend RRTPLANNER_LIB_EXPORT QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::Segment &data);
 
 private:
     QSharedDataPointer<SegmentPrivate> mp_pimpl;

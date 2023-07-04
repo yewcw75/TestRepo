@@ -66,7 +66,7 @@ void VectorFQTests::verify_resize()
     //qInfo() << "v1: " << v1;
     QCOMPARE(v1.size(), 4);
     v1.resize(6);
-    qInfo() << "v1: " << v1;
+    //qInfo() << "v1: " << v1;
     QCOMPARE(v1.size(), 6);
 }
 

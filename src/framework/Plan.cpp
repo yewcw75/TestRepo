@@ -5,6 +5,7 @@
 #include <QMetaEnum>
 #include <QString>
 #include <QtGlobal>
+#include <QDebug>
 
 RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 
@@ -20,7 +21,6 @@ public:
         :QSharedData(other),
           m_segmentList(other.m_segmentList),
           m_propertyFlags(other.m_propertyFlags),
-          m_fieldFlags(other.m_fieldFlags),
           m_crossTrack(other.m_crossTrack),
           m_id(other.m_id)
     {}
@@ -28,7 +28,6 @@ public:
 public:
     QVector<Segment> m_segmentList;
     Plan::PropertyFlags m_propertyFlags{};
-    Plan::FieldFlags m_fieldFlags{};
     double m_crossTrack{}; //[m]
     int m_id{};
 };
@@ -68,7 +67,6 @@ void Plan::clearPlan()
 {
     mp_pimpl->m_segmentList.clear();
     mp_pimpl->m_propertyFlags = Property::NONE;
-    mp_pimpl->m_fieldFlags = Field::NONE;
     mp_pimpl->m_crossTrack = 0.0;
     mp_pimpl->m_id = 0.0;
     return;
@@ -109,6 +107,8 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
 
     //start to build plan if verify plan is ok
     if(res_ok){
+        mp_pimpl->m_segmentList.clear();
+
         //form segment and append to segment list
         double lengthCumulative = 0;
         Waypt wayptPrev = wayptList.at(0);
@@ -139,8 +139,6 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
             //for next iteration
             wayptPrev = wayptNext;
         }
-        mp_pimpl->m_fieldFlags.setFlag(Field::SEGMENT_LIST);
-        mp_pimpl->m_fieldFlags.setFlag(Field::LENGTH);
     }
 
     return(res_ok);
@@ -174,7 +172,6 @@ bool  Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
 void Plan::setId(int id)
 {
     mp_pimpl->m_id = id;
-    mp_pimpl->m_fieldFlags.setFlag(Field::ID);
     return;
 }
 
@@ -238,7 +235,6 @@ double Plan::length() const
 void Plan::setCrossTrack(double crossTrack)
 {
     mp_pimpl->m_crossTrack = crossTrack;
-    mp_pimpl->m_fieldFlags.setFlag(Field::CROSS_TRACK);
     return;
 }
 
@@ -252,7 +248,7 @@ double Plan::crossTrack() const
 void Plan::setProperty(const Property& property, bool on)
 {
     mp_pimpl->m_propertyFlags.setFlag(property, on);
-    mp_pimpl->m_fieldFlags.setFlag(Field::PROPERTY_FLAGS);
+    return;
 }
 
 //----------
@@ -265,7 +261,6 @@ bool Plan::testProperty(const Property& property) const
 void Plan::setPropertyFlags(const PropertyFlags& flags)
 {
     mp_pimpl->m_propertyFlags = flags;
-    mp_pimpl->m_fieldFlags.setFlag(Field::PROPERTY_FLAGS);
     return;
 }
 
@@ -276,9 +271,18 @@ const Plan::PropertyFlags& Plan::propertyFlags() const
 }
 
 //----------
-const Plan::FieldFlags& Plan::getFieldFlags() const
+QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::Plan &data)
 {
-    return(mp_pimpl->m_fieldFlags);
+    QDebugStateSaver saver(debug);
+    debug.nospace() << "\n\n********************" << "\n*    Plan id: " << data.id() << "    *\n********************" << \
+                       "\n  Crosstrack = " << data.crossTrack() << "m" << \
+                       "\n  Length = " << data.length() << "m" << \
+                       "\n  IsNominal = " << data.testProperty(Plan::Property::IS_NOMINAL) << \
+                       "\n  IsLimit = " << data.testProperty(Plan::Property::IS_LIMIT);
+    for(const Segment& segment: data.segmentList()){
+        debug.nospace() << "\n  " << segment;
+    }
+    return debug;
 }
 
 //----------

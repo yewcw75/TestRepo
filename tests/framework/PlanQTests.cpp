@@ -40,7 +40,6 @@ void PlanQTests:: verifySame(const Waypt& waypt1, const Waypt& waypt2)
     QCOMPARE(waypt1.northing(), waypt2.northing());
     QCOMPARE(waypt1.easting(), waypt2.easting());
     QCOMPARE(waypt1.lon0_deg(), waypt2.lon0_deg());
-    QCOMPARE(waypt1.getFieldFlags(), waypt2.getFieldFlags());
     return;
 }
 
@@ -121,22 +120,17 @@ void PlanQTests::verify_set_plan()
     //set plan
     Plan plan;
     QString resString;
-    QVERIFY(plan.getFieldFlags().testFlag(Plan::Field::NONE));
     bool res = plan.setPlan(wayptList, segIdList, id, &resString);
-    qInfo() << "[PlanQTests::verify_set_plan()]" << resString;
+    //qInfo() << "[PlanQTests::verify_set_plan()]" << resString;
     QCOMPARE(res, setOk);
 
     //set crosstrack
-    QVERIFY(!plan.getFieldFlags().testFlag(Plan::Field::CROSS_TRACK));
     plan.setCrossTrack(crossTrack);
-    QVERIFY(plan.getFieldFlags().testFlag(Plan::Field::CROSS_TRACK));
     QCOMPARE(plan.crossTrack(), crossTrack);
 
     //set property flags
     Plan::PropertyFlags propertyFlags(propertyFlagsVal);
-    QVERIFY(!plan.getFieldFlags().testFlag(Plan::Field::PROPERTY_FLAGS));
     plan.setPropertyFlags(propertyFlags);
-    QVERIFY(plan.getFieldFlags().testFlag(Plan::Field::PROPERTY_FLAGS));
     QCOMPARE(plan.propertyFlags(), propertyFlags);
 
     if(res){
@@ -157,11 +151,6 @@ void PlanQTests::verify_set_plan()
             QVERIFY(UtilHelper::compare(currSegment.bVecNext()[IDX_EASTING], bVecList.at(i+1)[IDX_EASTING]));
         }
 
-        //verify field flags
-        QVERIFY(plan.getFieldFlags().testFlag(Plan::Field::ID));
-        QVERIFY(plan.getFieldFlags().testFlag(Plan::Field::SEGMENT_LIST));
-        QVERIFY(plan.getFieldFlags().testFlag(Plan::Field::LENGTH));
-
         //verify other params
         QCOMPARE(plan.id(), id);
         QVERIFY(UtilHelper::compare(plan.length(), planLength));
@@ -177,11 +166,5 @@ void PlanQTests::verify_set_plan()
                 QCOMPARE(plan.segmentList().at(i).id(), segIdList.at(i));
             }
         }
-    }
-    else{
-        //verify field flags
-        QVERIFY(!plan.getFieldFlags().testFlag(Plan::Field::ID));
-        QVERIFY(!plan.getFieldFlags().testFlag(Plan::Field::SEGMENT_LIST));
-        QVERIFY(!plan.getFieldFlags().testFlag(Plan::Field::LENGTH));
     }
 }

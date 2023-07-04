@@ -141,12 +141,12 @@ std::ostream& operator<<(std::ostream& os, const VectorF& obj)
 QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::VectorF &data)
 {
     QDebugStateSaver saver(debug);
-    debug.nospace() << "[";
+    debug.nospace() << "(";
     for(int i = 0; i < data.size(); ++i){
         if(i != 0) debug.nospace() << ",";
         debug.nospace() << data[i];
     }
-    debug.nospace() << "]";
+    debug.nospace() << ")";
     return debug;
 }
 

@@ -21,20 +21,8 @@ class PlanPrivate;
 class RRTPLANNER_LIB_EXPORT Plan
 {
     friend class PlanHelper;
-
     Q_GADGET
 public:
-    enum class Field{
-        NONE            = 0,
-        ID              = 1 << 1,
-        SEGMENT_LIST    = 1 << 2,
-        LENGTH          = 1 << 3,
-        CROSS_TRACK     = 1 << 4,
-        PROPERTY_FLAGS  = 1 << 5
-    };
-    Q_FLAG(Field) //Q_ENUM is also called in Q_FLAG()
-    Q_DECLARE_FLAGS(FieldFlags, Field) //FieldFlags to keep track of fields that had been set
-
     enum class Property{
         NONE            = 0,
         IS_NOMINAL      = 1 << 0,
@@ -81,8 +69,8 @@ public:
     void setPropertyFlags(const PropertyFlags& flags);
     const PropertyFlags& propertyFlags() const;
 
-    //presence flags of fields
-    const FieldFlags& getFieldFlags() const;
+    // Overloading the << operator
+    friend RRTPLANNER_LIB_EXPORT QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::Plan &data);
 
 protected:
     void appendSegment(const Segment& segment); //will overwrite lengthCumulative of input segment with the appropriate value. Make sure segment length has been set correctly.
@@ -92,7 +80,6 @@ private:
     QSharedDataPointer<PlanPrivate> mp_pimpl;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Plan::FieldFlags)
 Q_DECLARE_OPERATORS_FOR_FLAGS(Plan::PropertyFlags)
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

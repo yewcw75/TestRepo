@@ -141,12 +141,14 @@ Plan PlanHelper::getCrossTrackPlan(const Plan& plan,
     int nSeg = segList.size();
 
     Plan planOut; //plan to return
+    planOut.setCrossTrack(plan.crossTrack() + dx); //set cross track first
 
     if(nEventSeg < nSeg) {//if no. of segments with events is smaller the number of seg => new plan is not just one point
         QVector<Waypt> wayptList_planOut;
         QVector<int> segIdList_planOut;
+
         //loop thru ref plan's segment and start building
-        for (int idxSeg = 0; idxSeg < nSeg; ++idxSeg){
+        for (int idxSeg = 0; idxSeg < nSeg; ++idxSeg){  
             //if curr segment has event, dun proceed to form segment
             if(eventSegIdxList.contains(idxSeg)){
                 continue;
@@ -159,20 +161,22 @@ Plan PlanHelper::getCrossTrackPlan(const Plan& plan,
                 wayptList_planOut.append(wayptPrev);
             }
             Waypt wayptNext(currSeg.wayptNext());
-            wayptNext.set(findOffsetWaypt(currSeg.wayptNext().coord_const_ref(), currSeg.nVec(), currSeg.bVecNext(), dx, tol_small));
+            wayptNext.setCoord(findOffsetWaypt(currSeg.wayptNext().coord_const_ref(), currSeg.nVec(), currSeg.bVecNext(), dx, tol_small));
             wayptList_planOut.append(wayptNext);
-            segIdList_planOut.append(idxSeg);
+            segIdList_planOut.append(currSeg.id());
         } //for idxSeg = 1: nSeg
 
         //set planOut
         bool setOk = planOut.setPlan(wayptList_planOut, segIdList_planOut, results_desc);
         if(results_out){
             *results_out = setOk;
-        }      
+        }
+        /*
         if(results_desc){
             qInfo() << "[PlanHelper::getCrossTrackPlan] set plan results: " << *results_desc;
         }
-        planOut.setProperty(Plan::Property::IS_LIMIT, abs(planOut.crossTrack()) >= crossTrackHorizon);
+        */
+        planOut.setProperty(Plan::Property::IS_LIMIT, abs(planOut.crossTrack()) - crossTrackHorizon > -TOL_SMALL);
     }
     else { //new plan is a point
         const Segment& firstSeg = segList.first();
@@ -183,7 +187,7 @@ Plan PlanHelper::getCrossTrackPlan(const Plan& plan,
         wayptPrev.setCoord(coord_offset);
         Waypt wayptNext(lastSeg.wayptNext());
         wayptNext.setCoord(coord_offset);
-        Segment newSeg(wayptPrev, wayptNext, lastSeg.id(), true);
+        Segment newSeg(wayptPrev, wayptNext, lastSeg.id());
         newSeg.setSegmentAttributes(); //will set length
         newSeg.setLengthCumulative(newSeg.length());
 
@@ -197,12 +201,11 @@ Plan PlanHelper::getCrossTrackPlan(const Plan& plan,
             *results_desc = QString("[PlanHelper::getCrossTrackPlan] Plan is a point. Set Ok.");
         }
     }
-    planOut.setCrossTrack(plan.crossTrack() + dx);
     return(planOut);
 }
 
 //----------
-bool PlanHelper::buildSuccessiveEllMap(const QSharedPointer<Plan> p_planNominal, //nominal plan
+bool PlanHelper::buildSingleSideEllMaps(const QSharedPointer<Plan> p_planNominal, //nominal plan
                                 double side, //-1.0 : port side, 1.0 : stbd side
                                 double crossTrackHorizon, //[m] always a positive variable
                                 QList<QSharedPointer<Plan>>& planList, //planList to append
@@ -219,6 +222,7 @@ bool PlanHelper::buildSuccessiveEllMap(const QSharedPointer<Plan> p_planNominal,
     //while loop to build ellmap on one side
     Plan planRef(*p_planNominal); //make a copy of nominal plan
     int countWhileLoop = 0; //additional check to prevent infinite while loop
+    //qInfo() << planRef;
     while( planRef.nSegment() > 1 && //need min of 2 segs to have edge event
         countWhileLoop < nSegNominal //max possible no. of event is nSegNominal - 1
            )
@@ -243,6 +247,7 @@ bool PlanHelper::buildSuccessiveEllMap(const QSharedPointer<Plan> p_planNominal,
             if(!ret){
                 break; //break while loop
             }
+            //qInfo() << planRef;
             QSharedPointer<Plan> plan2Append(new Plan(planRef));
             insertDummySegments(plan2Append, nSegNominal);
             pushPlan(plan2Append, side, planList);//push to plan list
@@ -264,7 +269,7 @@ bool PlanHelper::buildSuccessiveEllMap(const QSharedPointer<Plan> p_planNominal,
                                                     &ret, //false if error
                                                     results_desc //results description
                                                     );
-            Q_ASSERT(planRef.testProperty(Plan::Property::IS_LIMIT));
+            planRef.setProperty(Plan::Property::IS_LIMIT);
             QSharedPointer<Plan> plan2Append(new Plan(planRef));
             insertDummySegments(plan2Append, nSegNominal);
             pushPlan(plan2Append, side, planList);//push to plan list
@@ -277,7 +282,7 @@ bool PlanHelper::buildSuccessiveEllMap(const QSharedPointer<Plan> p_planNominal,
 void PlanHelper::insertDummySegments(QSharedPointer<Plan>& plan, int nSegNominal)
 {
     const QVector<Segment>& segList = plan->segmentList();
-    int nSeg       = segList.size();
+    int nSeg = segList.size();
     assert(nSeg > 0);
     QVector<Segment> segListOut;
 
@@ -287,14 +292,12 @@ void PlanHelper::insertDummySegments(QSharedPointer<Plan>& plan, int nSegNominal
        Segment seg2Insert = segList.at(scount);
        if (idNominal < segList.at(scount).id()){
            seg2Insert.setId(idNominal);
-           seg2Insert.setIsZeroLengthSegment(true);
            seg2Insert.setWayptNext(seg2Insert.wayptPrev());
            seg2Insert.setbVecNext(seg2Insert.bVecPrev());
            seg2Insert.setLength(0.0);
        }
        else if (idNominal > segList.at(scount).id()){
            seg2Insert.setId(idNominal);
-           seg2Insert.setIsZeroLengthSegment(true);
            seg2Insert.setWayptPrev(seg2Insert.wayptNext());
            seg2Insert.setbVecPrev(seg2Insert.bVecNext());
            seg2Insert.setLength(0.0);
