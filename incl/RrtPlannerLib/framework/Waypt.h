@@ -35,7 +35,7 @@ public:
      * @param northing_m The northing value in meters.
      * @param easting_m The easting value in meters.
      * @param lon0_deg The reference longitude in degrees.
-     * @param id The waypt value.
+     * @param id The waypt id.
      */
     Waypt(double northing_m, double easting_m, double lon0_deg = 0.0, int id = -1);
 
@@ -43,7 +43,7 @@ public:
      * @brief Constructor overload.
      * @param coord The coordinate vector containing the northing and easting values in meters.
      * @param lon0_deg The reference longitude in degrees.
-     * @param id The waypt value.
+     * @param id The waypt id.
      */
     Waypt(const VectorF& coord, double lon0_deg = 0.0, int id = -1);
 
@@ -54,14 +54,11 @@ public:
 
     /**
      * @brief Copy constructor.
-     * @param other The Waypt object to copy.
      */
     Waypt(const Waypt& other);
 
     /**
      * @brief Assignment operator.
-     * @param other The Waypt object to assign.
-     * @return Reference to the assigned Waypt object.
      */
     Waypt& operator=(const Waypt& other);
 
@@ -69,16 +66,16 @@ public:
      * @brief Sets the waypoint with the given northing, easting, reference longitude, and ID.
      * @param northing_m The northing value in meters.
      * @param easting_m The easting value in meters.
-     * @param lon0_deg The reference longitude in degrees.
-     * @param id The waypt id.
+     * @param lon0_deg The reference longitude in degrees. Default = 0.0.
+     * @param id The waypt id. Default = -1.
      */
     void set(double northing_m, double easting_m, double lon0_deg = 0.0, int id = -1);
 
     /**
      * @brief Sets the waypoint with the given coordinate vector, reference longitude, and ID.
      * @param coord The coordinate vector containing the northing and easting values in meters.
-     * @param lon0_deg The reference longitude in degrees.
-     * @param id The waypt id.
+     * @param lon0_deg The reference longitude in degrees. Default = 0.0.
+     * @param id The waypt id. Default = -1.
      */
     void set(const VectorF& coord, double lon0_deg = 0.0, int id = -1);
 

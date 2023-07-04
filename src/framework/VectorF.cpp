@@ -1,6 +1,5 @@
 #include <RrtPlannerLib/framework/VectorF.h>
 #include <QSharedData>
-#include <QDebug>
 #include <QScopedPointer>
 
 namespace bnu = boost::numeric::ublas;
@@ -91,13 +90,13 @@ int VectorF::size() const
 }
 
 //---------
-const double& VectorF::at(int idx) const
+double VectorF::at(int idx) const
 {
     return((*mp_pimpl->m_data)[idx]);
 }
 
 //---------
-const double& VectorF::operator[](int idx) const
+double VectorF::operator[](int idx) const
 {
     return((*mp_pimpl->m_data)[idx]);
 }
@@ -126,18 +125,7 @@ boost::numeric::ublas::vector<double>& VectorF::data()
     return(*(mp_pimpl->m_data));
 }
 
-std::ostream& operator<<(std::ostream& os, const VectorF& obj)
-{
-   os << "[";
-   for(int i = 0; i < obj.size(); ++i){
-       if(i != 0) os << ",";
-       os << obj[i];
-   }
-   os << "]";
-   return os;
-}
-
-
+//---------
 QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::VectorF &data)
 {
     QDebugStateSaver saver(debug);
