@@ -21,11 +21,11 @@ public:
     VectorFHelper();
     ~VectorFHelper();
 
-    static float norm2(const VectorF& vec); //sqrt(vec.' * vec)
-    static VectorF multiply_value(const VectorF& vec, float scalar); //scalar * vec
+    static double norm2(const VectorF& vec); //sqrt(vec.' * vec)
+    static VectorF multiply_value(const VectorF& vec, double scalar); //scalar * vec
     static VectorF add_vector(const VectorF& vec1, const VectorF& vec2); //vec1 + vec2
     static VectorF subtract_vector(const VectorF& vec1, const VectorF& vec2); //vec1 - vec2
-    static float dot_product(const VectorF& vec1, const VectorF& vec2); //vec1 dot vec2)
+    static double dot_product(const VectorF& vec1, const VectorF& vec2); //vec1 dot vec2)
 };
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

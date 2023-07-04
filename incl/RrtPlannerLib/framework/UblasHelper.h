@@ -19,14 +19,14 @@ public:
     UblasHelper();
     ~UblasHelper();
 
-    static bnu::matrix<float> concatenate_col_vectors(const bnu::vector<float>& v1,
-                                                      const bnu::vector<float>& v2
+    static bnu::matrix<double> concatenate_col_vectors(const bnu::vector<double>& v1,
+                                                      const bnu::vector<double>& v2
                                                       ); //treat v1 and v2 as col vectors, and concatenate column-wise. i.e. [v1, v2]
 
-    static bool solve(const bnu::matrix<float>& M, //invertible square matrix, [NxN]
-                      const bnu::vector<float>& y, //[Nx1]
-                      float tol_small, //for checking if ok to 1/det(M)
-                      bnu::vector<float>& x //[Nx1]
+    static bool solve(const bnu::matrix<double>& M, //invertible square matrix, [NxN]
+                      const bnu::vector<double>& y, //[Nx1]
+                      double tol_small, //for checking if ok to 1/det(M)
+                      bnu::vector<double>& x //[Nx1]
                       );
 
 };

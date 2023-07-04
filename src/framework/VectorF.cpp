@@ -12,20 +12,20 @@ class VectorFPrivate: public QSharedData
 public:
     VectorFPrivate(int size = 0)
         :QSharedData(),
-          m_data(new bnu::vector<float>(size))
+          m_data(new bnu::vector<double>(size))
     {}
-    explicit VectorFPrivate(const bnu::vector<float>& data)
+    explicit VectorFPrivate(const bnu::vector<double>& data)
         :QSharedData(),
-          m_data(new bnu::vector<float>(data))
+          m_data(new bnu::vector<double>(data))
     {}
     VectorFPrivate(const VectorFPrivate& other)
         : QSharedData(other),
-          m_data(new bnu::vector<float>(*other.m_data))
+          m_data(new bnu::vector<double>(*other.m_data))
     {}
     ~VectorFPrivate(){}
 
 public:
-    QScopedPointer<bnu::vector<float>> m_data;
+    QScopedPointer<bnu::vector<double>> m_data;
 };
 
 //#########################
@@ -37,7 +37,7 @@ VectorF::VectorF()
 }
 
 //---------
-VectorF::VectorF(const std::initializer_list<float>& list)
+VectorF::VectorF(const std::initializer_list<double>& list)
     :mp_pimpl(new VectorFPrivate)
 {
     size_t size = list.size();
@@ -50,7 +50,7 @@ VectorF::VectorF(const std::initializer_list<float>& list)
 }
 
 //---------
-VectorF::VectorF(const boost::numeric::ublas::vector<float>& data)
+VectorF::VectorF(const boost::numeric::ublas::vector<double>& data)
     :mp_pimpl(new VectorFPrivate(data))
 {
 
@@ -91,37 +91,37 @@ int VectorF::size() const
 }
 
 //---------
-const float& VectorF::at(int idx) const
+const double& VectorF::at(int idx) const
 {
     return((*mp_pimpl->m_data)[idx]);
 }
 
 //---------
-const float& VectorF::operator[](int idx) const
+const double& VectorF::operator[](int idx) const
 {
     return((*mp_pimpl->m_data)[idx]);
 }
 
 //---------
-float& VectorF::operator[](int idx)
+double& VectorF::operator[](int idx)
 {
     return((*mp_pimpl->m_data)[idx]);
 }
 
 //---------
-void VectorF::set(const boost::numeric::ublas::vector<float>& data)
+void VectorF::set(const boost::numeric::ublas::vector<double>& data)
 {
     *(mp_pimpl->m_data) = data;
 }
 
 //---------
-const boost::numeric::ublas::vector<float>& VectorF::data_const_ref() const
+const boost::numeric::ublas::vector<double>& VectorF::data_const_ref() const
 {
     return(*(mp_pimpl->m_data));
 }
 
 //---------
-boost::numeric::ublas::vector<float>& VectorF::data()
+boost::numeric::ublas::vector<double>& VectorF::data()
 {
     return(*(mp_pimpl->m_data));
 }

@@ -1,5 +1,8 @@
 #include "WayptQTests.h"
+#include <RrtPlannerLib/framework/FrameworkDefines.h>
 #include <QtTest/QtTest>
+
+using namespace rrtplanner::framework;
 
 //----------
 WayptQTests::WayptQTests()
@@ -26,7 +29,7 @@ void WayptQTests::cleanUp()
 }
 
 //----------
-void WayptQTests::verify(Waypt waypt, float northing, float easting, double lon0, int id)
+void WayptQTests::verify(Waypt waypt, double northing, double easting, double lon0, int id)
 {
     QCOMPARE(waypt.northing(), northing);
     QCOMPARE(waypt.easting(), easting);
@@ -43,14 +46,14 @@ void WayptQTests::verify(Waypt waypt, float northing, float easting, double lon0
 //----------
 void WayptQTests::verify_set_params_data()
 {
-    QTest::addColumn<float>("northing");
-    QTest::addColumn<float>("easting");
+    QTest::addColumn<double>("northing");
+    QTest::addColumn<double>("easting");
     QTest::addColumn<double>("lon0");
     QTest::addColumn<int>("id");
 
-    QTest::newRow("Test 1") << (float)-12345.54321 << (float)98765.5678 << (double)887766 << (int)-9999;
-    QTest::newRow("Test 2") << (float)12345.54321 << (float)-98765.5678 << (double)-887766 << (int)9999;
-    QTest::newRow("Test 3") << (float)1.2345 << (float)103.2233 << (double)-104.0 << (int)1;
+    QTest::newRow("Test 1") << (double)-12345.54321 << (double)98765.5678 << (double)887766 << (int)-9999;
+    QTest::newRow("Test 2") << (double)12345.54321 << (double)-98765.5678 << (double)-887766 << (int)9999;
+    QTest::newRow("Test 3") << (double)1.2345 << (double)103.2233 << (double)-104.0 << (int)1;
 
     return;
 }
@@ -59,8 +62,8 @@ void WayptQTests::verify_set_params_data()
 void WayptQTests::verify_set_params()
 {
     setup();
-    QFETCH(float, northing);
-    QFETCH(float, easting);
+    QFETCH(double, northing);
+    QFETCH(double, easting);
     QFETCH(double, lon0);
     QFETCH(int, id);
 
@@ -89,14 +92,14 @@ void WayptQTests::verify_set_params()
 //----------
 void WayptQTests::verify_setters_data()
 {
-    QTest::addColumn<float>("northing");
-    QTest::addColumn<float>("easting");
+    QTest::addColumn<double>("northing");
+    QTest::addColumn<double>("easting");
     QTest::addColumn<double>("lon0");
     QTest::addColumn<int>("id");
 
-    QTest::newRow("Test 1") << (float)-12345.54321 << (float)98765.5678 << (double)887766 << (int)-9999;
-    QTest::newRow("Test 2") << (float)12345.54321 << (float)-98765.5678 << (double)-887766 << (int)9999;
-    QTest::newRow("Test 3") << (float)1.2345 << (float)103.2233 << (double)-104.0 << (int)1;
+    QTest::newRow("Test 1") << (double)-12345.54321 << (double)98765.5678 << (double)887766 << (int)-9999;
+    QTest::newRow("Test 2") << (double)12345.54321 << (double)-98765.5678 << (double)-887766 << (int)9999;
+    QTest::newRow("Test 3") << (double)1.2345 << (double)103.2233 << (double)-104.0 << (int)1;
 
     return;
 }
@@ -105,8 +108,8 @@ void WayptQTests::verify_setters_data()
 void WayptQTests::verify_setters()
 {
     setup();
-    QFETCH(float, northing);
-    QFETCH(float, easting);
+    QFETCH(double, northing);
+    QFETCH(double, easting);
     QFETCH(double, lon0);
     QFETCH(int, id);
 
@@ -128,14 +131,14 @@ void WayptQTests::verify_setters()
 //----------
 void WayptQTests::verify_copy_data()
 {
-    QTest::addColumn<float>("northing");
-    QTest::addColumn<float>("easting");
+    QTest::addColumn<double>("northing");
+    QTest::addColumn<double>("easting");
     QTest::addColumn<double>("lon0");
     QTest::addColumn<int>("id");
 
-    QTest::newRow("Test 1") << (float)-12345.54321 << (float)98765.5678 << (double)887766 << (int)-9999;
-    QTest::newRow("Test 2") << (float)12345.54321 << (float)-98765.5678 << (double)-887766 << (int)9999;
-    QTest::newRow("Test 3") << (float)1.2345 << (float)103.2233 << (double)-104.0 << (int)1;
+    QTest::newRow("Test 1") << (double)-12345.54321 << (double)98765.5678 << (double)887766 << (int)-9999;
+    QTest::newRow("Test 2") << (double)12345.54321 << (double)-98765.5678 << (double)-887766 << (int)9999;
+    QTest::newRow("Test 3") << (double)1.2345 << (double)103.2233 << (double)-104.0 << (int)1;
 
     return;
 }
@@ -144,8 +147,8 @@ void WayptQTests::verify_copy_data()
 void WayptQTests::verify_copy()
 {
     setup();
-    QFETCH(float, northing);
-    QFETCH(float, easting);
+    QFETCH(double, northing);
+    QFETCH(double, easting);
     QFETCH(double, lon0);
     QFETCH(int, id);
 

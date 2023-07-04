@@ -39,7 +39,7 @@ PlanHelper::VerifyPlanResult PlanHelper::verifyPlanInput(const QVector<Waypt>& w
         for(int idx = 1; idx < nWaypt; ++idx){ //loop from 2nd waypt onwards
             VectorF wayptNext = wayptList.at(idx).coord_const_ref();
             VectorF vecPrevToNext = VectorFHelper::subtract_vector(wayptNext, wayptPrev);
-            float dotPdt = VectorFHelper::dot_product(vecPrevToNext, vecFirstToLast);
+            double dotPdt = VectorFHelper::dot_product(vecPrevToNext, vecFirstToLast);
             if(dotPdt < 0.0){
                 res = VerifyPlanResult::VERIFY_PLAN_ERR_REVERSE_DIR;
                 break;
@@ -52,15 +52,15 @@ PlanHelper::VerifyPlanResult PlanHelper::verifyPlanInput(const QVector<Waypt>& w
 
 //----------
 bool PlanHelper::findNearestEdgeEvent(const Plan& plan,
-                                     float crossTrackHorizon,
-                                     float side,
-                                     float eps_dx,
-                                     float& dxNearest_out,
+                                     double crossTrackHorizon,
+                                     double side,
+                                     double eps_dx,
+                                     double& dxNearest_out,
                                      QVector<int>& eventSegIdxList_out)
 {
     bool found = false;
     QVector<int> eventSegIdxList;
-    float dxNearest = std::numeric_limits<float>::max(); //init dx
+    double dxNearest = std::numeric_limits<double>::max(); //init dx
 
     const QVector<Segment>& segmentList = plan.segmentList();
     int nSeg = segmentList.size();
@@ -78,18 +78,18 @@ bool PlanHelper::findNearestEdgeEvent(const Plan& plan,
             const VectorF& wayptNext = currSeg.wayptNext().coord_const_ref();
             bnu::matrix M = UblasHelper::concatenate_col_vectors(bVecPrev.data_const_ref(),
                                                                          -1.0 * bVecNext.data_const_ref());
-            bnu::vector<float> v = VectorFHelper::subtract_vector(wayptNext, wayptPrev).data_const_ref();
-            bnu::vector<float> d;
+            bnu::vector<double> v = VectorFHelper::subtract_vector(wayptNext, wayptPrev).data_const_ref();
+            bnu::vector<double> d;
             bool ok = UblasHelper::solve(M, v, TOL_SMALL, d);
             if(ok){
-                bnu::vector<float> posEvent = wayptNext.data_const_ref() + d[1]*bVecNext.data_const_ref();
+                bnu::vector<double> posEvent = wayptNext.data_const_ref() + d[1]*bVecNext.data_const_ref();
                 bnu::matrix M2 = UblasHelper::concatenate_col_vectors(tVec.data_const_ref(),
                                                                               nVec.data_const_ref());
-                bnu::vector<float> v2 = posEvent - wayptPrev.data_const_ref();
-                bnu::vector<float> d2;
+                bnu::vector<double> v2 = posEvent - wayptPrev.data_const_ref();
+                bnu::vector<double> d2;
                 bool ok2 = UblasHelper::solve(M2, v2, TOL_SMALL, d2);
                 if(ok2){
-                    float dx = side * d2[1]; //for port side, cast the problem to stbd side
+                    double dx = side * d2[1]; //for port side, cast the problem to stbd side
                     if(dx > 0 && plan.crossTrack() + dx <= crossTrackHorizon){
                        if( dxNearest - dx >  eps_dx){ //=> dx is smaller than dxNearest
                            dxNearest = dx;
@@ -124,12 +124,12 @@ bool PlanHelper::findNearestEdgeEvent(const Plan& plan,
  *
  */
 Plan PlanHelper::getCrossTrackPlan(const Plan& plan,
-                                  float crossTrackHorizon,
-                                  float dx,
+                                  double crossTrackHorizon,
+                                  double dx,
                                   const QVector<int>& eventSegIdxList,
-                                  float tol_small,
-                                  bool* results_out
-                                  )
+                                  double tol_small,
+                                  bool* results_out,
+                                  QString* results_desc)
 {
     if(crossTrackHorizon < 0){
         crossTrackHorizon = abs(crossTrackHorizon);
@@ -165,14 +165,13 @@ Plan PlanHelper::getCrossTrackPlan(const Plan& plan,
         } //for idxSeg = 1: nSeg
 
         //set planOut
-        QString resDesc;
-        bool setOk = planOut.setPlan(wayptList_planOut, segIdList_planOut, &resDesc);
+        bool setOk = planOut.setPlan(wayptList_planOut, segIdList_planOut, results_desc);
         if(results_out){
             *results_out = setOk;
+        }      
+        if(results_desc){
+            qInfo() << "[PlanHelper::getCrossTrackPlan] set plan results: " << *results_desc;
         }
-        qInfo() << "[PlanHelper::getCrossTrackPlan] set plan results: " << resDesc;
-
-
         planOut.setProperty(Plan::Property::IS_LIMIT, abs(planOut.crossTrack()) >= crossTrackHorizon);
     }
     else { //new plan is a point
@@ -185,29 +184,164 @@ Plan PlanHelper::getCrossTrackPlan(const Plan& plan,
         Waypt wayptNext(lastSeg.wayptNext());
         wayptNext.setCoord(coord_offset);
         Segment newSeg(wayptPrev, wayptNext, lastSeg.id(), true);
+        newSeg.setSegmentAttributes(); //will set length
+        newSeg.setLengthCumulative(newSeg.length());
 
         planOut.appendSegment(newSeg);
         planOut.setProperty(Plan::Property::IS_LIMIT);
+
+        if(results_out){
+            *results_out = true;
+        }
+        if(results_desc){
+            *results_desc = QString("[PlanHelper::getCrossTrackPlan] Plan is a point. Set Ok.");
+        }
     }
     planOut.setCrossTrack(plan.crossTrack() + dx);
     return(planOut);
 }
 
 //----------
+bool PlanHelper::buildSuccessiveEllMap(const QSharedPointer<Plan> p_planNominal, //nominal plan
+                                double side, //-1.0 : port side, 1.0 : stbd side
+                                double crossTrackHorizon, //[m] always a positive variable
+                                QList<QSharedPointer<Plan>>& planList, //planList to append
+                                QString* results_desc)
+{
+    bool ret = true;
+    int nSegNominal = p_planNominal->nSegment();
+
+    //append nominal plan when side is stbd
+    if(side > 0.0){
+        planList.push_back(p_planNominal);
+    }
+
+    //while loop to build ellmap on one side
+    Plan planRef(*p_planNominal); //make a copy of nominal plan
+    int countWhileLoop = 0; //additional check to prevent infinite while loop
+    while( planRef.nSegment() > 1 && //need min of 2 segs to have edge event
+        countWhileLoop < nSegNominal //max possible no. of event is nSegNominal - 1
+           )
+    {
+        double dxNearest_out{};
+        QVector<int> eventSegIdxList_out;
+        bool found = PlanHelper::findNearestEdgeEvent(planRef,
+                                                      crossTrackHorizon,
+                                                      side,
+                                                      EPS_DX,
+                                                      dxNearest_out,
+                                                      eventSegIdxList_out);
+        if(found){
+            planRef = PlanHelper::getCrossTrackPlan(planRef,
+                                        crossTrackHorizon,
+                                        dxNearest_out,
+                                        eventSegIdxList_out,
+                                        TOL_SMALL,
+                                        &ret, //false if error
+                                        results_desc //results description
+                                        );
+            if(!ret){
+                break; //break while loop
+            }
+            QSharedPointer<Plan> plan2Append(new Plan(planRef));
+            insertDummySegments(plan2Append, nSegNominal);
+            pushPlan(plan2Append, side, planList);//push to plan list
+        }
+        else{ //no edge event found
+            break;
+        }
+        ++countWhileLoop;
+    } //while-loop
+
+    //max cross-track plan
+    if(ret){ //if no error so far
+        if(!planRef.testProperty(Plan::Property::IS_LIMIT)){ //if last plan was not the limit
+            planRef = PlanHelper::getCrossTrackPlan(planRef,
+                                                    crossTrackHorizon,
+                                                    side*crossTrackHorizon - planRef.crossTrack(),
+                                                    QVector<int>(),
+                                                    TOL_SMALL,
+                                                    &ret, //false if error
+                                                    results_desc //results description
+                                                    );
+            Q_ASSERT(planRef.testProperty(Plan::Property::IS_LIMIT));
+            QSharedPointer<Plan> plan2Append(new Plan(planRef));
+            insertDummySegments(plan2Append, nSegNominal);
+            pushPlan(plan2Append, side, planList);//push to plan list
+        }
+    }
+    return(ret);
+}
+
+//----------
+void PlanHelper::insertDummySegments(QSharedPointer<Plan>& plan, int nSegNominal)
+{
+    const QVector<Segment>& segList = plan->segmentList();
+    int nSeg       = segList.size();
+    assert(nSeg > 0);
+    QVector<Segment> segListOut;
+
+    int scount = 0;
+    double lengthCumulative = 0.0;
+    for (int idNominal = 0; idNominal < nSegNominal; ++idNominal){
+       Segment seg2Insert = segList.at(scount);
+       if (idNominal < segList.at(scount).id()){
+           seg2Insert.setId(idNominal);
+           seg2Insert.setIsZeroLengthSegment(true);
+           seg2Insert.setWayptNext(seg2Insert.wayptPrev());
+           seg2Insert.setbVecNext(seg2Insert.bVecPrev());
+           seg2Insert.setLength(0.0);
+       }
+       else if (idNominal > segList.at(scount).id()){
+           seg2Insert.setId(idNominal);
+           seg2Insert.setIsZeroLengthSegment(true);
+           seg2Insert.setWayptPrev(seg2Insert.wayptNext());
+           seg2Insert.setbVecPrev(seg2Insert.bVecNext());
+           seg2Insert.setLength(0.0);
+       }
+       else { //=> segList.at(scount).id == idNominal
+           ++scount;
+           scount = scount > nSeg - 1? nSeg - 1: scount; //clip to nSeg - 1
+        }
+       lengthCumulative += seg2Insert.length();
+       seg2Insert.setLengthCumulative(lengthCumulative);
+       segListOut.push_back(seg2Insert); //append segment to segListOut
+    } //for-loop
+    plan->setSegmentList(segListOut); //replace the segment list in plan
+    return;
+}
+
+//----------
+void PlanHelper::pushPlan( const QSharedPointer<Plan>& plan,
+                            double side,
+                            QList<QSharedPointer<Plan>>& planList //planList to prepend/append
+                         )
+{
+    if(side < 0){
+        planList.push_front(plan);
+    }
+    else
+    {
+        planList.push_back(plan);
+    }
+    return;
+}
+
+//----------
 VectorF PlanHelper::findOffsetWaypt(const VectorF& pt,
                                     const VectorF& nVec,
                                     const VectorF& bVec,
-                                    float dx, //crosstrack to offset
-                                    float tol_small
+                                    double dx, //crosstrack to offset
+                                    double tol_small
                                     )
 {
     //solve scalar, a, using relation: dot(a.bvec, nvec) = dx => a = dx/dot(bvec, nvec)
-    float dotPdt = VectorFHelper::dot_product(bVec, nVec);
+    double dotPdt = VectorFHelper::dot_product(bVec, nVec);
     bool ok = abs(dotPdt) >= tol_small;
     if(!ok){
         qFatal("[PlanHelper::findOffsetWaypt] Division by zero error");
     }
-    float  a = dx/dotPdt;
+    double  a = dx/dotPdt;
     VectorF res = VectorFHelper::add_vector(pt, VectorFHelper::multiply_value(bVec, a)); //pt + a * bVec
     return(res);
 }

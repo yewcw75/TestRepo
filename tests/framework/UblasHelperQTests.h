@@ -1,10 +1,8 @@
 #ifndef RRTPLANNER_LIB_LINEARALGEBRAQTESTS_H
 #define RRTPLANNER_LIB_LINEARALGEBRAQTESTS_H
 
-#include <RrtPlannerLib/framework/UblasHelper.h>
 #include <QObject>
 
-using namespace rrtplanner::framework;
 class UblasHelperQTests : public QObject
 {
     Q_OBJECT

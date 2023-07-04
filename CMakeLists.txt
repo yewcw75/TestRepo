@@ -47,6 +47,8 @@ include(GNUInstallDirs)
 add_library(${PROJECT_NAME} SHARED
   incl/${PROJECT_NAME}/RrtPlannerLibGlobal.h
   incl/${PROJECT_NAME}/framework/FrameworkDefines.h
+  incl/${PROJECT_NAME}/framework/UtilHelper.h
+  src/framework/UtilHelper.cpp
   incl/${PROJECT_NAME}/framework/VectorFHelper.h
   src/framework/VectorFHelper.cpp
   incl/${PROJECT_NAME}/framework/UblasHelper.h
@@ -61,6 +63,9 @@ add_library(${PROJECT_NAME} SHARED
   src/framework/Plan.cpp
   incl/${PROJECT_NAME}/framework/PlanHelper.h
   src/framework/PlanHelper.cpp
+  incl/${PROJECT_NAME}/framework/EllMap.h
+  src/framework/EllMap.cpp
+
 )
 
 #############################

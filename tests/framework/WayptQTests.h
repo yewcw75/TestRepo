@@ -5,7 +5,6 @@
 #include <QObject>
 #include <QScopedPointer>
 
-using namespace rrtplanner::framework;
 class WayptQTests : public QObject
 {
     Q_OBJECT
@@ -17,7 +16,7 @@ public:
 private:
     void setup();
     void cleanUp();
-    void verify(Waypt waypt, float northing, float easting, double lon0, int id);
+    void verify(rrtplanner::framework::Waypt waypt, double northing, double easting, double lon0, int id);
 
 private slots:
     void verify_set_params_data();

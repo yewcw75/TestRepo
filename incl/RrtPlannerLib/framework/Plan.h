@@ -70,10 +70,10 @@ public:
     QVector<Waypt> wayptList() const; //get the waypt list of plan
     const QVector<Segment>& segmentList() const; //get the segment list of plan
 
-    float length() const; //[m] total plan length
+    double length() const; //[m] total plan length
 
-    void setCrossTrack(float crossTrack); //[m] cross-track dist to nominal plan
-    float crossTrack() const; //[m] //[m] cross-track dist to nominal plan
+    void setCrossTrack(double crossTrack); //[m] cross-track dist to nominal plan
+    double crossTrack() const; //[m] //[m] cross-track dist to nominal plan
 
     void setProperty(const Property& property, bool on = true);
     bool testProperty(const Property& property) const;
@@ -85,7 +85,8 @@ public:
     const FieldFlags& getFieldFlags() const;
 
 protected:
-    void appendSegment(const Segment& segment);
+    void appendSegment(const Segment& segment); //will overwrite lengthCumulative of input segment with the appropriate value. Make sure segment length has been set correctly.
+    void setSegmentList(const QVector<Segment>& segmentList);
 
 private:
     QSharedDataPointer<PlanPrivate> mp_pimpl;

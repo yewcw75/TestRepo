@@ -12,7 +12,7 @@
 #define RRTPLANNER_LIB_WAYPT_H
 
 #include <RrtPlannerLib/RrtPlannerLibGlobal.h>
-#include <RrtPlannerLib/framework/FrameworkDefines.h>
+#include <RrtPlannerLib/framework/VectorF.h>
 #include <QSharedDataPointer>
 #include <QObject>
 
@@ -53,7 +53,7 @@ public:
      * @param lon0_deg The reference longitude in degrees.
      * @param id The waypt value.
      */
-    Waypt(float northing_m, float easting_m, double lon0_deg = 0.0, int id = -1);
+    Waypt(double northing_m, double easting_m, double lon0_deg = 0.0, int id = -1);
 
     /**
      * @brief Constructor overload.
@@ -88,7 +88,7 @@ public:
      * @param lon0_deg The reference longitude in degrees.
      * @param id The waypt id.
      */
-    void set(float northing_m, float easting_m, double lon0_deg = 0.0, int id = -1);
+    void set(double northing_m, double easting_m, double lon0_deg = 0.0, int id = -1);
 
     /**
      * @brief Sets the waypoint with the given coordinate vector, reference longitude, and ID.
@@ -102,25 +102,25 @@ public:
      * @brief Sets the northing value of the waypoint.
      * @param northing_m The northing value in meters.
      */
-    void setNorthing(float northing_m);
+    void setNorthing(double northing_m);
 
     /**
      * @brief Gets the northing value of the waypoint.
      * @return The northing value in meters.
      */
-    float northing() const;
+    double northing() const;
 
     /**
      * @brief Sets the easting value of the waypoint.
      * @param easting_m The easting value in meters.
      */
-    void setEasting(float easting_m);
+    void setEasting(double easting_m);
 
     /**
      * @brief Gets the easting value of the waypoint.
      * @return The easting value in meters.
      */
-    float easting() const;
+    double easting() const;
 
     /**
      * @brief Sets the waypt id.

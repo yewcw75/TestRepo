@@ -21,7 +21,6 @@ public:
           m_segmentList(other.m_segmentList),
           m_propertyFlags(other.m_propertyFlags),
           m_fieldFlags(other.m_fieldFlags),
-          m_length(other.m_length),
           m_crossTrack(other.m_crossTrack),
           m_id(other.m_id)
     {}
@@ -30,8 +29,7 @@ public:
     QVector<Segment> m_segmentList;
     Plan::PropertyFlags m_propertyFlags{};
     Plan::FieldFlags m_fieldFlags{};
-    float m_length{}; //[m]
-    float m_crossTrack{}; //[m]
+    double m_crossTrack{}; //[m]
     int m_id{};
 };
 
@@ -71,7 +69,6 @@ void Plan::clearPlan()
     mp_pimpl->m_segmentList.clear();
     mp_pimpl->m_propertyFlags = Property::NONE;
     mp_pimpl->m_fieldFlags = Field::NONE;
-    mp_pimpl->m_length = 0.0;
     mp_pimpl->m_crossTrack = 0.0;
     mp_pimpl->m_id = 0.0;
     return;
@@ -105,7 +102,7 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
     if(res_ok){
         PlanHelper::VerifyPlanResult res = PlanHelper::verifyPlanInput(wayptList);
         res_ok = (res == PlanHelper::VerifyPlanResult::VERIFY_PLAN_OK);
-        if(resultsDesc){ //write results description if given pointer is not null
+        if(resultsDesc){ //write results description if given pointer is not null. Overwrite previous.
             *resultsDesc = QString(" Verify waypoints: ") + QMetaEnum::fromType<PlanHelper::VerifyPlanResult>().key(static_cast<int>(res));
         }
     }
@@ -113,10 +110,14 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
     //start to build plan if verify plan is ok
     if(res_ok){
         //form segment and append to segment list
+        double lengthCumulative = 0;
         Waypt wayptPrev = wayptList.at(0);
         for(int idx = 1; idx < nWaypt; ++idx){
             Waypt wayptNext = wayptList.at(idx);
             Segment segment(wayptPrev, wayptNext, segIdList2Use.at(idx - 1));
+            segment.setSegmentAttributes(); //set length, tVec, nVec
+            lengthCumulative += segment.length();
+            segment.setLengthCumulative(lengthCumulative);
 
             //bisector
             if(idx == 1){ //now is first segment
@@ -134,7 +135,6 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
 
             //add segment
             mp_pimpl->m_segmentList.append(segment);
-            mp_pimpl->m_length += segment.length(); //accumulate length for plan
 
             //for next iteration
             wayptPrev = wayptNext;
@@ -225,13 +225,17 @@ const QVector<Segment>& Plan::segmentList() const
 
 //----------
 
-float Plan::length() const
+double Plan::length() const
 {
-    return(mp_pimpl->m_length);
+    double length = 0.0;
+    if(mp_pimpl->m_segmentList.size() > 0){
+        length = mp_pimpl->m_segmentList.last().lengthCumulative();
+    }
+    return(length);
 }
 
 //----------
-void Plan::setCrossTrack(float crossTrack)
+void Plan::setCrossTrack(double crossTrack)
 {
     mp_pimpl->m_crossTrack = crossTrack;
     mp_pimpl->m_fieldFlags.setFlag(Field::CROSS_TRACK);
@@ -239,7 +243,7 @@ void Plan::setCrossTrack(float crossTrack)
 }
 
 //----------
-float Plan::crossTrack() const
+double Plan::crossTrack() const
 {
     return(mp_pimpl->m_crossTrack);
 }
@@ -280,13 +284,18 @@ const Plan::FieldFlags& Plan::getFieldFlags() const
 //----------
 void Plan::appendSegment(const Segment& segment)
 {
+    double lengthCumulative = this->length() + segment.length(); //expected cumulative length
     mp_pimpl->m_segmentList.append(segment);
-    mp_pimpl->m_length += segment.length(); //accumulate length for plan
-    mp_pimpl->m_fieldFlags.setFlag(Field::SEGMENT_LIST);
-    mp_pimpl->m_fieldFlags.setFlag(Field::LENGTH);
+    mp_pimpl->m_segmentList.last().setLengthCumulative(lengthCumulative);
     return;
 }
 
+//----------
+void Plan::setSegmentList(const QVector<Segment>& segmentList)
+{
+    mp_pimpl->m_segmentList = segmentList;
+    return;
+}
 //----------
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

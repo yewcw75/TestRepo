@@ -19,13 +19,13 @@ VectorFHelper::~VectorFHelper()
 }
 
 //----------
-float VectorFHelper::norm2(const VectorF& vec)
+double VectorFHelper::norm2(const VectorF& vec)
 {
     return(bnu::norm_2(vec.data_const_ref()));
 }
 
 //----------
-VectorF VectorFHelper::multiply_value(const VectorF& vec, float scalar)
+VectorF VectorFHelper::multiply_value(const VectorF& vec, double scalar)
 {
     return(VectorF(scalar * vec.data_const_ref()));
 }
@@ -43,7 +43,7 @@ VectorF VectorFHelper::subtract_vector(const VectorF& vec1, const VectorF& vec2)
 }
 
 //----------
-float VectorFHelper::dot_product(const VectorF& vec1, const VectorF& vec2)
+double VectorFHelper::dot_product(const VectorF& vec1, const VectorF& vec2)
 {
     return(bnu::inner_prod(vec1.data_const_ref(), vec2.data_const_ref()));
 }

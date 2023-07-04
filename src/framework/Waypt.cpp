@@ -1,4 +1,5 @@
 #include <RrtPlannerLib/framework/Waypt.h>
+#include <RrtPlannerLib/framework/FrameworkDefines.h>
 #include <RrtPlannerLib/framework/VectorFHelper.h>
 #include <QSharedData>
 #include <QtGlobal>
@@ -43,7 +44,7 @@ Waypt::Waypt()
 }
 
 //----------
-Waypt::Waypt(float northing_m, float easting_m, double lon0_deg, int id)
+Waypt::Waypt(double northing_m, double easting_m, double lon0_deg, int id)
     :mp_pimpl(new WayptPrivate)
 {
     set(northing_m, easting_m, lon0_deg, id);
@@ -79,7 +80,7 @@ Waypt& Waypt::operator=(const Waypt& other)
 }
 
 //----------
-void Waypt::set(float northing_m, float easting_m, double lon0_deg, int id)
+void Waypt::set(double northing_m, double easting_m, double lon0_deg, int id)
 {
    setNorthing(northing_m);
    setEasting(easting_m);
@@ -97,7 +98,7 @@ void Waypt::set(const VectorF& coord, double lon0_deg, int id)
 }
 
 //----------
-void Waypt::setNorthing(float northing_m)
+void Waypt::setNorthing(double northing_m)
 {
     mp_pimpl->m_coord[IDX_NORTHING] = northing_m;
     mp_pimpl->m_fieldFlags.setFlag(Waypt::Field::NORTHING);
@@ -105,12 +106,12 @@ void Waypt::setNorthing(float northing_m)
 }
 
 //----------
-float Waypt::northing() const
+double Waypt::northing() const
 {
     return(mp_pimpl->m_coord[IDX_NORTHING]);
 }
 
-void Waypt::setEasting(float easting_m)
+void Waypt::setEasting(double easting_m)
 {
     mp_pimpl->m_coord[IDX_EASTING] = easting_m;
     mp_pimpl->m_fieldFlags.setFlag(Waypt::Field::EASTING);
@@ -118,7 +119,7 @@ void Waypt::setEasting(float easting_m)
 }
 
 //----------
-float Waypt::easting() const
+double Waypt::easting() const
 {
     return(mp_pimpl->m_coord[IDX_EASTING]);
 }
@@ -176,8 +177,8 @@ Waypt::FieldFlags Waypt::getFieldFlags() const
 QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::Waypt &data)
 {
     QDebugStateSaver saver(debug);
-    debug.nospace() << "Waypt id: " << data.id() << "Coord [m]: " << data.coord_const_ref() << \
-                       "lon0 [deg]; " << data.lon0_deg();
+    debug.nospace() << "Waypt id: " << data.id() << ", Coord: " << data.coord_const_ref() << "m"\
+                       ", lon0: " << data.lon0_deg() << "deg";
     return debug;
 }
 

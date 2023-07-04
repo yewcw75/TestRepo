@@ -1,7 +1,13 @@
 #include "PlanQTests.h"
+#include <RrtPlannerLib/framework/Plan.h>
+#include <RrtPlannerLib/framework/FrameworkDefines.h>
+#include <RrtPlannerLib/framework/UtilHelper.h>
 #include <QtTest/QtTest>
 #include <QtGlobal>
 #include <iostream>
+
+
+using namespace rrtplanner::framework;
 
 //----------
 PlanQTests::PlanQTests()
@@ -44,8 +50,8 @@ void PlanQTests::verify_set_plan_data()
     QTest::addColumn<int>("id");
     QTest::addColumn<QVector<Waypt>>("wayptList");
     QTest::addColumn<QVector<int>>("segIdList");
-    QTest::addColumn<float>("planLength");
-    QTest::addColumn<float>("crossTrack");
+    QTest::addColumn<double>("planLength");
+    QTest::addColumn<double>("crossTrack");
     QTest::addColumn<int>("propertyFlagsVal");
     QTest::addColumn<bool>("setOk");
     QTest::addColumn<QVector<VectorF>>("bVecList");
@@ -66,22 +72,22 @@ void PlanQTests::verify_set_plan_data()
 
     Plan::PropertyFlags propertyFlags = Plan::Property::IS_LIMIT;
     QTest::newRow("Test 1A (empty SegIdList)") << (int) 1 << (QVector<Waypt>)wayptList << QVector<int>() << \
-                               (float)4828.42712475 << (float)10.0 << (int)propertyFlags << (bool)true << \
+                               (double)4828.42712475 << (double)10.0 << (int)propertyFlags << (bool)true << \
                                bVecList;
 
     QTest::newRow("Test 1B (specified SegIdList)") << (int) 1 << (QVector<Waypt>)wayptList << QVector<int>{11, 22, 33, 44} << \
-                               (float)4828.42712475 << (float)10.0 << (int)propertyFlags << (bool)true << \
+                               (double)4828.42712475 << (double)10.0 << (int)propertyFlags << (bool)true << \
                                bVecList;
 
     QTest::newRow("Test 1C (specified SegIdList with wrong length)") << (int) 1 << (QVector<Waypt>)wayptList << QVector<int>{11, 22, 33, 44, 55} << \
-                               (float)4828.42712475 << (float)10.0 << (int)propertyFlags << (bool)false << \
+                               (double)4828.42712475 << (double)10.0 << (int)propertyFlags << (bool)false << \
                                bVecList;
 
     QVector<Waypt> wayptList2;
     propertyFlags = Plan::Property::IS_NOMINAL;
     wayptList2.append(Waypt(0, 0, 103, 0));
     QTest::newRow("Test 2") << (int) 1 << (QVector<Waypt>)wayptList2 << QVector<int>() <<\
-                               (float)0.0 << (float)-10.0 << (int)propertyFlags << (bool)false << \
+                               (double)0.0 << (double)-10.0 << (int)propertyFlags << (bool)false << \
                                bVecList /*does not matter*/;
 
     QVector<Waypt> wayptList3;
@@ -93,7 +99,7 @@ void PlanQTests::verify_set_plan_data()
     wayptList3.append(Waypt(4000, 0, 103, 3));
     propertyFlags = Plan::Property::NONE;
     QTest::newRow("Test 3") << (int) 1 << (QVector<Waypt>)wayptList3 << QVector<int>() <<\
-                               (float)0.0 /*does not matter, expected not used*/ << (float)10.0 << (int)propertyFlags << (bool)false << \
+                               (double)0.0 /*does not matter, expected not used*/ << (double)10.0 << (int)propertyFlags << (bool)false << \
                                bVecList /*does not matter*/;
     return;
 }
@@ -106,8 +112,8 @@ void PlanQTests::verify_set_plan()
     QFETCH(int, id);
     QFETCH(QVector<Waypt>, wayptList);
     QFETCH(QVector<int>, segIdList);
-    QFETCH(float, planLength);
-    QFETCH(float, crossTrack);
+    QFETCH(double, planLength);
+    QFETCH(double, crossTrack);
     QFETCH(int, propertyFlagsVal);
     QFETCH(bool, setOk);
     QFETCH(QVector<VectorF>, bVecList);
@@ -145,10 +151,10 @@ void PlanQTests::verify_set_plan()
         QCOMPARE(segmentList_res.size() + 1, bVecList.size());
         for(int i = 0; i < segmentList_res.size(); ++i){
             const Segment& currSegment = segmentList_res.at(i);
-            QVERIFY(qFuzzyCompare(currSegment.bVecPrev()[IDX_NORTHING], bVecList.at(i)[IDX_NORTHING]));
-            QVERIFY(qFuzzyCompare(currSegment.bVecPrev()[IDX_EASTING], bVecList.at(i)[IDX_EASTING]));
-            QVERIFY(qFuzzyCompare(currSegment.bVecNext()[IDX_NORTHING], bVecList.at(i+1)[IDX_NORTHING]));
-            QVERIFY(qFuzzyCompare(currSegment.bVecNext()[IDX_EASTING], bVecList.at(i+1)[IDX_EASTING]));
+            QVERIFY(UtilHelper::compare(currSegment.bVecPrev()[IDX_NORTHING], bVecList.at(i)[IDX_NORTHING]));
+            QVERIFY(UtilHelper::compare(currSegment.bVecPrev()[IDX_EASTING], bVecList.at(i)[IDX_EASTING]));
+            QVERIFY(UtilHelper::compare(currSegment.bVecNext()[IDX_NORTHING], bVecList.at(i+1)[IDX_NORTHING]));
+            QVERIFY(UtilHelper::compare(currSegment.bVecNext()[IDX_EASTING], bVecList.at(i+1)[IDX_EASTING]));
         }
 
         //verify field flags
@@ -158,7 +164,7 @@ void PlanQTests::verify_set_plan()
 
         //verify other params
         QCOMPARE(plan.id(), id);
-        QVERIFY(qFuzzyCompare(plan.length(), planLength));
+        QVERIFY(UtilHelper::compare(plan.length(), planLength));
         QCOMPARE(plan.nWaypt(), wayptList.size());
         QCOMPARE(plan.nSegment(), wayptList.size() - 1);
 

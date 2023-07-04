@@ -50,19 +50,40 @@ public:
      * @return bool to indicate if any edge event is found.
      */
     static bool findNearestEdgeEvent(const Plan& plan,
-                                     float crossTrackHorizon,
-                                     float side,
-                                     float eps_dx,
-                                     float& dxNearest_out,
+                                     double crossTrackHorizon,
+                                     double side,
+                                     double eps_dx,
+                                     double& dxNearest_out,
                                      QVector<int>& eventSegIdxList_out);
 
     static Plan getCrossTrackPlan(const Plan& plan,
-                                  float crossTrackHorizon, //[m] always a positive variable
-                                  float dx, //crosstrack to offset
+                                  double crossTrackHorizon, //[m] always a positive variable
+                                  double dx, //crosstrack to offset
                                   const QVector<int>& eventSegIdxList, //list of segment indices with edge events at dx
-                                  float tol_small,
-                                  bool* results_out = nullptr //results
+                                  double tol_small,
+                                  bool* results_out = nullptr, //results. returns false if error occurred.
+                                  QString* results_desc = nullptr //results description
                                   );
+
+    //if side < 0, derived ellmap plans on port side will be preprended successively.
+    //if side >= 0, nominal plan will be appended first, followed by successive ellmap plans on stbd.
+    //return false if error occurred.
+    //results_descr results description
+    static bool buildSuccessiveEllMap(const QSharedPointer<Plan> p_planNominal, //nominal plan
+                                double side, //-1.0 : port side, 1.0 : stbd side
+                                double crossTrackHorizon, //[m] always a positive variable
+                                QList<QSharedPointer<Plan>>& planList, //planList to prepend/append
+                                QString* results_desc);
+
+    //It is assumed here that if a plan has no missing segment, it will have segments with segment id running from 0 to nSegNominal - 1.
+    //When a jump in segment id is found, a zero-length dummy segment with id equals to the missing segment's id will be inserted.
+    static void insertDummySegments(QSharedPointer<Plan>& plan, int nSegNominal);
+
+    //if side < 0, plan will be prepended. if side >= 0, plan will be appended.
+    static void pushPlan( const QSharedPointer<Plan>& plan,
+                            double side,
+                            QList<QSharedPointer<Plan>>& planList //planList to prepend/append
+                         );
 
     /**
      * @brief findOffsetWaypt Find an offset point, pt_offset, along unit vector bVec such that
@@ -90,8 +111,8 @@ public:
     static VectorF findOffsetWaypt(const VectorF& pt,
                                  const VectorF& nVec,
                                  const VectorF& bVec,
-                                 float dx, //crosstrack to offset
-                                 float tol_small
+                                 double dx, //crosstrack to offset
+                                 double tol_small
                                  );
 
 };

@@ -1,11 +1,9 @@
 #ifndef RRTPLANNER_LIB_PLANHELPERQTESTS_H
 #define RRTPLANNER_LIB_PLANHELPERQTESTS_H
 
-#include <RrtPlannerLib/framework/Plan.h>
 #include <QObject>
 #include <QScopedPointer>
 
-using namespace rrtplanner::framework;
 class PlanHelperQTests : public QObject
 {
     Q_OBJECT
