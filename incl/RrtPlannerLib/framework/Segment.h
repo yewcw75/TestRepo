@@ -9,7 +9,7 @@
  * Once the previous and next waypoints are set, the setSegmentAttributes() function can be called to calculate the
  * segment length, the unit tangent vector along the segment (tVec), and the unit normal vector to the segment (nVec).
  *
- * @author ycw
+ * @authors Enric Xargay Mata, ycw
  * @date 20230630
  */
 

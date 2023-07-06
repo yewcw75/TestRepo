@@ -4,8 +4,7 @@
  *
  * This file contains the declaration of the Waypt class, which represents a waypoint in a plan.
  * It provides functionalities for setting and accessing various properties of a waypoint, such as northing, easting, ID, and reference longitude.
- *
- * @author ycw
+ * @authors Enric Xargay Mata, ycw
  * @date 2023-06-30
  */
 #ifndef RRTPLANNER_LIB_WAYPT_H

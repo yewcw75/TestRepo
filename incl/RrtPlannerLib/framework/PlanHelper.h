@@ -2,7 +2,7 @@
  * @file PlanHelper.h
  * @brief Contains helper functions for the Plan class.
  *
- * @author ycw
+ * @authors Enric Xargay Mata, ycw
  * @date 2023-06-30
  */
 

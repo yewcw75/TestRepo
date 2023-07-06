@@ -8,7 +8,7 @@
  * With the underlying structure wrapped, it is hoped that in the event that a different underlying structure were to be used in the future, changes can be made more easily.
  * Furthermore, additional functionalities to make things more convenient can be made, e.g., constructing with std::initializer for a ublas::vector.
  *
- * @author ycw
+ * @authors Enric Xargay Mata, ycw
  * @date 2023-06-30
  */
 

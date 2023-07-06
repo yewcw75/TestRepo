@@ -4,7 +4,7 @@
  *
  * The Plan class provides functionality to store a list of segments and manage properties such as whether it is a nominal plan or a limit plan.
  *
- * @author ycw
+ * @authors Enric Xargay Mata, ycw
  * @date 20230630
  */
 

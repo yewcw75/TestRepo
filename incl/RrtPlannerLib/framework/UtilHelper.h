@@ -2,7 +2,7 @@
  * @file UtilHelper.h
  * Helper class containing various utility functions.
  *
- * @author ycw
+ * @authors Enric Xargay Mata, ycw
  * @date 20230703
  */
 #ifndef UTILHELPER_H

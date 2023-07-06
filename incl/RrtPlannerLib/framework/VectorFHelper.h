@@ -6,6 +6,7 @@
  * These functions make it easier to refactor the code if there is a need to change the underlying data structures in the future.
  *
  * @see VectorF.h
+ * @authors Enric Xargay Mata, ycw
  */
 
 #ifndef RRTPLANNER_LIB_VECTORFHELPER_H

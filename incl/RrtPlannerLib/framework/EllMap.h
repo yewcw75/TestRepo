@@ -4,7 +4,7 @@
  *
  * The EllMap class represents a map that consists of a nominal plan and offset plans on both sides about the nominal plan.
  *
- * @author ycw
+ * @authors Enric Xargay Mata, ycw
  * @date 2023-06-30
  */
 

@@ -1,6 +1,8 @@
 /**
  * @file UblasHelper.h
  * @brief Contains functions related to linear algebra using boost::numeric::ublas structures.
+ *
+ * @authors Enric Xargay Mata, ycw
  */
 
 #ifndef RRTPLANNER_LIB_UBLASHELPER_H
