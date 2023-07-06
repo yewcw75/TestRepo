@@ -205,7 +205,7 @@ Plan PlanHelper::getCrossTrackPlan(const Plan& plan,
 }
 
 //----------
-bool PlanHelper::buildSingleSideEllMaps(const QSharedPointer<Plan> p_planNominal, //nominal plan
+bool PlanHelper::buildSingleSideEllMap(const QSharedPointer<Plan> p_planNominal, //nominal plan
                                 double side, //-1.0 : port side, 1.0 : stbd side
                                 double crossTrackHorizon, //[m] always a positive variable
                                 QList<QSharedPointer<Plan>>& planList, //planList to append

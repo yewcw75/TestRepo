@@ -76,7 +76,7 @@ bool EllMap::buildEllMap(double crossTrackHorizon,
     if(mp_pimpl->mp_planNominal) { //pointer is not null
         QList<double> sideList{-1.0, 1.0}; //use in for loop to find ellmaps for port side first, then stbd side.
         for(const auto& side: sideList){
-            ret = PlanHelper::buildSingleSideEllMaps(mp_pimpl->mp_planNominal,
+            ret = PlanHelper::buildSingleSideEllMap(mp_pimpl->mp_planNominal,
                                                     side,
                                                     crossTrackHorizon,
                                                     mp_pimpl->m_planSharedPtrList,

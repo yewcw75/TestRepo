@@ -238,7 +238,7 @@ void PlanHelperQTests::verify_buildSingleSideEllMaps()
 
     QList<QSharedPointer<Plan>> planList;
     QString results_desc;
-    bool result = PlanHelper::buildSingleSideEllMaps(QSharedPointer<Plan>(new Plan(plan)), //nominal plan
+    bool result = PlanHelper::buildSingleSideEllMap(QSharedPointer<Plan>(new Plan(plan)), //nominal plan
                                     side, //-1.0 : port side, 1.0 : stbd side
                                     crossTrackHorizon, //[m] always a positive variable
                                     planList, //planList to prepend/append

@@ -90,24 +90,27 @@ public:
                                   QString* results_desc = nullptr);
 
     /**
-     * @brief Builds ellmaps on a single side of the nominal plan.
+     * @brief Builds offset plans on one side (i.e. port or starboard) of the nominal plan.
      * @param p_planNominal The nominal plan.
-     * @param side The side to build ellmaps: -1.0 for port, 1.0 for starboard.
+     * @param side The side to build EllMap: -1.0 for port, 1.0 for starboard.
      * @param crossTrackHorizon The maximum cross-track distance. Positive number.
      * @param planList The list of plans to store generated plan.
      * @param[out] results_desc Pointer to store a description of the operation result.
      * @return True if the operation is successful, false otherwise.
      */
-    static bool buildSingleSideEllMaps(const QSharedPointer<Plan> p_planNominal,
+    static bool buildSingleSideEllMap(const QSharedPointer<Plan> p_planNominal,
                                        double side,
                                        double crossTrackHorizon,
                                        QList<QSharedPointer<Plan>>& planList,
                                        QString* results_desc);
 
     /**
-     * @brief Inserts dummy segments into the plan to fill missing segment IDs.
+     * @brief Inserts dummy segments into the plan for fill missing segments.
      * @param plan The plan to modify.
      * @param nSegNominal The number of segments in the nominal plan.
+     *
+     * Note: The approach assumes that if there are no missing segment, the segment ids should
+     * run from 0 to (nSegmentNominal - 1).
      */
     static void insertDummySegments(QSharedPointer<Plan>& plan, int nSegNominal);
 
