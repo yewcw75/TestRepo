@@ -66,6 +66,14 @@ add_library(${PROJECT_NAME} SHARED
   incl/${PROJECT_NAME}/framework/EllMap.h
   src/framework/EllMap.cpp
 
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/IShape.h
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/Polygon.h
+  src/framework/algorithm/gjk/Polygon.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/Gjk.h
+  src/framework/algorithm/gjk/Gjk.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/Simplex.h
+  src/framework/algorithm/gjk/Simplex.cpp
+
 )
 
 #############################
@@ -76,6 +84,8 @@ target_include_directories(${PROJECT_NAME}
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>  # Relative install include path
   PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/pimpl/framework>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/pimpl/framework/algorithm>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/pimpl/framework/algorithm/gjk>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/pimpl/models>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/pimpl/controllers>
     $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>

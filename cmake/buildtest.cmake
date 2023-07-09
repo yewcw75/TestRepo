@@ -32,19 +32,27 @@ add_executable(${PROJECT_NAME}QTests
     tests/framework/UblasHelperQTests.cpp
     tests/framework/EllMapQTests.h
     tests/framework/EllMapQTests.cpp
+
+    tests/framework/algorithm/gjk/PolygonQTests.h
+    tests/framework/algorithm/gjk/PolygonQTests.cpp
     )
 
 target_include_directories(${PROJECT_NAME}QTests PRIVATE
     ./
     ./incl/${PROJECT_NAME}/
     ./incl/${PROJECT_NAME}/framework
+    ./incl/${PROJECT_NAME}/framework/algorithm
+    ./incl/${PROJECT_NAME}/framework/algorithm/gjk
     ./incl/${PROJECT_NAME}/controllers
     ./incl/${PROJECT_NAME}/models
     ./pimpl/${PROJECT_NAME}/framework
+    ./pimpl/${PROJECT_NAME}/framework/algorithm
     ./pimpl/${PROJECT_NAME}/controllers
     ./pimpl/${PROJECT_NAME}/models
     ./tests
     ./tests/framework
+    ./tests/framework/algorithm
+    ./tests/framework/algorithm/gjk
     ./tests/controllers
     ./tests/models
     ${Boost_INCLUDE_DIRS}
