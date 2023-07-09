@@ -84,7 +84,7 @@ VectorF Polygon::support(const VectorF& dir) const
     Q_ASSERT(mp_pimpl->mp_vertexList->size() > 0);
 
     VectorF ret;
-    double maxVal = std::numeric_limits<double>::min();
+    double maxVal = -std::numeric_limits<double>::max();
     for(const VectorF& vertex: *mp_pimpl->mp_vertexList){
         double val = VectorFHelper::dot_product(vertex, dir);
         if(val > maxVal){

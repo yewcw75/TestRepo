@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
     PlanHelperQTests planHelperQTests;
     UblasHelperQTests linearAlgebraHelperQTests;
     EllMapQTests ellMapQTests;
-    //PolygonQTests polygonQTests;
+    PolygonQTests polygonQTests;
 
     int status = \
             QTest::qExec(&vectorFQTests, argc, argv) + \
@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
             QTest::qExec(&planQTests, argc, argv) + \
             QTest::qExec(&planHelperQTests, argc, argv) + \
             QTest::qExec(&linearAlgebraHelperQTests, argc, argv) + \
-            QTest::qExec(&ellMapQTests, argc, argv); + \
-            //QTest::qExec(&polygonQTests, argc, argv);
+            QTest::qExec(&ellMapQTests, argc, argv) + \
+            QTest::qExec(&polygonQTests, argc, argv);
 
     return status;
 }
