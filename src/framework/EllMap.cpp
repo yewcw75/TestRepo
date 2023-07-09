@@ -1,4 +1,4 @@
-#include <RrtPlannerLib/framework/ellmap.h>
+#include <RrtPlannerLib/framework/Ellmap.h>
 #include <RrtPlannerLib/framework/FrameworkDefines.h> //for EPS_DX, TOL_SMALL
 #include <RrtPlannerLib/framework/PlanHelper.h>
 #include <QList>
