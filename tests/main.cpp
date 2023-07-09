@@ -5,6 +5,7 @@
 #include "UblasHelperQTests.h"
 #include "VectorFQTests.h"
 #include "EllMapQTests.h"
+#include "PolygonQTests.h"
 #include <QtTest/QtTest>
 
 int main(int argc, char* argv[])
@@ -18,13 +19,17 @@ int main(int argc, char* argv[])
     PlanHelperQTests planHelperQTests;
     UblasHelperQTests linearAlgebraHelperQTests;
     EllMapQTests ellMapQTests;
+    //PolygonQTests polygonQTests;
 
-    int status = QTest::qExec(&vectorFQTests, argc, argv) + \
-                 QTest::qExec(&wayptQTests, argc, argv) + \
-                 QTest::qExec(&segmentQTests, argc, argv) + \
-                 QTest::qExec(&planQTests, argc, argv) + \
-                 QTest::qExec(&planHelperQTests, argc, argv) + \
-                 QTest::qExec(&linearAlgebraHelperQTests, argc, argv) + \
-                 QTest::qExec(&ellMapQTests, argc, argv);
+    int status = \
+            QTest::qExec(&vectorFQTests, argc, argv) + \
+            QTest::qExec(&wayptQTests, argc, argv) + \
+            QTest::qExec(&segmentQTests, argc, argv) + \
+            QTest::qExec(&planQTests, argc, argv) + \
+            QTest::qExec(&planHelperQTests, argc, argv) + \
+            QTest::qExec(&linearAlgebraHelperQTests, argc, argv) + \
+            QTest::qExec(&ellMapQTests, argc, argv); + \
+            //QTest::qExec(&polygonQTests, argc, argv);
+
     return status;
 }
