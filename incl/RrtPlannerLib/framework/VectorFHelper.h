@@ -74,6 +74,15 @@ public:
      * @return The computed dot product.
      */
     static double dot_product(const VectorF& vec1, const VectorF& vec2);
+
+    /**
+     * @brief compare Compares two VectorF objects and return true if norm_2 of their difference is smaller than the specified tolerance.
+     * @param d1 first VectorF input to compare
+     * @param d2 second VectorF input to compare
+     * @param tol_small tolerance level
+     * @return bool True => norm_2 of the difference between d1 and d2 are smaller or equal to tol_small.
+     */
+    static bool compare(const VectorF& vec1, const VectorF& vec2, double tol_small);
 };
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

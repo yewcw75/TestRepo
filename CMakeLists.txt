@@ -67,6 +67,7 @@ add_library(${PROJECT_NAME} SHARED
   src/framework/EllMap.cpp
 
   incl/${PROJECT_NAME}/framework/algorithm/gjk/IShape.h
+  src/framework/algorithm/gjk/IShape.cpp
   incl/${PROJECT_NAME}/framework/algorithm/gjk/Polygon.h
   src/framework/algorithm/gjk/Polygon.cpp
   incl/${PROJECT_NAME}/framework/algorithm/gjk/Gjk.h

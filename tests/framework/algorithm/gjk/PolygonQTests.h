@@ -19,6 +19,8 @@ private:
 private slots:
     void verify_support_data();
     void verify_support();
+    void verify_clone_data();
+    void verify_clone();
 };
 
 #endif

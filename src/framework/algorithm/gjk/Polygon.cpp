@@ -1,4 +1,5 @@
 #include <RrtPlannerLib/framework/algorithm/gjk/Polygon.h>
+#include <RrtPlannerLib/framework/FrameworkDefines.h>
 #include <RrtPlannerLib/framework/VectorFHelper.h>
 #include <QSharedData>
 #include <QVector>
@@ -92,6 +93,50 @@ VectorF Polygon::support(const VectorF& dir) const
             maxVal = val;
         }
     }
+    return(ret);
+}
+
+//----------
+int Polygon::size() const
+{
+    return(mp_pimpl->mp_vertexList->size());
+}
+
+//----------
+const VectorF& Polygon::at(int i) const
+{
+    return(mp_pimpl->mp_vertexList->at(i));
+}
+
+//----------
+VectorF& Polygon::operator[](int i)
+{
+    return(mp_pimpl->mp_vertexList->operator[](i));
+}
+
+//----------
+const QVector<VectorF>& Polygon::vertexList_const_ref() const
+{
+    return(*mp_pimpl->mp_vertexList);
+}
+
+//----------
+QVector<VectorF>& Polygon::vertexList()
+{
+    return(*mp_pimpl->mp_vertexList);
+}
+
+//----------
+QString Polygon::debugPrint() const
+{
+    QString ret("[");
+    for(const VectorF& vertex: *mp_pimpl->mp_vertexList){
+        ret += QString(" <") + \
+               QString::number(vertex.at(IDX_NORTHING), 'f', 2) + ", " + \
+               QString::number(vertex.at(IDX_EASTING), 'f', 2) + \
+               ">";
+    }
+    ret.append(" ]");
     return(ret);
 }
 

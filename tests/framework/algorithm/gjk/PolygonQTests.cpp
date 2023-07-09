@@ -69,3 +69,36 @@ void PolygonQTests::verify_support()
     return;
 }
 
+//----------
+void PolygonQTests::verify_clone_data()
+{
+    QTest::addColumn<Polygon>("polygon");
+
+    Polygon polygon({VectorF{1, 1}, VectorF{-50,20}, VectorF{60, 30}, VectorF{50, 5}});
+
+    //test 1
+    QTest::newRow("Test 1") << polygon;
+
+    return;
+}
+
+//----------
+void PolygonQTests::verify_clone()
+{
+    QFETCH(Polygon, polygon);
+
+    IShape* shape = &polygon;
+    IShape* shape2 = shape->clone(); //clone at base class level
+    Polygon* polygon2 = dynamic_cast<Polygon*>(shape2);
+    polygon2->operator[](0) = VectorFHelper::add_vector(polygon.at(0), VectorF{1,1});
+
+    qInfo() << "Polygon:" << *shape;
+    qInfo() << "Polygon2:" << *shape2;
+
+    QVERIFY(!VectorFHelper::compare(polygon2->at(0), polygon.at(0), 1e-6));
+    for(int i = 1; i < polygon.size(); ++i){
+        QVERIFY(VectorFHelper::compare(polygon2->at(i), polygon.at(i), 1e-6));
+    }
+    return;
+}
+
