@@ -24,7 +24,7 @@ public:
      * @param tol_small tolerance level
      * @return bool True => difference between d1 and d2 are smaller or equal to tol_small.
      */
-    static bool compare(double d1, double d2, int tol_small = 5);
+    static bool compare(double d1, double d2, double tol_small = 1e-3);
 };
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

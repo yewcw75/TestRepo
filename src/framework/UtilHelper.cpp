@@ -15,7 +15,7 @@ UtilHelper::~UtilHelper()
 }
 
 //----------
-bool UtilHelper::compare(double d1, double d2, int tol_small)
+bool UtilHelper::compare(double d1, double d2, double tol_small)
 {
     return(abs(d1 - d2) <= tol_small);
 }
