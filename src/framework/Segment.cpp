@@ -204,14 +204,7 @@ double Segment::lengthCumulative() const
 //----------
 void Segment::setbVecPrev(const VectorF& bVecPrev)
 {
-    VectorF bVecPrev2Use = bVecPrev;
-    double norm2 = VectorFHelper::norm2(bVecPrev2Use);
-    if(!UtilHelper::compare(norm2, (double)1.0)){
-        qWarning() << "[Segment::setbVecPrev(const VectorF& bVecPrev)] bVecPres expected to be a unit vector but it is not! Normalization performed.";
-        bVecPrev2Use = VectorFHelper::multiply_value(bVecPrev2Use, 1/norm2);
-    }
-
-    mp_pimpl->m_bVecPrev = bVecPrev2Use;
+    mp_pimpl->m_bVecPrev = bVecPrev;
     return;
 }
 
@@ -231,13 +224,7 @@ const VectorF& Segment::bVecPrev() const
 //----------
 void Segment::setbVecNext(const VectorF& bVecNext)
 {
-    VectorF bVecNext2Use = bVecNext;
-    double norm2 = VectorFHelper::norm2(bVecNext2Use);
-    if(!UtilHelper::compare(norm2, (double)1.0)){
-        qWarning() << "[setbVecNext(const VectorF& bVecNext)] bVecNext expected to be a unit vector but it is not! Normalization performed.";
-        bVecNext2Use = VectorFHelper::multiply_value(bVecNext2Use, 1/norm2);
-    }
-    mp_pimpl->m_bVecNext = bVecNext2Use;
+    mp_pimpl->m_bVecNext = bVecNext;
     return;
 }
 
