@@ -6,20 +6,24 @@
 #include "VectorFQTests.h"
 #include "EllMapQTests.h"
 #include "PolygonQTests.h"
+#include "SimplexQTests.h"
+#include "GjkQTests.h"
 #include <QtTest/QtTest>
 
 int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
-    VectorFQTests vectorFQTests;
-    WayptQTests wayptQTests;
-    SegmentQTests segmentQTests;
-    PlanQTests planQTests;
-    PlanHelperQTests planHelperQTests;
-    UblasHelperQTests linearAlgebraHelperQTests;
-    EllMapQTests ellMapQTests;
-    PolygonQTests polygonQTests;
+    VectorFQTests       vectorFQTests;
+    WayptQTests         wayptQTests;
+    SegmentQTests       segmentQTests;
+    PlanQTests          planQTests;
+    PlanHelperQTests    planHelperQTests;
+    UblasHelperQTests   linearAlgebraHelperQTests;
+    EllMapQTests        ellMapQTests;
+    PolygonQTests       polygonQTests;
+    SimplexQTests       simplexQTests;
+    GjkQTests           gjkQTests;
 
     int status = \
             QTest::qExec(&vectorFQTests, argc, argv) + \
@@ -29,7 +33,9 @@ int main(int argc, char* argv[])
             QTest::qExec(&planHelperQTests, argc, argv) + \
             QTest::qExec(&linearAlgebraHelperQTests, argc, argv) + \
             QTest::qExec(&ellMapQTests, argc, argv) + \
-            QTest::qExec(&polygonQTests, argc, argv);
+            QTest::qExec(&polygonQTests, argc, argv) + \
+            QTest::qExec(&simplexQTests, argc, argv) + \
+            QTest::qExec(&gjkQTests, argc, argv);
 
     return status;
 }

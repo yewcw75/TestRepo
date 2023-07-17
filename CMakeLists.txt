@@ -98,6 +98,12 @@ target_compile_definitions(${PROJECT_NAME}
     PRIVATE RRTPLANNER_LIB_LIBRARY
 )
 
+if(BUILD_TESTING)
+    target_compile_definitions(${PROJECT_NAME}
+        PRIVATE BUILD_TESTING_ON
+    )
+endif()
+
 #############################
 #link dependencies
 if(${ament_cmake_FOUND})

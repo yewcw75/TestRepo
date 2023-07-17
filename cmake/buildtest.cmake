@@ -35,6 +35,10 @@ add_executable(${PROJECT_NAME}QTests
 
     tests/framework/algorithm/gjk/PolygonQTests.h
     tests/framework/algorithm/gjk/PolygonQTests.cpp
+    tests/framework/algorithm/gjk/SimplexQTests.h
+    tests/framework/algorithm/gjk/SimplexQTests.cpp
+    tests/framework/algorithm/gjk/GjkQTests.h
+    tests/framework/algorithm/gjk/GjkQTests.cpp
     )
 
 target_include_directories(${PROJECT_NAME}QTests PRIVATE

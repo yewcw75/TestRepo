@@ -194,6 +194,7 @@ public:
 
     /**
      * @brief Calculates and sets the segment attributes (length, tVec, nVec).
+     * @note tVec and nVec are calculated only if length > 0
      */
     void setSegmentAttributes();
 
