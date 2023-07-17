@@ -31,7 +31,8 @@ public:
     enum class VerifyPlanResult{
         VERIFY_PLAN_OK = 0,                   ///< The plan input is valid.
         VERIFY_PLAN_ERR_SINGLE_WAYPT,         ///< The plan has less than two waypoints.
-        VERIFY_PLAN_ERR_REVERSE_DIR           ///< The segments in the plan do not move in the direction of the first to last waypoint.
+        VERIFY_PLAN_ERR_REVERSE_DIR,          ///< The segments in the plan do not move in the direction of the first to last waypoint.
+        VERIFY_PLAN_ERR_REPEATED_WATPT        ///< The input to set plan has successive repeated points.
     };
     Q_ENUM(VerifyPlanResult)
 

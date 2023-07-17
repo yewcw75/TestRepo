@@ -31,14 +31,22 @@ PlanHelper::VerifyPlanResult PlanHelper::verifyPlanInput(const QVector<Waypt>& w
     //check if there are more than 1 waypt
     res = nWaypt > 1 ? VerifyPlanResult::VERIFY_PLAN_OK : VerifyPlanResult::VERIFY_PLAN_ERR_SINGLE_WAYPT;
 
-    if(res ==  VerifyPlanResult::VERIFY_PLAN_OK){
-        //check if any segment goes in a reverse direction
+    //check no repeated point
+    //check if any segment goes in a reverse direction
+    if(res ==  VerifyPlanResult::VERIFY_PLAN_OK){   
         VectorF wayptPrev = wayptList.at(0).coord_const_ref();
         VectorF wayptLast = wayptList.at(nWaypt-1).coord_const_ref();
         VectorF vecFirstToLast = VectorFHelper::subtract_vector(wayptLast, wayptPrev);
         for(int idx = 1; idx < nWaypt; ++idx){ //loop from 2nd waypt onwards
             VectorF wayptNext = wayptList.at(idx).coord_const_ref();
             VectorF vecPrevToNext = VectorFHelper::subtract_vector(wayptNext, wayptPrev);
+            //check repeat points
+            double segLength = VectorFHelper::norm2(vecPrevToNext);
+            if(segLength < TOL_SMALL){
+                res = VerifyPlanResult::VERIFY_PLAN_ERR_REPEATED_WATPT;
+                break;
+            }
+            //check reverse dir
             double dotPdt = VectorFHelper::dot_product(vecPrevToNext, vecFirstToLast);
             if(dotPdt < 0.0){
                 res = VerifyPlanResult::VERIFY_PLAN_ERR_REVERSE_DIR;
