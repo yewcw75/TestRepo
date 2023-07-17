@@ -7,6 +7,26 @@
 
 using namespace rrtplanner::framework;
 
+class MockPlan: public Plan
+{
+public:
+    MockPlan()
+        :Plan(){}
+    virtual ~MockPlan(){}
+    //in tests here, we may want to set a plan with zero length segment,
+    //and skips the verify plan process, which disallows repeated successive waypoints.
+    bool setPlan_skipCheck(const QVector<Waypt>& wayptList,
+                           int id,
+                           QString* resultsDesc = nullptr)
+    {
+        bool res_ok = setPlan(wayptList, QVector<int>(), resultsDesc, false);
+        if(res_ok){
+            setId(id);
+        }
+        return(res_ok);
+    }
+};
+
 //----------
 EllMapQTests::EllMapQTests()
 {
@@ -34,13 +54,13 @@ void EllMapQTests::cleanUp()
 //----------
 void EllMapQTests::verify_buildEllMap_data()
 {
-    QTest::addColumn<Plan>("planNominal");
+    QTest::addColumn<MockPlan>("planNominal");
     QTest::addColumn<double>("crossTrackHorizon");
-    QTest::addColumn<QVector<Plan>>("planList_expect");
+    QTest::addColumn<QVector<MockPlan>>("planList_expect");
 
     //set nominal plan
-    Plan planNominal;
-    planNominal.setPlan(QVector<Waypt>{Waypt{0.0, 0.0, 0.0, 0},
+    MockPlan planNominal;
+    planNominal.setPlan_skipCheck(QVector<Waypt>{Waypt{0.0, 0.0, 0.0, 0},
                                 Waypt{1000.0, 1000.0, 0.0, 1},
                                 Waypt{2000.0, 1000.0, 0.0, 2},
                                 Waypt{3000.0, 0.0, 0.0, 3},
@@ -49,11 +69,11 @@ void EllMapQTests::verify_buildEllMap_data()
     planNominal.setProperty(Plan::Property::IS_NOMINAL);
 
     //set expected ellmap plan list
-    QVector<Plan> planList_expect;
+    QVector<MockPlan> planList_expect;
 
     //port side
-    Plan planTmp;
-    planTmp.setPlan(QVector<Waypt>{Waypt{1232.2330470, -1767.7669530, 0.0, 0},
+    MockPlan planTmp;
+    planTmp.setPlan_skipCheck(QVector<Waypt>{Waypt{1232.2330470, -1767.7669530, 0.0, 0},
                                    Waypt{1232.2330470, -1767.7669530, 0.0, 1},
                                    Waypt{1232.2330470, -1767.7669530, 0.0, 2},
                                    Waypt{1964.4660941, -2500.0000000, 0.0, 3},
@@ -62,7 +82,7 @@ void EllMapQTests::verify_buildEllMap_data()
     planTmp.setProperty(Plan::Property::IS_LIMIT);
     planList_expect.push_back(planTmp);
 
-    planTmp.setPlan(QVector<Waypt>{Waypt{1500.0000000, -1500.0000000, 0.0, 0},
+    planTmp.setPlan_skipCheck(QVector<Waypt>{Waypt{1500.0000000, -1500.0000000, 0.0, 0},
                                    Waypt{1500.0000000, -1500.0000000, 0.0, 1},
                                    Waypt{1500.0000000, -1500.0000000, 0.0, 2},
                                    Waypt{2121.3203436, -2121.3203436, 0.0, 3},
@@ -71,7 +91,7 @@ void EllMapQTests::verify_buildEllMap_data()
     planTmp.setProperty(Plan::Property::IS_LIMIT, false);
     planList_expect.push_back(planTmp);
 
-    planTmp.setPlan(QVector<Waypt>{Waypt{853.5533906, -853.5533906, 0.0, 0},
+    planTmp.setPlan_skipCheck(QVector<Waypt>{Waypt{853.5533906, -853.5533906, 0.0, 0},
                                    Waypt{1500.0000000, -207.1067812, 0.0, 1},
                                    Waypt{1500.0000000, -207.1067812, 0.0, 2},
                                    Waypt{2500.0000000, -1207.1067812, 0.0, 3},
@@ -84,7 +104,7 @@ void EllMapQTests::verify_buildEllMap_data()
     planList_expect.push_back(planNominal);
     planList_expect.last().setId(3);
 
-    planTmp.setPlan(QVector<Waypt>{Waypt{-1707.1067812, 1707.1067812, 0.0, 0},
+    planTmp.setPlan_skipCheck(QVector<Waypt>{Waypt{-1707.1067812, 1707.1067812, 0.0, 0},
                                    Waypt{-0.0000000, 3414.2135624, 0.0, 1},
                                    Waypt{3000.0000000, 3414.2135624, 0.0, 2},
                                    Waypt{4000.0000000, 2414.2135624, 0.0, 3},
@@ -93,7 +113,7 @@ void EllMapQTests::verify_buildEllMap_data()
     planTmp.setProperty(Plan::Property::IS_LIMIT, false);
     planList_expect.push_back(planTmp);
 
-    planTmp.setPlan(QVector<Waypt>{Waypt{-1767.7669530, 1767.7669530, 0.0, 0},
+    planTmp.setPlan_skipCheck(QVector<Waypt>{Waypt{-1767.7669530, 1767.7669530, 0.0, 0},
                                    Waypt{-35.5339059, 3500.0000000, 0.0, 1},
                                    Waypt{3035.5339059, 3500.0000000, 0.0, 2},
                                    Waypt{4060.6601718, 2474.8737342, 0.0, 3},
@@ -109,9 +129,9 @@ void EllMapQTests::verify_buildEllMap_data()
 //----------
 void EllMapQTests::verify_buildEllMap()
 {
-    QFETCH(Plan, planNominal);
+    QFETCH(MockPlan, planNominal);
     QFETCH(double, crossTrackHorizon);
-    QFETCH(QVector<Plan>, planList_expect);
+    QFETCH(QVector<MockPlan>, planList_expect);
 
     EllMap ellMap;
     ellMap.setNominalPlan(planNominal);
@@ -140,10 +160,12 @@ void EllMapQTests::verify_buildEllMap()
             QVERIFY(UtilHelper::compare(seg.wayptPrev().northing(), seg_expected.wayptPrev().northing()));
             QVERIFY(UtilHelper::compare(seg.wayptNext().easting(), seg_expected.wayptNext().easting()));
             QVERIFY(UtilHelper::compare(seg.wayptNext().northing(), seg_expected.wayptNext().northing()));
-            QVERIFY(UtilHelper::compare(seg.tVec().at(IDX_NORTHING), seg_expected.tVec().at(IDX_NORTHING)));
-            QVERIFY(UtilHelper::compare(seg.tVec().at(IDX_EASTING), seg_expected.tVec().at(IDX_EASTING)));
-            QVERIFY(UtilHelper::compare(seg.nVec().at(IDX_NORTHING), seg_expected.nVec().at(IDX_NORTHING)));
-            QVERIFY(UtilHelper::compare(seg.nVec().at(IDX_EASTING), seg_expected.nVec().at(IDX_EASTING)));
+            if(seg.length()> TOL_SMALL){
+                QVERIFY(UtilHelper::compare(seg.tVec().at(IDX_NORTHING), seg_expected.tVec().at(IDX_NORTHING)));
+                QVERIFY(UtilHelper::compare(seg.tVec().at(IDX_EASTING), seg_expected.tVec().at(IDX_EASTING)));
+                QVERIFY(UtilHelper::compare(seg.nVec().at(IDX_NORTHING), seg_expected.nVec().at(IDX_NORTHING)));
+                QVERIFY(UtilHelper::compare(seg.nVec().at(IDX_EASTING), seg_expected.nVec().at(IDX_EASTING)));
+            }
             QVERIFY(UtilHelper::compare(seg.length(), seg_expected.length()));
             QVERIFY(UtilHelper::compare(seg.lengthCumulative(), seg_expected.lengthCumulative()));
         }
