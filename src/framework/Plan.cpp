@@ -78,69 +78,7 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
              QString* resultsDesc //optional QString ptr to return description of results
              )
 {
-    QVector<int> segIdList2Use(segIdList); //make a non-const copy for local use
-
-    //if segIdList is not provided, we auto generate here
-    if(segIdList2Use.size() == 0){
-        for(int i = 0; i < wayptList.size() -1 ; ++i){
-            segIdList2Use.append(i);
-        }
-    }
-
-    //Check nWaypts and nSegIdList are correct
-    int nWaypt = wayptList.size();
-    int nSegIdList = segIdList2Use.size();
-
-    bool res_ok = nWaypt-1 == nSegIdList;
-    if(resultsDesc){ //write results description if given pointer is not null
-        *resultsDesc = QString("[Plan::setPlan] Verify nWaypt-1 == nSegIdList: %1.").arg(res_ok);
-    }
-
-    //Check waypt plan is feasible
-    if(res_ok){
-        PlanHelper::VerifyPlanResult res = PlanHelper::verifyPlanInput(wayptList);
-        res_ok = (res == PlanHelper::VerifyPlanResult::VERIFY_PLAN_OK);
-        if(resultsDesc){ //write results description if given pointer is not null. Overwrite previous.
-            *resultsDesc = QString(" Verify waypoints: ") + QMetaEnum::fromType<PlanHelper::VerifyPlanResult>().key(static_cast<int>(res));
-        }
-    }
-
-    //start to build plan if verify plan is ok
-    if(res_ok){
-        mp_pimpl->m_segmentList.clear();
-
-        //form segment and append to segment list
-        double lengthCumulative = 0;
-        Waypt wayptPrev = wayptList.at(0);
-        for(int idx = 1; idx < nWaypt; ++idx){
-            Waypt wayptNext = wayptList.at(idx);
-            Segment segment(wayptPrev, wayptNext, segIdList2Use.at(idx - 1));
-            segment.setSegmentAttributes(); //set length, tVec, nVec
-            lengthCumulative += segment.length();
-            segment.setLengthCumulative(lengthCumulative);
-
-            //bisector
-            if(idx == 1){ //now is first segment
-                segment.setbVecPrev(segment.nVec());
-            }
-            else{
-                Segment& segmentPrev = mp_pimpl->m_segmentList.last();
-                segment.setbVecPrev(segmentPrev);
-                segmentPrev.setbVecNext(segment.bVecPrev());
-            }
-
-            if(idx == nWaypt - 1){ //now is last segment
-                segment.setbVecNext(segment.nVec());
-            }
-
-            //add segment
-            mp_pimpl->m_segmentList.append(segment);
-
-            //for next iteration
-            wayptPrev = wayptNext;
-        }
-    }
-
+    bool res_ok = setPlan(wayptList, segIdList, resultsDesc, true);
     return(res_ok);
 }
 
@@ -151,7 +89,7 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
              QString* resultsDesc //optional QString ptr to return description of results
              )
 {
-    bool res_ok = setPlan(wayptList, segIdList, resultsDesc);
+    bool res_ok = setPlan(wayptList, segIdList, resultsDesc, true);
     if(res_ok){
         setId(id);
     }
@@ -283,6 +221,78 @@ QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::Plan &dat
         debug.nospace() << "\n  " << segment;
     }
     return debug;
+}
+
+//----------
+bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
+             const QVector<int>& segIdList, //segment id to assign. Vector size expected to be (wayptList.size() - 1)
+             QString* resultsDesc, //optional QString ptr to return description of results
+             bool toVerifyPlan)
+{
+    QVector<int> segIdList2Use(segIdList); //make a non-const copy for local use
+
+    //if segIdList is not provided, we auto generate here
+    if(segIdList2Use.size() == 0){
+        for(int i = 0; i < wayptList.size() -1 ; ++i){
+            segIdList2Use.append(i);
+        }
+    }
+
+    //Check nWaypts and nSegIdList are correct
+    int nWaypt = wayptList.size();
+    int nSegIdList = segIdList2Use.size();
+
+    bool res_ok = nWaypt-1 == nSegIdList;
+    if(resultsDesc){ //write results description if given pointer is not null
+        *resultsDesc = QString("[Plan::setPlan] Verify nWaypt-1 == nSegIdList: %1.").arg(res_ok);
+    }
+
+    //Check waypt plan is feasible
+    if(res_ok && toVerifyPlan){
+        PlanHelper::VerifyPlanResult res = PlanHelper::verifyPlanInput(wayptList);
+        res_ok = (res == PlanHelper::VerifyPlanResult::VERIFY_PLAN_OK);
+        if(resultsDesc){ //write results description if given pointer is not null. Overwrite previous.
+            *resultsDesc = QString(" Verify waypoints: ") + QMetaEnum::fromType<PlanHelper::VerifyPlanResult>().key(static_cast<int>(res));
+        }
+    }
+
+    //start to build plan if verify plan is ok
+    if(res_ok){
+        mp_pimpl->m_segmentList.clear();
+
+        //form segment and append to segment list
+        double lengthCumulative = 0;
+        Waypt wayptPrev = wayptList.at(0);
+        for(int idx = 1; idx < nWaypt; ++idx){
+            Waypt wayptNext = wayptList.at(idx);
+            Segment segment(wayptPrev, wayptNext, segIdList2Use.at(idx - 1));
+            segment.setSegmentAttributes(); //set length, tVec, nVec
+            lengthCumulative += segment.length();
+            segment.setLengthCumulative(lengthCumulative);
+
+            //bisector
+            if(idx == 1){ //now is first segment
+                segment.setbVecPrev(segment.nVec());
+            }
+            else{
+                Segment& segmentPrev = mp_pimpl->m_segmentList.last();
+                segment.setbVecPrev(segmentPrev);
+                segmentPrev.setbVecNext(segment.bVecPrev());
+            }
+
+            if(idx == nWaypt - 1){ //now is last segment
+                segment.setbVecNext(segment.nVec());
+            }
+
+            //add segment
+            mp_pimpl->m_segmentList.append(segment);
+
+            //for next iteration
+            wayptPrev = wayptNext;
+        }
+    }
+
+    return(res_ok);
 }
 
 //----------

@@ -190,6 +190,20 @@ public:
 
 protected:
     /**
+     * @brief Sets the plan using the given waypoint list and segment ID list.
+     * @param wayptList The list of waypoints to set the plan.
+     * @param segIdList The list of segment IDs to assign. The size of the vector should be (wayptList.size() - 1).
+     * @param resultsDesc Optional pointer to return the description of the result.
+     * @param toVerifyPlan Verify that plan is ok. Will call PlanHelper::verifyPlanInput() to check plan.
+     * Not advisable to skip verify plan, except during developer's testing.
+     * @return True if the plan is successfully set, false otherwise.
+     */
+    bool setPlan(const QVector<Waypt>& wayptList,
+                 const QVector<int>& segIdList,
+                 QString* resultsDesc,
+                 bool toVerifyPlan);
+
+    /**
      * @brief Appends a segment to the plan.
      * @param segment The segment to append.
      *
