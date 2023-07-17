@@ -20,6 +20,7 @@ public:
     Polygon& operator=(const Polygon& other);
     virtual ~Polygon();
     virtual Polygon* clone() const override;
+    virtual VectorF centroid() const override;
     virtual VectorF support(const VectorF& dir) const override; //return the support point of the shape in the given input direction. Note: dir need not be unit vector.
 
     int size() const;

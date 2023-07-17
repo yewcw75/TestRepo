@@ -9,11 +9,11 @@ RRTPLANNER_FRAMEWORK_ALGORITHM_GJK_BEGIN_NAMESPACE
 
 class RRTPLANNER_LIB_EXPORT IShape
 {
-    friend class QDebug;
 public:
     IShape() = default;
     virtual ~IShape() = default;
     virtual IShape* clone() const = 0;
+    virtual VectorF centroid() const = 0; //get centroid of shape
     virtual VectorF support(const VectorF& dir) const = 0; //return the support point of the shape in the given input direction.
 
     // Overloading the << operator

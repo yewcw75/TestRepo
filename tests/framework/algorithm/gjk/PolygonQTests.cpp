@@ -92,13 +92,42 @@ void PolygonQTests::verify_clone()
     Polygon* polygon2 = dynamic_cast<Polygon*>(shape2);
     polygon2->operator[](0) = VectorFHelper::add_vector(polygon.at(0), VectorF{1,1});
 
-    qInfo() << "Polygon:" << *shape;
-    qInfo() << "Polygon2:" << *shape2;
+    //qInfo() << "Polygon:" << *shape;
+    //qInfo() << "Polygon2:" << *shape2;
 
     QVERIFY(!VectorFHelper::compare(polygon2->at(0), polygon.at(0), 1e-6));
     for(int i = 1; i < polygon.size(); ++i){
         QVERIFY(VectorFHelper::compare(polygon2->at(i), polygon.at(i), 1e-6));
     }
+    return;
+}
+
+//----------
+void PolygonQTests::verify_centroid_data()
+{
+    QTest::addColumn<Polygon>("polygon");
+    QTest::addColumn<VectorF>("centroid_expect");
+
+    Polygon polygon({VectorF{1.0, 1.0}, VectorF{2.0, 4.0}, VectorF{5.0, 3.0}, VectorF{4.0, 1.0}});
+    VectorF centroid_expect{3, 2.25};
+
+    //test 1
+    QTest::newRow("Test 1") << polygon << centroid_expect;
+
+    return;
+}
+
+//----------
+void PolygonQTests::verify_centroid()
+{
+    QFETCH(Polygon, polygon);
+    QFETCH(VectorF, centroid_expect);
+
+    VectorF centroid = polygon.centroid();
+
+    qInfo() << "centroid: " << centroid;
+    qInfo() << "centroid_expect: " << centroid_expect;
+    QVERIFY(VectorFHelper::compare(centroid, centroid_expect, 1e-6));
     return;
 }
 

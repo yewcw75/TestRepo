@@ -80,6 +80,19 @@ Polygon* Polygon::clone() const
 }
 
 //----------
+VectorF Polygon::centroid() const
+{
+    Q_ASSERT(mp_pimpl->mp_vertexList->size() > 0);
+
+    VectorF ret{0.0, 0.0};
+    for(const VectorF& vertex: *mp_pimpl->mp_vertexList){
+        ret = VectorFHelper::add_vector(ret, vertex);
+    }
+    ret = VectorFHelper::multiply_value(ret, 1.0/mp_pimpl->mp_vertexList->size());
+    return(ret);
+}
+
+//----------
 VectorF Polygon::support(const VectorF& dir) const
 {
     Q_ASSERT(mp_pimpl->mp_vertexList->size() > 0);
