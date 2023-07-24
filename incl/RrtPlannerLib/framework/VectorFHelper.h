@@ -76,6 +76,34 @@ public:
     static double dot_product(const VectorF& vec1, const VectorF& vec2);
 
     /**
+     * @brief Computes the z value of the cross product between two 2d VectorF objects. vec1 cross vec2.
+     * @param vec1 The first VectorF object.
+     * @param vec2 The second VectorF object.
+     * @return z value of the computed cross product.
+     * @note qWarning if vec1 and vec2 are not of dim 2
+     */
+    static double cross_product_zVal(const VectorF& vec1, const VectorF& vec2);
+
+    /**
+     * @brief Computes the cross product between two 3d VectorF objects. vec1 cross vec2.
+     * @param vec1 The first VectorF object.
+     * @param vec2 The second VectorF object.
+     * @return The computed cross product.
+     * @note qWarning if vec1 and vec2 are not of dim 3
+     */
+    static VectorF cross_product(const VectorF& vec1, const VectorF& vec2);
+
+    /**
+     * @brief First pads the input 2d vector (with the two dimensions being x and y respectively) with 0 in the z-dimension.
+     * Then the cross product with z-vector = [0; 0; 1] is computed. Note that the z-dimension of the cross product is expected to be zero and
+     * it will be trimmed before being returned.
+     * @param vec The input VectorF object.
+     * @return The computed cross product with the z-vector. Dimension = 2.
+     * @note qWarning if vec is not of dim 2
+     */
+    static VectorF vec2D_cross_z(const VectorF& vec);
+
+    /**
      * @brief compare Compares two VectorF objects and return true if norm_2 of their difference is smaller than the specified tolerance.
      * @param d1 first VectorF input to compare
      * @param d2 second VectorF input to compare

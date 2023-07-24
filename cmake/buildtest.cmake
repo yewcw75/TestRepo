@@ -20,6 +20,8 @@ add_executable(${PROJECT_NAME}QTests
     tests/main.cpp
     tests/framework/VectorFQTests.h
     tests/framework/VectorFQTests.cpp
+    tests/framework/VectorFHelperQTests.h
+    tests/framework/VectorFHelperQTests.cpp
     tests/framework/WayptQTests.h
     tests/framework/WayptQTests.cpp
     tests/framework/SegmentQTests.h

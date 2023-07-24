@@ -76,6 +76,7 @@ Polygon::~Polygon()
 Polygon* Polygon::clone() const
 {
     Polygon* ret = new Polygon(*this);
+    ret->detach();
     return(ret);
 }
 
@@ -151,6 +152,13 @@ QString Polygon::debugPrint() const
     }
     ret.append(" ]");
     return(ret);
+}
+
+//----------
+void Polygon::detach()
+{
+    mp_pimpl.detach();
+    return;
 }
 
 

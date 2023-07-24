@@ -49,6 +49,59 @@ double VectorFHelper::dot_product(const VectorF& vec1, const VectorF& vec2)
 }
 
 //----------
+double VectorFHelper::cross_product_zVal(const VectorF& vec1, const VectorF& vec2)
+{
+    double zVal{0.0};
+    const int DIM_EXPECT = 2;
+
+    if(vec1.size() != DIM_EXPECT || vec2.size() != DIM_EXPECT){
+        qWarning() << "[VectorFHelper::cross_product_zVal] Either one or both VectorF input are not of expected dimension of 2. Results may be errorneous!";
+        Q_ASSERT(0);
+    }
+    if(vec1.size() >= DIM_EXPECT && vec2.size() >= DIM_EXPECT){
+        zVal = vec1[0]*vec2[1] - vec1[1]*vec2[0];
+     }
+    return(zVal);
+}
+
+//----------
+VectorF VectorFHelper::cross_product(const VectorF& vec1, const VectorF& vec2)
+{
+    const int DIM_EXPECT = 3;
+
+    VectorF vecOut{0,0,0};
+
+    if(vec1.size() != DIM_EXPECT || vec2.size() != DIM_EXPECT){
+        qWarning() << "[VectorFHelper::cross_product] Either one or both VectorF input are not of expected dimension of 3. Results may be errorneous!";
+        Q_ASSERT(0);
+    }
+    if(vec1.size() >= DIM_EXPECT && vec2.size() >= DIM_EXPECT){
+        vecOut[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
+        vecOut[1] = vec1[2]*vec2[0] - vec1[0]*vec2[2];
+        vecOut[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
+     }
+    return(vecOut);
+}
+
+//----------
+VectorF VectorFHelper::vec2D_cross_z(const VectorF& vec)
+{
+    VectorF vecOut{0, 0};
+
+    const int DIM_EXPECT = 2;
+
+    if(vec.size() != DIM_EXPECT){
+        qWarning() << "[VectorFHelper::vec2D_cross_z] The VectorF input is not of expected dimension of 2. Results may be errorneous!";
+        Q_ASSERT(0);
+    }
+    if(vec.size() >= DIM_EXPECT){
+        vecOut[0] = vec[1];
+        vecOut[1] = -vec[0];
+     }
+    return(vecOut);
+}
+
+//----------
 bool VectorFHelper::compare(const VectorF& vec1, const VectorF& vec2, double tol_small)
 {
     Q_ASSERT(tol_small >= 0);

@@ -4,6 +4,7 @@
 #include "PlanHelperQTests.h"
 #include "UblasHelperQTests.h"
 #include "VectorFQTests.h"
+#include "VectorFHelperQTests.h"
 #include "EllMapQTests.h"
 #include "PolygonQTests.h"
 #include "SimplexQTests.h"
@@ -15,6 +16,7 @@ int main(int argc, char* argv[])
     QApplication app(argc, argv);
 
     VectorFQTests       vectorFQTests;
+    VectorFHelperQTests vectorFHelperQTests;
     WayptQTests         wayptQTests;
     SegmentQTests       segmentQTests;
     PlanQTests          planQTests;
@@ -27,6 +29,7 @@ int main(int argc, char* argv[])
 
     int status = \
             QTest::qExec(&vectorFQTests, argc, argv) + \
+            QTest::qExec(&vectorFHelperQTests, argc, argv) + \
             QTest::qExec(&wayptQTests, argc, argv) + \
             QTest::qExec(&segmentQTests, argc, argv) + \
             QTest::qExec(&planQTests, argc, argv) + \

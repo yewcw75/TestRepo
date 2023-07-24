@@ -66,14 +66,39 @@ add_library(${PROJECT_NAME} SHARED
   incl/${PROJECT_NAME}/framework/EllMap.h
   src/framework/EllMap.cpp
 
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/IShape.h
-  src/framework/algorithm/gjk/IShape.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/Polygon.h
-  src/framework/algorithm/gjk/Polygon.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/GjkDefines.h
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/GjkFactory.h
+  src/framework/algorithm/gjk/GjkFactory.cpp
   incl/${PROJECT_NAME}/framework/algorithm/gjk/Gjk.h
   src/framework/algorithm/gjk/Gjk.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/Simplex.h
-  src/framework/algorithm/gjk/Simplex.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/IShape.h
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/Polygon.h
+  src/framework/algorithm/gjk/Polygon.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/GjkBasic.h
+  src/framework/algorithm/gjk/internal/GjkBasic.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/GjkMinDist.h
+  src/framework/algorithm/gjk/internal/GjkMinDist.cpp
+
+
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/GjkComponentFactory.h
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/GjkComponentFactoryCreator.h
+  src/framework/algorithm/gjk/internal/GjkComponentFactoryCreator.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/GjkComponentFactoryBasic.h
+  src/framework/algorithm/gjk/internal/GjkComponentFactoryBasic.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/GjkComponentFactoryMinDist.h
+  src/framework/algorithm/gjk/internal/GjkComponentFactoryMinDist.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/Simplex.h
+  src/framework/algorithm/gjk/internal/Simplex.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/SimplexBasic.h
+  src/framework/algorithm/gjk/internal/SimplexBasic.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/SimplexMinDist.h
+  src/framework/algorithm/gjk/internal/SimplexMinDist.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/Support.h
+  src/framework/algorithm/gjk/internal/Support.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/SupportBasic.h
+  src/framework/algorithm/gjk/internal/SupportBasic.cpp
+  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/SupportMinDist.h
+  src/framework/algorithm/gjk/internal/SupportMinDist.cpp
 
 )
 

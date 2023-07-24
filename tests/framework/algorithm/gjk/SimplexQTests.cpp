@@ -1,5 +1,6 @@
 #include "SimplexQTests.h"
-#include <RrtPlannerLib/framework/algorithm/gjk/Simplex.h>
+#include "internal/GjkComponentFactory.h"
+#include <RrtPlannerLib/framework/algorithm/gjk/internal/GjkComponentFactoryCreator.h>
 #include <RrtPlannerLib/framework/VectorF.h>
 #include <RrtPlannerLib/framework/VectorFHelper.h>
 #include <RrtPlannerLib/framework/FrameworkDefines.h>
@@ -8,12 +9,12 @@
 #include <QtGlobal>
 
 
-using namespace rrtplanner::framework;
-using namespace rrtplanner::framework::algorithm::gjk;
-
 //----------
 SimplexQTests::SimplexQTests()
 {
+    QScopedPointer<GjkComponentFactory> factoryBasic( \
+            GjkComponentFactoryCreator::getGjkComponentFactory(GjkComponentFactoryCreator::GjkType::Basic));
+    mp_simplex.reset(factoryBasic->getSimplex(1e-6));
 
 }
 
@@ -65,10 +66,10 @@ void SimplexQTests::verify_update()
     QFETCH(QVector<VectorF>, vertexList);
     QFETCH(QVector<bool>, resultsList_expect);
 
-    Simplex simplex;
+    mp_simplex->reset();
     for(int i = 0; i < vertexList.size(); ++i){
         VectorF v;
-        bool results = simplex.update(vertexList.at(i), v);
+        bool results = mp_simplex->update(vertexList.at(i), v);
         QCOMPARE(results, resultsList_expect.at(i));
     }
     return;
