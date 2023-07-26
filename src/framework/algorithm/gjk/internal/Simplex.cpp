@@ -42,7 +42,6 @@ Simplex::~Simplex()
 void Simplex::set_eps_square(double eps_square)
 {
     mp_pimpl->m_eps_square = eps_square;
-    return;
 }
 
 //----------

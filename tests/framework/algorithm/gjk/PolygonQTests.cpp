@@ -53,7 +53,7 @@ void PolygonQTests::verify_support_data()
     dir = VectorF{0, -1};
     support = VectorF{0, 0};
     QTest::newRow("Test 2") << polygon << dir << support;
-    return;
+    
 }
 
 //----------
@@ -66,7 +66,7 @@ void PolygonQTests::verify_support()
     VectorF support = polygon.support(dir);
     VectorF diff = VectorFHelper::subtract_vector(support, support_expect);
     QVERIFY(UtilHelper::compare(VectorFHelper::norm2(diff), 0.0));
-    return;
+    
 }
 
 //----------
@@ -79,7 +79,7 @@ void PolygonQTests::verify_clone_data()
     //test 1
     QTest::newRow("Test 1") << polygon;
 
-    return;
+    
 }
 
 //----------
@@ -99,7 +99,7 @@ void PolygonQTests::verify_clone()
     for(int i = 1; i < polygon.size(); ++i){
         QVERIFY(VectorFHelper::compare(polygon2->at(i), polygon.at(i), 1e-6));
     }
-    return;
+    
 }
 
 //----------
@@ -114,7 +114,7 @@ void PolygonQTests::verify_centroid_data()
     //test 1
     QTest::newRow("Test 1") << polygon << centroid_expect;
 
-    return;
+    
 }
 
 //----------
@@ -128,6 +128,6 @@ void PolygonQTests::verify_centroid()
     qInfo() << "centroid: " << centroid;
     qInfo() << "centroid_expect: " << centroid_expect;
     QVERIFY(VectorFHelper::compare(centroid, centroid_expect, 1e-6));
-    return;
+    
 }
 

@@ -57,7 +57,7 @@ void SimplexQTests::verify_update_data()
     resultsList_expect = QVector<bool>{false,false,true};
     QTest::newRow("Test 3") << vertexList << resultsList_expect;
 
-    return;
+    
 }
 
 //----------
@@ -72,5 +72,5 @@ void SimplexQTests::verify_update()
         bool results = mp_simplex->update(vertexList.at(i), v);
         QCOMPARE(results, resultsList_expect.at(i));
     }
-    return;
+    
 }

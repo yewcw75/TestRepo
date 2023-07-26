@@ -49,7 +49,6 @@ void SegmentPrivate::calculateBisector(const Segment& seg1, const Segment& seg2,
         bVec[IDX_NORTHING] = seg2.nVec()[IDX_EASTING];
         bVec[IDX_EASTING] = -seg2.nVec()[IDX_NORTHING];
     }
-    return;
 }
 
 //##############################
@@ -95,14 +94,12 @@ void Segment::set(const Waypt& wayptPrev, const Waypt& wayptNext, int id)
     setId(id);
     setWayptPrev(wayptPrev);
     setWayptNext(wayptNext);
-    return;
 }
 
 //----------
 void Segment::setId(int id)
 {
     mp_pimpl->m_id = id;
-    return;
 }
 
 //----------
@@ -115,7 +112,6 @@ int Segment::id() const
 void Segment::setWayptPrev(const Waypt& wayptPrev)
 {
     mp_pimpl->m_wayptPrev = wayptPrev;
-    return;
 }
 
 //----------
@@ -128,7 +124,6 @@ const Waypt& Segment::wayptPrev() const
 void Segment::setWayptNext(const Waypt& wayptNext)
 {
     mp_pimpl->m_wayptNext = wayptNext;
-    return;
 }
 
 //----------
@@ -141,7 +136,6 @@ const Waypt& Segment::wayptNext() const
 void Segment::setTVec(const VectorF& tVec)
 {
     mp_pimpl->m_tVec = tVec;
-    return;
 }
 
 //----------
@@ -154,7 +148,6 @@ const VectorF& Segment::tVec() const
 void Segment::setNVec(const VectorF& nVec)
 {
     mp_pimpl->m_nVec = nVec;
-    return;
 }
 
 //----------
@@ -167,7 +160,6 @@ const VectorF& Segment::nVec() const
 void Segment::setLength(double length)
 {
     mp_pimpl->m_length = length;
-    return;
 }
 
 //----------
@@ -180,7 +172,6 @@ double Segment::length() const
 void Segment::setLengthCumulative(double lengthCumulative)
 {
     mp_pimpl->m_lengthCumulative = lengthCumulative;
-    return;
 }
 
 //----------
@@ -193,14 +184,12 @@ double Segment::lengthCumulative() const
 void Segment::setbVecPrev(const VectorF& bVecPrev)
 {
     mp_pimpl->m_bVecPrev = bVecPrev;
-    return;
 }
 
 //----------
 void Segment::setbVecPrev(const Segment& segmentPrev)
 {
     mp_pimpl->calculateBisector(segmentPrev, *this, mp_pimpl->m_bVecPrev);
-    return;
 }
 
 //----------
@@ -213,14 +202,12 @@ const VectorF& Segment::bVecPrev() const
 void Segment::setbVecNext(const VectorF& bVecNext)
 {
     mp_pimpl->m_bVecNext = bVecNext;
-    return;
 }
 
 //----------
 void Segment::setbVecNext(const Segment& segmentNext)
 {
     mp_pimpl->calculateBisector(*this, segmentNext, mp_pimpl->m_bVecNext);
-    return;
 }
 
 //----------
@@ -248,7 +235,6 @@ void Segment::setSegmentAttributes()
             qFatal("[Segment::setSegmentAttributes()] DIM_COORD > 2 could not handled yet.");
         }
     }
-    return;
 }
 
 //----------

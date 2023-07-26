@@ -62,7 +62,7 @@ void SegmentQTests::verify(const Segment& segment,
     QVERIFY(UtilHelper::compare(nVec[IDX_EASTING], easting_res_nVec));
     QVERIFY(UtilHelper::compare(length, segLength_res));
 
-    return;
+    
 }
 
 //----------
@@ -87,7 +87,7 @@ void SegmentQTests::verify_set_segment_data()
                                << (double)-0.465746 << (double)-0.884918 << (double)0.884918 << (double)-0.465746 << (double)214.709106;
     QTest::newRow("Test 4") << (int) -9283499 << (double)0 << (double)-10 << (double)-100 << (double)200 \
                                << (double)-0.429934 << (double)0.902861 << (double)-0.902861 << (double)-0.429934 << (double)232.594067;
-    return;
+    
 }
 
 //----------

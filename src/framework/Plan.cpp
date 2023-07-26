@@ -60,7 +60,6 @@ void Plan::clearPlan()
     mp_pimpl->m_propertyFlags = Property::NONE;
     mp_pimpl->m_crossTrack = 0.0;
     mp_pimpl->m_id = 0.0;
-    return;
 }
 
 //----------
@@ -101,7 +100,6 @@ bool  Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
 void Plan::setId(int id)
 {
     mp_pimpl->m_id = id;
-    return;
 }
 
 //----------
@@ -164,7 +162,6 @@ double Plan::length() const
 void Plan::setCrossTrack(double crossTrack)
 {
     mp_pimpl->m_crossTrack = crossTrack;
-    return;
 }
 
 //----------
@@ -177,7 +174,6 @@ double Plan::crossTrack() const
 void Plan::setProperty(const Property& property, bool on)
 {
     mp_pimpl->m_propertyFlags.setFlag(property, on);
-    return;
 }
 
 //----------
@@ -190,7 +186,6 @@ bool Plan::testProperty(const Property& property) const
 void Plan::setPropertyFlags(const PropertyFlags& flags)
 {
     mp_pimpl->m_propertyFlags = flags;
-    return;
 }
 
 //----------
@@ -292,14 +287,12 @@ void Plan::appendSegment(const Segment& segment)
     double lengthCumulative = this->length() + segment.length(); //expected cumulative length
     mp_pimpl->m_segmentList.append(segment);
     mp_pimpl->m_segmentList.last().setLengthCumulative(lengthCumulative);
-    return;
 }
 
 //----------
 void Plan::setSegmentList(const QVector<Segment>& segmentList)
 {
     mp_pimpl->m_segmentList = segmentList;
-    return;
 }
 //----------
 

@@ -170,7 +170,6 @@ SimplexMinDist::~SimplexMinDist()
 void SimplexMinDist::reset()
 {
     mp_pimpl->m_vertexList.clear();
-    return;
 }
 
 //----------

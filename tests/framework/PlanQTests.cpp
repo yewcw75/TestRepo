@@ -40,7 +40,7 @@ void PlanQTests:: verifySame(const Waypt& waypt1, const Waypt& waypt2)
     QCOMPARE(waypt1.northing(), waypt2.northing());
     QCOMPARE(waypt1.easting(), waypt2.easting());
     QCOMPARE(waypt1.lon0_deg(), waypt2.lon0_deg());
-    return;
+    
 }
 
 //----------
@@ -100,7 +100,7 @@ void PlanQTests::verify_set_plan_data()
     QTest::newRow("Test 3") << (int) 1 << (QVector<Waypt>)wayptList3 << QVector<int>() <<\
                                (double)0.0 /*does not matter, expected not used*/ << (double)10.0 << (int)propertyFlags << (bool)false << \
                                bVecList /*does not matter*/;
-    return;
+    
 }
 
 //----------

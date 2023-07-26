@@ -76,7 +76,7 @@ void PlanHelperQTests::verify_findNearestEdgeEventdata_data()
 
     eventSegIdxList = QVector<int>{3}; //note: matlab idx from 1. in c, our idx is from 0.
     QTest::newRow("Test 2") << plan << 1.0 << 2500.0 << 2414.213562 << eventSegIdxList;
-    return;
+    
 }
 
 //----------
@@ -100,7 +100,7 @@ void PlanHelperQTests::verify_findNearestEdgeEventdata()
            QVERIFY(eventSegIdxList_expect.contains(value));
        }
     }
-    return;
+    
 }
 
 //----------
@@ -132,7 +132,7 @@ void PlanHelperQTests::verify_getCrossTrackPlan_data()
                                 Waypt{3000.000000, 3414.213562},
                                 Waypt{4000.000000, 2414.213562}};
     QTest::newRow("Test 2") << plan <<  2500.0 << 2414.213562 << eventSegIdxList << wayptList_expect;
-    return;
+    
 }
 
 
@@ -155,7 +155,7 @@ void PlanHelperQTests::verify_getCrossTrackPlan()
         QVERIFY(UtilHelper::compare(wayptList.at(i).northing(), wayptList_expect.at(i).northing()));
         QVERIFY(UtilHelper::compare(wayptList.at(i).easting(), wayptList_expect.at(i).easting()));
     }
-    return;
+    
 }
 
 //----------
@@ -245,7 +245,7 @@ void PlanHelperQTests::verify_buildSingleSideEllMaps_data()
     planList.push_back(planTmp);
 
     QTest::newRow("Test 2") << plan << 1.0 << 2500.0 << planList;
-    return;
+    
 }
 
 //----------

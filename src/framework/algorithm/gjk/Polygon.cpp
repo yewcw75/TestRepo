@@ -151,7 +151,6 @@ QString Polygon::debugPrint() const
 void Polygon::detach()
 {
     mp_pimpl.detach();
-    return;
 }
 
 

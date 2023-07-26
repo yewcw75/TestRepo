@@ -85,7 +85,7 @@ void UblasHelperQTests::verify_solve()
         QVERIFY(UtilHelper::compare(x[i], x_expect[i]));
     }
 
-    return;
+    
 }
 
 //----------
@@ -97,7 +97,7 @@ void UblasHelperQTests::verify_to_bnu_vector()
     bnu::vector<double> bnu_vec = UblasHelper::to_bnu_vector(vec);
     QCOMPARE(bnu_vec[0], northing);
     QCOMPARE(bnu_vec[1], easting);
-    return;
+    
 }
 */
 //----------
@@ -110,7 +110,7 @@ void UblasHelperQTests::verify_to_bgm_vector()
     Bgm_Point point = UblasHelper::to_bgm_point(bnu_vec);
     QCOMPARE(point.get<0>(), northing);
     QCOMPARE(point.get<1>(), easting);
-    return;
+    
 }
 */
 //----------
@@ -127,5 +127,5 @@ void UblasHelperQTests::verify_concatenate_col_vectors()
     QCOMPARE(M(1,0), b);
     QCOMPARE(M(0,1), c);
     QCOMPARE(M(1,1), d);
-    return;
+    
 }

@@ -123,7 +123,7 @@ void EllMapQTests::verify_buildEllMap_data()
     planList_expect.push_back(planTmp);
 
     QTest::newRow("Test 1") << planNominal << 2500.0 << planList_expect;
-    return;
+    
 }
 
 //----------
@@ -170,6 +170,6 @@ void EllMapQTests::verify_buildEllMap()
             QVERIFY(UtilHelper::compare(seg.lengthCumulative(), seg_expected.lengthCumulative()));
         }
     }
-    return;
+    
 }
 

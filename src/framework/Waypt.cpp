@@ -78,7 +78,6 @@ void Waypt::set(double northing_m, double easting_m, double lon0_deg, int id)
    setEasting(easting_m);
    setLon0(lon0_deg);
    setId(id);
-   return;
 }
 
 //----------
@@ -93,7 +92,6 @@ void Waypt::set(const VectorF& coord, double lon0_deg, int id)
 void Waypt::setNorthing(double northing_m)
 {
     mp_pimpl->m_coord[IDX_NORTHING] = northing_m;
-    return;
 }
 
 //----------
@@ -105,7 +103,6 @@ double Waypt::northing() const
 void Waypt::setEasting(double easting_m)
 {
     mp_pimpl->m_coord[IDX_EASTING] = easting_m;
-    return;
 }
 
 //----------
@@ -118,7 +115,6 @@ double Waypt::easting() const
 void Waypt::setId(int id)
 {
     mp_pimpl->m_id = id;
-    return;
 }
 
 //----------
@@ -131,7 +127,6 @@ int Waypt::id() const
 void Waypt::setLon0(double lon0_deg)
 {
     mp_pimpl->m_lon0_deg = lon0_deg;
-    return;
 }
 
 //----------
@@ -144,7 +139,6 @@ double Waypt::lon0_deg() const
 void Waypt::setCoord(const VectorF& coord)
 {
     mp_pimpl->m_coord = coord;
-    return;
 }
 
 //----------

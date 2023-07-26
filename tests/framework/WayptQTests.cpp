@@ -35,7 +35,7 @@ void WayptQTests::verify(Waypt waypt, double northing, double easting, double lo
     QCOMPARE(waypt.easting(), easting);
     QCOMPARE(waypt.lon0_deg(), lon0);
     QCOMPARE(waypt.id(), id);
-    return;
+    
 }
 
 //----------
@@ -50,7 +50,7 @@ void WayptQTests::verify_set_params_data()
     QTest::newRow("Test 2") << (double)12345.54321 << (double)-98765.5678 << (double)-887766 << (int)9999;
     QTest::newRow("Test 3") << (double)1.2345 << (double)103.2233 << (double)-104.0 << (int)1;
 
-    return;
+    
 }
 
 //----------
@@ -81,7 +81,7 @@ void WayptQTests::verify_set_params()
     Waypt waypt4(coord, lon0, id);
     verify(waypt4, northing, easting, lon0, id);
 
-    return;
+    
 }
 
 //----------
@@ -96,7 +96,7 @@ void WayptQTests::verify_setters_data()
     QTest::newRow("Test 2") << (double)12345.54321 << (double)-98765.5678 << (double)-887766 << (int)9999;
     QTest::newRow("Test 3") << (double)1.2345 << (double)103.2233 << (double)-104.0 << (int)1;
 
-    return;
+    
 }
 
 //----------
@@ -119,7 +119,7 @@ void WayptQTests::verify_setters()
     QCOMPARE(coord[IDX_NORTHING], northing);
     QCOMPARE(coord[IDX_EASTING], easting);
 
-    return;
+    
 }
 
 //----------
@@ -134,7 +134,7 @@ void WayptQTests::verify_copy_data()
     QTest::newRow("Test 2") << (double)12345.54321 << (double)-98765.5678 << (double)-887766 << (int)9999;
     QTest::newRow("Test 3") << (double)1.2345 << (double)103.2233 << (double)-104.0 << (int)1;
 
-    return;
+    
 }
 
 //----------

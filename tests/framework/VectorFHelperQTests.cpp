@@ -35,7 +35,7 @@ void VectorFHelperQTests::verify_cross_product_zVal_data()
 
 
     QTest::newRow("Test 1") << vec1 << vec2 << zVal_expect;
-    return;
+    
 }
 
 //----------
@@ -47,7 +47,7 @@ void VectorFHelperQTests::verify_cross_product_zVal()
 
     double zVal = VectorFHelper::cross_product_zVal(vec1, vec2);
     QVERIFY(UtilHelper::compare(zVal, zVal_expect));
-    return;
+    
 }
 
 //----------
@@ -62,7 +62,7 @@ void VectorFHelperQTests::verify_cross_product_data()
     VectorF vecOut_expect{-0.3636, -0.5392, -2.0700};
 
     QTest::newRow("Test 1") << vec1 << vec2 << vecOut_expect;
-    return;
+    
 }
 
 //----------
@@ -74,7 +74,7 @@ void VectorFHelperQTests::verify_cross_product()
 
     VectorF vecOut = VectorFHelper::cross_product(vec1, vec2);
     QVERIFY(VectorFHelper::compare(vecOut, vecOut_expect, 1e-3));
-    return;
+    
 }
 
 //----------
@@ -87,7 +87,7 @@ void VectorFHelperQTests::verify_vec2D_cross_z_data()
     VectorF vecOut_expect{2.7694, -3.5784};
 
     QTest::newRow("Test 1") << vec << vecOut_expect;
-    return;
+    
 }
 
 //----------
@@ -98,7 +98,7 @@ void VectorFHelperQTests::verify_vec2D_cross_z()
 
     VectorF vecOut = VectorFHelper::vec2D_cross_z(vec);
     QVERIFY(VectorFHelper::compare(vecOut, vecOut_expect, 1e-3));
-    return;
+    
 }
 
 

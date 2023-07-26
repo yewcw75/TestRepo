@@ -160,7 +160,6 @@ SimplexBasic::~SimplexBasic()
 void SimplexBasic::reset()
 {
     mp_pimpl->m_vertexList.clear();
-    return;
 }
 
 //----------

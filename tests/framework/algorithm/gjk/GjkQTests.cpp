@@ -75,7 +75,7 @@ void GjkQTests::verify_chkIntersect_data()
     distance_expect = 0.0;
     distance_valid_expect = false;
     QTest::newRow("Test 4 - intersect") << polygon1 << polygon2 << intersect_expect<< distance_expect << distance_valid_expect;
-    return;
+
 }
 
 //----------
@@ -101,5 +101,5 @@ void GjkQTests::verify_chkIntersect()
     if(isValidDistance){
         QVERIFY(UtilHelper::compare(distance, distance_expect, 1e-3));
     }
-    return;
+
 }

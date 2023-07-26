@@ -319,7 +319,6 @@ void PlanHelper::insertDummySegments(QSharedPointer<Plan>& plan, int nSegNominal
        segListOut.push_back(seg2Insert); //append segment to segListOut
     } //for-loop
     plan->setSegmentList(segListOut); //replace the segment list in plan
-    return;
 }
 
 //----------
@@ -335,7 +334,6 @@ void PlanHelper::pushPlan( const QSharedPointer<Plan>& plan,
     {
         planList.push_back(plan);
     }
-    return;
 }
 
 //----------

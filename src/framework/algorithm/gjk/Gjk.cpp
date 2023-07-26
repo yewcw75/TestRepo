@@ -40,7 +40,6 @@ Gjk::~Gjk()
 void Gjk::set_eps_square(double eps_square)
 {
     mp_pimpl->m_eps_square = eps_square;
-    return;
 }
 
 //----------
@@ -53,7 +52,6 @@ double Gjk::eps_square() const
 void Gjk::set_max_iteration(int max_iteration)
 {
     mp_pimpl->m_maxIter = max_iteration;
-    return;
 }
 
 //----------

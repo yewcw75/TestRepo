@@ -96,7 +96,6 @@ EllMap::~EllMap()
 void EllMap::setNominalPlan(const Plan& plan)
 {
     mp_pimpl->mp_planNominal = QSharedPointer<Plan>(new Plan(plan));
-    return;
 }
 
 //----------
