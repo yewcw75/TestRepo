@@ -64,7 +64,7 @@ public:
     [[nodiscard]] virtual bool update(const VectorF& vertex, VectorF& v) override;
 
 private:
-    QScopedPointer<SimplexBasicPrivate> mp_pimpl;
+    QScopedPointer<SimplexBasicPrivate> d_ptr;
 };
 
 RRTPLANNER_FRAMEWORK_ALGORITHM_GJK_END_NAMESPACE

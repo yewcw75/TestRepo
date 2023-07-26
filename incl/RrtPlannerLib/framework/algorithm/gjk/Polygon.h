@@ -133,7 +133,7 @@ protected:
     virtual void detach();
 
 private:
-    QSharedDataPointer<PolygonPrivate> mp_pimpl;
+    QSharedDataPointer<PolygonPrivate> d_ptr;
 };
 
 /**

@@ -60,7 +60,7 @@ public:
     bool chkIntersect(const IShape& shape1, const IShape& shape2, double& distance, bool& isValidDistance);
 
 private:
-    QScopedPointer<GjkMinDistPrivate> mp_pimpl;
+    QScopedPointer<GjkMinDistPrivate> d_ptr;
 };
 
 /**

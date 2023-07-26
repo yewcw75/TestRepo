@@ -30,21 +30,21 @@ public:
  * @brief Waypt::Waypt
  */
 Waypt::Waypt()
-    :mp_pimpl(new WayptPrivate)
+    :d_ptr(new WayptPrivate)
 {
 
 }
 
 //----------
 Waypt::Waypt(double northing_m, double easting_m, double lon0_deg, int id)
-    :mp_pimpl(new WayptPrivate)
+    :d_ptr(new WayptPrivate)
 {
     set(northing_m, easting_m, lon0_deg, id);
 }
 
 //----------
 Waypt::Waypt(const VectorF& coord, double lon0_deg, int id)
-    :mp_pimpl(new WayptPrivate)
+    :d_ptr(new WayptPrivate)
 {
     set(coord, lon0_deg, id);
 }
@@ -57,7 +57,7 @@ Waypt::~Waypt()
 
 //----------
 Waypt::Waypt(const Waypt& other)
-    :mp_pimpl(other.mp_pimpl)
+    :d_ptr(other.d_ptr)
 {
 
 }
@@ -66,7 +66,7 @@ Waypt::Waypt(const Waypt& other)
 Waypt& Waypt::operator=(const Waypt& other)
 {
     if(this != &other){
-        mp_pimpl = other.mp_pimpl;
+        d_ptr = other.d_ptr;
     }
     return(*this);
 }
@@ -91,60 +91,60 @@ void Waypt::set(const VectorF& coord, double lon0_deg, int id)
 //----------
 void Waypt::setNorthing(double northing_m)
 {
-    mp_pimpl->m_coord[IDX_NORTHING] = northing_m;
+    d_ptr->m_coord[IDX_NORTHING] = northing_m;
 }
 
 //----------
 double Waypt::northing() const
 {
-    return(mp_pimpl->m_coord[IDX_NORTHING]);
+    return(d_ptr->m_coord[IDX_NORTHING]);
 }
 
 void Waypt::setEasting(double easting_m)
 {
-    mp_pimpl->m_coord[IDX_EASTING] = easting_m;
+    d_ptr->m_coord[IDX_EASTING] = easting_m;
 }
 
 //----------
 double Waypt::easting() const
 {
-    return(mp_pimpl->m_coord[IDX_EASTING]);
+    return(d_ptr->m_coord[IDX_EASTING]);
 }
 
 //----------
 void Waypt::setId(int id)
 {
-    mp_pimpl->m_id = id;
+    d_ptr->m_id = id;
 }
 
 //----------
 int Waypt::id() const
 {
-    return(mp_pimpl->m_id);
+    return(d_ptr->m_id);
 }
 
 //----------
 void Waypt::setLon0(double lon0_deg)
 {
-    mp_pimpl->m_lon0_deg = lon0_deg;
+    d_ptr->m_lon0_deg = lon0_deg;
 }
 
 //----------
 double Waypt::lon0_deg() const
 {
-    return(mp_pimpl->m_lon0_deg);
+    return(d_ptr->m_lon0_deg);
 }
 
 //----------
 void Waypt::setCoord(const VectorF& coord)
 {
-    mp_pimpl->m_coord = coord;
+    d_ptr->m_coord = coord;
 }
 
 //----------
 const VectorF& Waypt::coord_const_ref() const
 {
-    return(mp_pimpl->m_coord);
+    return(d_ptr->m_coord);
 }
 
 //----------

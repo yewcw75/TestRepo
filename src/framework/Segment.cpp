@@ -54,14 +54,14 @@ void SegmentPrivate::calculateBisector(const Segment& seg1, const Segment& seg2,
 //##############################
 //----------
 Segment::Segment()
-    :mp_pimpl(new SegmentPrivate)
+    :d_ptr(new SegmentPrivate)
 {
 
 }
 
 //----------
 Segment::Segment(const Waypt& wayptPrev, const Waypt& wayptNext, int id)
-    :mp_pimpl(new SegmentPrivate)
+    :d_ptr(new SegmentPrivate)
 {
     set(wayptPrev, wayptNext, id);
 }
@@ -74,7 +74,7 @@ Segment::~Segment()
 
 //----------
 Segment::Segment(const Segment& other)
-    :mp_pimpl(other.mp_pimpl)
+    :d_ptr(other.d_ptr)
 {
 
 }
@@ -83,7 +83,7 @@ Segment::Segment(const Segment& other)
 Segment& Segment::operator=(const Segment& other)
 {
     if(this != &other){
-        mp_pimpl = other.mp_pimpl;
+        d_ptr = other.d_ptr;
     }
     return(*this);
 }
@@ -99,137 +99,137 @@ void Segment::set(const Waypt& wayptPrev, const Waypt& wayptNext, int id)
 //----------
 void Segment::setId(int id)
 {
-    mp_pimpl->m_id = id;
+    d_ptr->m_id = id;
 }
 
 //----------
 int Segment::id() const
 {
-    return(mp_pimpl->m_id);
+    return(d_ptr->m_id);
 }
 
 //----------
 void Segment::setWayptPrev(const Waypt& wayptPrev)
 {
-    mp_pimpl->m_wayptPrev = wayptPrev;
+    d_ptr->m_wayptPrev = wayptPrev;
 }
 
 //----------
 const Waypt& Segment::wayptPrev() const
 {
-    return(mp_pimpl->m_wayptPrev);
+    return(d_ptr->m_wayptPrev);
 }
 
 //----------
 void Segment::setWayptNext(const Waypt& wayptNext)
 {
-    mp_pimpl->m_wayptNext = wayptNext;
+    d_ptr->m_wayptNext = wayptNext;
 }
 
 //----------
 const Waypt& Segment::wayptNext() const
 {
-    return(mp_pimpl->m_wayptNext);
+    return(d_ptr->m_wayptNext);
 }
 
 //----------
 void Segment::setTVec(const VectorF& tVec)
 {
-    mp_pimpl->m_tVec = tVec;
+    d_ptr->m_tVec = tVec;
 }
 
 //----------
 const VectorF& Segment::tVec() const
 {
-    return(mp_pimpl->m_tVec);
+    return(d_ptr->m_tVec);
 }
 
 //----------
 void Segment::setNVec(const VectorF& nVec)
 {
-    mp_pimpl->m_nVec = nVec;
+    d_ptr->m_nVec = nVec;
 }
 
 //----------
 const VectorF& Segment::nVec() const
 {
-    return(mp_pimpl->m_nVec);
+    return(d_ptr->m_nVec);
 }
 
 //----------
 void Segment::setLength(double length)
 {
-    mp_pimpl->m_length = length;
+    d_ptr->m_length = length;
 }
 
 //----------
 double Segment::length() const
 {
-    return(mp_pimpl->m_length);
+    return(d_ptr->m_length);
 }
 
 //----------
 void Segment::setLengthCumulative(double lengthCumulative)
 {
-    mp_pimpl->m_lengthCumulative = lengthCumulative;
+    d_ptr->m_lengthCumulative = lengthCumulative;
 }
 
 //----------
 double Segment::lengthCumulative() const
 {
-    return(mp_pimpl->m_lengthCumulative);
+    return(d_ptr->m_lengthCumulative);
 }
 
 //----------
 void Segment::setbVecPrev(const VectorF& bVecPrev)
 {
-    mp_pimpl->m_bVecPrev = bVecPrev;
+    d_ptr->m_bVecPrev = bVecPrev;
 }
 
 //----------
 void Segment::setbVecPrev(const Segment& segmentPrev)
 {
-    mp_pimpl->calculateBisector(segmentPrev, *this, mp_pimpl->m_bVecPrev);
+    d_ptr->calculateBisector(segmentPrev, *this, d_ptr->m_bVecPrev);
 }
 
 //----------
 const VectorF& Segment::bVecPrev() const
 {
-    return(mp_pimpl->m_bVecPrev);
+    return(d_ptr->m_bVecPrev);
 }
 
 //----------
 void Segment::setbVecNext(const VectorF& bVecNext)
 {
-    mp_pimpl->m_bVecNext = bVecNext;
+    d_ptr->m_bVecNext = bVecNext;
 }
 
 //----------
 void Segment::setbVecNext(const Segment& segmentNext)
 {
-    mp_pimpl->calculateBisector(*this, segmentNext, mp_pimpl->m_bVecNext);
+    d_ptr->calculateBisector(*this, segmentNext, d_ptr->m_bVecNext);
 }
 
 //----------
 const VectorF& Segment::bVecNext() const
 {
-    return(mp_pimpl->m_bVecNext);
+    return(d_ptr->m_bVecNext);
 }
 
 //----------
 void Segment::setSegmentAttributes()
 {
     //tVec and length
-    VectorF vecPrev2Next = VectorFHelper::subtract_vector(mp_pimpl->m_wayptNext.coord_const_ref(),
-                                                          mp_pimpl->m_wayptPrev.coord_const_ref());
-    mp_pimpl->m_length = VectorFHelper::norm2(vecPrev2Next);
-    if(mp_pimpl->m_length > TOL_SMALL){
-        mp_pimpl->m_tVec = VectorFHelper::multiply_value(vecPrev2Next, 1/mp_pimpl->m_length);
+    VectorF vecPrev2Next = VectorFHelper::subtract_vector(d_ptr->m_wayptNext.coord_const_ref(),
+                                                          d_ptr->m_wayptPrev.coord_const_ref());
+    d_ptr->m_length = VectorFHelper::norm2(vecPrev2Next);
+    if(d_ptr->m_length > TOL_SMALL){
+        d_ptr->m_tVec = VectorFHelper::multiply_value(vecPrev2Next, 1/d_ptr->m_length);
 
         //nVec
         if(DIM_COORD == 2){
-            mp_pimpl->m_nVec[IDX_NORTHING] = -mp_pimpl->m_tVec[IDX_EASTING];
-            mp_pimpl->m_nVec[IDX_EASTING] = mp_pimpl->m_tVec[IDX_NORTHING];
+            d_ptr->m_nVec[IDX_NORTHING] = -d_ptr->m_tVec[IDX_EASTING];
+            d_ptr->m_nVec[IDX_EASTING] = d_ptr->m_tVec[IDX_NORTHING];
         }
         else if(DIM_COORD > 2){
             qFatal("[Segment::setSegmentAttributes()] DIM_COORD > 2 could not handled yet.");

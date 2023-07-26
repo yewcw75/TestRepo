@@ -14,27 +14,26 @@ public:
     VesShape::Type m_type{VesShape::Type::NOT_SET};
     VectorF m_offset; //[dNorthing, dEasting] in meters
     double m_rotation; //[deg]
-    bool m_valid{false};
 };
 
 //#########################
 //----------
 VesShape::VesShape()
-    : mp_pimpl(new VesShapePrivate)
+    : d_ptr(new VesShapePrivate)
 {
 
 }
 
 //----------
 VesShape::VesShape(const Type& type)
-    : mp_pimpl(new VesShapePrivate)
+    : d_ptr(new VesShapePrivate)
 {
-    mp_pimpl->m_type = type;
+    d_ptr->m_type = type;
 }
 
 //----------
 VesShape::VesShape(const VesShape &other)
-    : mp_pimpl(other.mp_pimpl)
+    : d_ptr(other.d_ptr)
 {
 
 }
@@ -43,7 +42,7 @@ VesShape::VesShape(const VesShape &other)
 VesShape &VesShape::operator=(const VesShape &other)
 {
     if (this != &other){
-        mp_pimpl = other.mp_pimpl;
+        d_ptr = other.d_ptr;
     }
     return *this;
 }
@@ -57,31 +56,37 @@ VesShape::~VesShape()
 //----------
 double VesShape::rotation() const
 {
-    return mp_pimpl->m_rotation;
+    return d_ptr->m_rotation;
 }
 
 //----------
 void VesShape::setRotation(double rotation)
 {
-    mp_pimpl->m_rotation = rotation;
+    d_ptr->m_rotation = rotation;
 }
 
 //----------
-const VectorF &VesShape::offset() const
+VesShape::Type VesShape::type() const
 {
-    return mp_pimpl->m_offset;
+    return(d_ptr->m_type);
+}
+
+//----------
+const VectorF& VesShape::offset() const
+{
+    return d_ptr->m_offset;
 }
 
 //----------
 void VesShape::setOffset(const VectorF &offset)
 {
-    mp_pimpl->m_offset = offset;
+    d_ptr->m_offset = offset;
 }
 
 //----------
 void VesShape::detach()
 {
-    mp_pimpl.detach();
+    d_ptr.detach();
 }
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

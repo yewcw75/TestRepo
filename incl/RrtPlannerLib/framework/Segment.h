@@ -207,7 +207,7 @@ public:
     friend RRTPLANNER_LIB_EXPORT QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::Segment& data);
 
 private:
-    QSharedDataPointer<SegmentPrivate> mp_pimpl;
+    QSharedDataPointer<SegmentPrivate> d_ptr;
 };
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

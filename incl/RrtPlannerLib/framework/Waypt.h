@@ -142,7 +142,7 @@ public:
     friend RRTPLANNER_LIB_EXPORT QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::Waypt &data);
 
 private:
-    QSharedDataPointer<WayptPrivate> mp_pimpl;
+    QSharedDataPointer<WayptPrivate> d_ptr;
 };
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

@@ -15,13 +15,13 @@ public:
           m_hdg_deg(other.m_hdg_deg),
           m_lon0_deg(other.m_lon0_deg)
     {
-        if(other.m_vesShape){
-            m_vesShape.reset(other.m_vesShape->clone());
+        if(other.mp_vesShape){
+            mp_vesShape.reset(other.mp_vesShape->clone());
         }
     }
     ~VesselPrivate() = default;
 public:
-    QScopedPointer<VesShape> m_vesShape{};
+    QSharedPointer<VesShape> mp_vesShape{};
     QDateTime m_timeStamp{};
     VectorF m_posNE{};
     VectorF m_velNE{};
@@ -31,14 +31,24 @@ public:
 
 //####################
 //----------
-Vessel::Vessel() : mp_pimpl(new VesselPrivate)
+Vessel::Vessel()
+    : d_ptr(new VesselPrivate)
 {
 
 }
 
 //----------
+Vessel::Vessel(const VectorF &posNE, double lon0_deg, const VectorF &velNE, double hdg_deg)
+    : d_ptr(new VesselPrivate)
+{
+    setPosNE(posNE, lon0_deg);
+    setVelNE(velNE);
+    setHdg_deg(hdg_deg);
+}
+
+//----------
 Vessel::Vessel(const Vessel &rhs)
-    : mp_pimpl{rhs.mp_pimpl}
+    : d_ptr{rhs.d_ptr}
 {
 
 }
@@ -47,7 +57,7 @@ Vessel::Vessel(const Vessel &rhs)
 Vessel &Vessel::operator=(const Vessel &rhs)
 {
     if (this != &rhs){
-        mp_pimpl.operator=(rhs.mp_pimpl);
+        d_ptr =rhs.d_ptr;
     }
     return *this;
 }
@@ -61,74 +71,86 @@ Vessel::~Vessel()
 //----------
 void Vessel::setPosNE(const VectorF &posNE, double lon0_deg)
 {
-    mp_pimpl->m_posNE = posNE;
-    mp_pimpl->m_lon0_deg = lon0_deg;
+    d_ptr->m_posNE = posNE;
+    d_ptr->m_lon0_deg = lon0_deg;
 }
 
 //----------
 double Vessel::lon0_deg() const
 {
-    return mp_pimpl->m_lon0_deg;
+    return d_ptr->m_lon0_deg;
 }
 
 //----------
 void Vessel::setLon0_deg(double lon0_deg)
 {
-    mp_pimpl->m_lon0_deg = lon0_deg;
+    d_ptr->m_lon0_deg = lon0_deg;
 }
 
 //----------
 const VectorF &Vessel::posNE() const
 {
-    return mp_pimpl->m_posNE;
+    return d_ptr->m_posNE;
 }
 
 //----------
 void Vessel::setPosNE(const VectorF &posNE)
 {
-    mp_pimpl->m_posNE = posNE;
+    d_ptr->m_posNE = posNE;
 }
 
 //----------
 double Vessel::hdg_deg() const
 {
-    return mp_pimpl->m_hdg_deg;
+    return d_ptr->m_hdg_deg;
 }
 
 //----------
 void Vessel::setHdg_deg(double hdg_deg)
 {
-   mp_pimpl->m_hdg_deg = hdg_deg;
+   d_ptr->m_hdg_deg = hdg_deg;
 }
 
 //----------
 const VectorF &Vessel::velNE() const
 {
-    return mp_pimpl->m_velNE;
+    return d_ptr->m_velNE;
 }
 
 //----------
 void Vessel::setVelNE(const VectorF &velNE)
 {
-    mp_pimpl->m_velNE = velNE;
+    d_ptr->m_velNE = velNE;
+}
+
+//----------
+void Vessel::setVesShape(const QSharedPointer<VesShape>& p_vesShape)
+{
+    d_ptr->mp_vesShape = p_vesShape;
+}
+
+//----------
+const QSharedPointer<VesShape>& Vessel::vesShape() const
+{
+    return d_ptr->mp_vesShape;
 }
 
 //----------
 const QDateTime &Vessel::timeStamp() const
 {
-    return mp_pimpl->m_timeStamp;
+    return d_ptr->m_timeStamp;
 }
 
 //----------
 void Vessel::setTimeStamp(const QDateTime &timeStamp)
 {
-    mp_pimpl->m_timeStamp = timeStamp;
+    d_ptr->m_timeStamp = timeStamp;
 }
 
 //----------
 void Vessel::setTimeStamp()
 {
-    mp_pimpl->m_timeStamp = QDateTime::currentDateTimeUtc();
+    d_ptr->m_timeStamp = QDateTime::currentDateTimeUtc();
 }
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

@@ -28,7 +28,7 @@ public:
 //---------
 Polygon::Polygon()
     : IShape(),
-      mp_pimpl(new PolygonPrivate)
+      d_ptr(new PolygonPrivate)
 {
 
 }
@@ -36,7 +36,7 @@ Polygon::Polygon()
 //---------
 Polygon::Polygon(const std::initializer_list<VectorF>& list)
     : IShape(),
-      mp_pimpl(new PolygonPrivate(list))
+      d_ptr(new PolygonPrivate(list))
 {
 
 }
@@ -44,7 +44,7 @@ Polygon::Polygon(const std::initializer_list<VectorF>& list)
 //---------
 Polygon::Polygon(const Polygon& other)
     :IShape(),
-      mp_pimpl(other.mp_pimpl)
+      d_ptr(other.d_ptr)
 {
 
 
@@ -54,7 +54,7 @@ Polygon::Polygon(const Polygon& other)
 Polygon& Polygon::operator=(const Polygon& other)
 {
     if(this != &other){
-        this->mp_pimpl = other.mp_pimpl;
+        this->d_ptr = other.d_ptr;
     }
     return(*this);
 }
@@ -76,24 +76,24 @@ Polygon* Polygon::clone() const
 //----------
 VectorF Polygon::centroid() const
 {
-    Q_ASSERT(mp_pimpl->m_vertexList.size() > 0);
+    Q_ASSERT(d_ptr->m_vertexList.size() > 0);
 
     VectorF ret{0.0, 0.0};
-    for(const VectorF& vertex: mp_pimpl->m_vertexList){
+    for(const VectorF& vertex: d_ptr->m_vertexList){
         ret = VectorFHelper::add_vector(ret, vertex);
     }
-    ret = VectorFHelper::multiply_value(ret, 1.0/mp_pimpl->m_vertexList.size());
+    ret = VectorFHelper::multiply_value(ret, 1.0/d_ptr->m_vertexList.size());
     return(ret);
 }
 
 //----------
 VectorF Polygon::support(const VectorF& dir) const
 {
-    Q_ASSERT(mp_pimpl->m_vertexList.size() > 0);
+    Q_ASSERT(d_ptr->m_vertexList.size() > 0);
 
     VectorF ret;
     double maxVal = -std::numeric_limits<double>::max();
-    for(const VectorF& vertex: mp_pimpl->m_vertexList){
+    for(const VectorF& vertex: d_ptr->m_vertexList){
         double val = VectorFHelper::dot_product(vertex, dir);
         if(val > maxVal){
             ret = vertex;
@@ -106,38 +106,38 @@ VectorF Polygon::support(const VectorF& dir) const
 //----------
 int Polygon::size() const
 {
-    return(mp_pimpl->m_vertexList.size());
+    return(d_ptr->m_vertexList.size());
 }
 
 //----------
 const VectorF& Polygon::at(int i) const
 {
-    return(mp_pimpl->m_vertexList.at(i));
+    return(d_ptr->m_vertexList.at(i));
 }
 
 //----------
 VectorF& Polygon::operator[](int i)
 {
-    return(mp_pimpl->m_vertexList[i]);
+    return(d_ptr->m_vertexList[i]);
 }
 
 //----------
 const QVector<VectorF>& Polygon::vertexList_const_ref() const
 {
-    return(mp_pimpl->m_vertexList);
+    return(d_ptr->m_vertexList);
 }
 
 //----------
 QVector<VectorF>& Polygon::vertexList()
 {
-    return(mp_pimpl->m_vertexList);
+    return(d_ptr->m_vertexList);
 }
 
 //----------
 QString Polygon::debugPrint() const
 {
     QString ret("[");
-    for(const VectorF& vertex: mp_pimpl->m_vertexList){
+    for(const VectorF& vertex: d_ptr->m_vertexList){
         ret += QString(" <") + \
                QString::number(vertex.at(IDX_NORTHING), 'f', 2) + ", " + \
                QString::number(vertex.at(IDX_EASTING), 'f', 2) + \
@@ -150,7 +150,7 @@ QString Polygon::debugPrint() const
 //----------
 void Polygon::detach()
 {
-    mp_pimpl.detach();
+    d_ptr.detach();
 }
 
 

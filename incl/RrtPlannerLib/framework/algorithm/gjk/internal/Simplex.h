@@ -80,7 +80,7 @@ public:
     double eps_square() const;
 
 private:
-    QScopedPointer<SimplexPrivate> mp_pimpl;
+    QScopedPointer<SimplexPrivate> d_ptr;
 };
 
 RRTPLANNER_FRAMEWORK_ALGORITHM_GJK_END_NAMESPACE

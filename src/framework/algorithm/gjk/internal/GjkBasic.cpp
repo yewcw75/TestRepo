@@ -29,11 +29,11 @@ public:
 //----------
 GjkBasic::GjkBasic()
     :Gjk(),
-      mp_pimpl(new GjkBasicPrivate)
+      d_ptr(new GjkBasicPrivate)
 {
     QScopedPointer<GjkComponentFactory> gjkFactory(GjkComponentFactoryCreator::getGjkComponentFactory(GjkComponentFactoryCreator::GjkType::Basic));
-    mp_pimpl->mp_simplex.reset(gjkFactory->getSimplex(eps_square()));
-    mp_pimpl->mp_support.reset(gjkFactory->getSupport(eps_square()));
+    d_ptr->mp_simplex.reset(gjkFactory->getSimplex(eps_square()));
+    d_ptr->mp_support.reset(gjkFactory->getSupport(eps_square()));
 }
 
 //----------
@@ -54,27 +54,27 @@ bool GjkBasic::chkIntersect(const IShape& shape1, const IShape& shape2,
     //initialize
     distance = 0.0;
     isValidDistance = false;
-    mp_pimpl->mp_simplex->reset();
-    mp_pimpl->mp_support->reset();
+    d_ptr->mp_simplex->reset();
+    d_ptr->mp_support->reset();
     VectorF searchDir = VectorFHelper::subtract_vector(shape2.centroid(), shape1.centroid()); //arbitrary search dir
     VectorF spp0;
-    Support::ResultFlag result_flag = mp_pimpl->mp_support->support(&shape1, &shape2, searchDir, false, spp0);
+    Support::ResultFlag result_flag = d_ptr->mp_support->support(&shape1, &shape2, searchDir, false, spp0);
 
     isIntersect = result_flag == Support::ResultFlag::SUPPORT_ON_ORIGIN;
     if(result_flag == Support::ResultFlag::SUPPORT_BEYOND_ORIGIN){
-        isIntersect = mp_pimpl->mp_simplex->update(spp0, searchDir);  //will call handle0D(v) in Simplex class. return searchDir as Origin - vertex[0]. bool return is ignored here.
+        isIntersect = d_ptr->mp_simplex->update(spp0, searchDir);  //will call handle0D(v) in Simplex class. return searchDir as Origin - vertex[0]. bool return is ignored here.
         Q_ASSERT(!isIntersect);
         //iteration
         int k = 0;
         while(k++ < max_iteration()){
             VectorF spp;
-            Support::ResultFlag result_flag = mp_pimpl->mp_support->support(&shape1, &shape2, searchDir, true, spp);
+            Support::ResultFlag result_flag = d_ptr->mp_support->support(&shape1, &shape2, searchDir, true, spp);
             isIntersect = result_flag == Support::ResultFlag::SUPPORT_ON_ORIGIN;
             if(isIntersect || result_flag == Support::ResultFlag::SUPPORT_SHORT_OF_ORIGIN) {
                 break;
             }
 
-            isIntersect =  mp_pimpl->mp_simplex->update(spp, searchDir); //note searchDir is updated with the next search direction to use
+            isIntersect =  d_ptr->mp_simplex->update(spp, searchDir); //note searchDir is updated with the next search direction to use
             if(isIntersect){
                 break;
             }

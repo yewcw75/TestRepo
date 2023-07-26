@@ -45,7 +45,7 @@ bool EllMapData::buildEllMap(double crossTrackHorizon,
             }
         } //for(const auto& side: sideList)
     }
-    else{ //mp_pimpl->mp_planNominal is null
+    else{ //d_ptr->mp_planNominal is null
         ret = false;
         results_desc_local = QString("[EllMap::buildEllMap] Build EllMap fails. Nominal plan is not set yet.");
     }
@@ -65,14 +65,14 @@ bool EllMapData::buildEllMap(double crossTrackHorizon,
 //#################
 //----------
 EllMap::EllMap()
-    : mp_pimpl(new EllMapData)
+    : d_ptr(new EllMapData)
 {
 
 }
 
 //----------
 EllMap::EllMap(const EllMap &rhs)
-    : mp_pimpl(rhs.mp_pimpl)
+    : d_ptr(rhs.d_ptr)
 {
 
 }
@@ -81,7 +81,7 @@ EllMap::EllMap(const EllMap &rhs)
 EllMap &EllMap::operator=(const EllMap &rhs)
 {
     if (this != &rhs){
-        mp_pimpl.operator=(rhs.mp_pimpl);
+        d_ptr.operator=(rhs.d_ptr);
     }
     return *this;
 }
@@ -95,32 +95,32 @@ EllMap::~EllMap()
 //----------
 void EllMap::setNominalPlan(const Plan& plan)
 {
-    mp_pimpl->mp_planNominal = QSharedPointer<Plan>(new Plan(plan));
+    d_ptr->mp_planNominal = QSharedPointer<Plan>(new Plan(plan));
 }
 
 //----------
 bool EllMap::buildEllMap(double crossTrackHorizon,
                          QString* results_desc)
 {
-    return(mp_pimpl->buildEllMap(crossTrackHorizon, results_desc));
+    return(d_ptr->buildEllMap(crossTrackHorizon, results_desc));
 }
 
 //----------
 int EllMap::nPlan() const
 {
-    return(mp_pimpl->m_planSharedPtrList.size());
+    return(d_ptr->m_planSharedPtrList.size());
 }
 
 //----------
 QSharedPointer<const Plan> EllMap::nominalPlan() const
 {
-    return(mp_pimpl->mp_planNominal);
+    return(d_ptr->mp_planNominal);
 }
 
 //----------
 QSharedPointer<const Plan> EllMap::at(int idx) const
 {
-    return(mp_pimpl->m_planSharedPtrList.at(idx));
+    return(d_ptr->m_planSharedPtrList.at(idx));
 }
 
 //----------

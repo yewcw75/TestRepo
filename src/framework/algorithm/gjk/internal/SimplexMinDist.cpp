@@ -147,7 +147,7 @@ bool SimplexMinDistPrivate::handle0D(VectorF& v)
 //####################
 SimplexMinDist::SimplexMinDist()
     :Simplex(),
-      mp_pimpl(new SimplexMinDistPrivate(this))
+      d_ptr(new SimplexMinDistPrivate(this))
 {
 
 }
@@ -155,7 +155,7 @@ SimplexMinDist::SimplexMinDist()
 //----------
 SimplexMinDist::SimplexMinDist(double eps_square)
     :Simplex(eps_square),
-      mp_pimpl(new SimplexMinDistPrivate(this))
+      d_ptr(new SimplexMinDistPrivate(this))
 {
 
 }
@@ -169,23 +169,23 @@ SimplexMinDist::~SimplexMinDist()
 //----------
 void SimplexMinDist::reset()
 {
-    mp_pimpl->m_vertexList.clear();
+    d_ptr->m_vertexList.clear();
 }
 
 //----------
 bool SimplexMinDist::update(const VectorF& vertex, VectorF& v)
 {
     bool isOriginInSimplex{false};
-    mp_pimpl->m_vertexList.append(vertex);
-    switch(mp_pimpl->m_vertexList.size()){
+    d_ptr->m_vertexList.append(vertex);
+    switch(d_ptr->m_vertexList.size()){
     case 3:
-        isOriginInSimplex = mp_pimpl->handle2D(v);
+        isOriginInSimplex = d_ptr->handle2D(v);
         break;
     case 2:
-        isOriginInSimplex = mp_pimpl->handle1D(v);
+        isOriginInSimplex = d_ptr->handle1D(v);
         break;
     default:
-        isOriginInSimplex = mp_pimpl->handle0D(v);
+        isOriginInSimplex = d_ptr->handle0D(v);
     }
     return(isOriginInSimplex);
 }

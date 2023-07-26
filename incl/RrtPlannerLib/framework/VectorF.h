@@ -128,7 +128,7 @@ public:
     friend RRTPLANNER_LIB_EXPORT QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::VectorF& data);
 
 private:
-    QSharedDataPointer<VectorFPrivate> mp_pimpl; /**< The QSharedDataPointer to the VectorF's private implementation. */
+    QSharedDataPointer<VectorFPrivate> d_ptr; /**< The QSharedDataPointer to the VectorF's private implementation. */
 };
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

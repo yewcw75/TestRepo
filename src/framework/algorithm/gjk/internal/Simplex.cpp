@@ -20,14 +20,14 @@ public:
 //###################
 //----------
 Simplex::Simplex()
-    :mp_pimpl(new SimplexPrivate)
+    :d_ptr(new SimplexPrivate)
 {
 
 }
 
 //----------
 Simplex::Simplex(double eps_square)
-    :mp_pimpl(new SimplexPrivate)
+    :d_ptr(new SimplexPrivate)
 {
     set_eps_square(eps_square);
 }
@@ -41,13 +41,13 @@ Simplex::~Simplex()
 //----------
 void Simplex::set_eps_square(double eps_square)
 {
-    mp_pimpl->m_eps_square = eps_square;
+    d_ptr->m_eps_square = eps_square;
 }
 
 //----------
 double Simplex::eps_square() const
 {
-    return(mp_pimpl->m_eps_square);
+    return(d_ptr->m_eps_square);
 }
 
 

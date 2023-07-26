@@ -94,7 +94,7 @@ public:
     friend RRTPLANNER_LIB_EXPORT QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::EllMap& data);
 
 private:
-    QSharedDataPointer<EllMapData> mp_pimpl;
+    QSharedDataPointer<EllMapData> d_ptr;
 };
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

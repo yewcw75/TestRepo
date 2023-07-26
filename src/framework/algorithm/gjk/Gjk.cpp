@@ -25,7 +25,7 @@ public:
 
 //----------
 Gjk::Gjk()
-    :mp_pimpl(new GjkPrivate)
+    :d_ptr(new GjkPrivate)
 {
 
 }
@@ -39,25 +39,25 @@ Gjk::~Gjk()
 //----------
 void Gjk::set_eps_square(double eps_square)
 {
-    mp_pimpl->m_eps_square = eps_square;
+    d_ptr->m_eps_square = eps_square;
 }
 
 //----------
 double Gjk::eps_square() const
 {
-    return(mp_pimpl->m_eps_square);
+    return(d_ptr->m_eps_square);
 }
 
 //----------
 void Gjk::set_max_iteration(int max_iteration)
 {
-    mp_pimpl->m_maxIter = max_iteration;
+    d_ptr->m_maxIter = max_iteration;
 }
 
 //----------
 int Gjk::max_iteration() const
 {
-    return(mp_pimpl->m_maxIter);
+    return(d_ptr->m_maxIter);
 }
 
 RRTPLANNER_FRAMEWORK_ALGORITHM_GJK_END_NAMESPACE

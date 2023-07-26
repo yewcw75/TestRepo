@@ -219,7 +219,7 @@ protected:
     void setSegmentList(const QVector<Segment>& segmentList);
 
 private:
-    QSharedDataPointer<PlanPrivate> mp_pimpl;
+    QSharedDataPointer<PlanPrivate> d_ptr;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Plan::PropertyFlags)

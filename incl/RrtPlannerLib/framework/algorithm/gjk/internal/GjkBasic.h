@@ -62,7 +62,7 @@ public:
     bool chkIntersect(const IShape& shape1, const IShape& shape2, double& distance, bool& isValidDistance);
 
 private:
-    QScopedPointer<GjkBasicPrivate> mp_pimpl;
+    QScopedPointer<GjkBasicPrivate> d_ptr;
 };
 
 RRTPLANNER_FRAMEWORK_ALGORITHM_GJK_END_NAMESPACE

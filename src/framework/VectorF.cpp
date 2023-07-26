@@ -30,27 +30,27 @@ public:
 //#########################
 //---------
 VectorF::VectorF()
-    :mp_pimpl(new VectorFPrivate())
+    :d_ptr(new VectorFPrivate())
 {
 
 }
 
 //---------
 VectorF::VectorF(const std::initializer_list<double>& list)
-    :mp_pimpl(new VectorFPrivate)
+    :d_ptr(new VectorFPrivate)
 {
     size_t size = list.size();
-    mp_pimpl->m_data->resize(size);
+    d_ptr->m_data->resize(size);
 
     size_t index = 0;
     for (const auto& value : list) {
-         (*mp_pimpl->m_data)[index++] = value;
+         (*d_ptr->m_data)[index++] = value;
     }
 }
 
 //---------
 VectorF::VectorF(const boost::numeric::ublas::vector<double>& data)
-    :mp_pimpl(new VectorFPrivate(data))
+    :d_ptr(new VectorFPrivate(data))
 {
 
 }
@@ -63,7 +63,7 @@ VectorF::~VectorF()
 
 //---------
 VectorF::VectorF(const VectorF& other)
-    :mp_pimpl(other.mp_pimpl)
+    :d_ptr(other.d_ptr)
 {
 
 }
@@ -72,7 +72,7 @@ VectorF::VectorF(const VectorF& other)
 VectorF& VectorF::operator=(const VectorF& other)
 {
     if(this != &other){
-        mp_pimpl = other.mp_pimpl;
+        d_ptr = other.d_ptr;
     }
     return(*this);
 }
@@ -80,49 +80,49 @@ VectorF& VectorF::operator=(const VectorF& other)
 //---------
 void VectorF::resize(int size, bool to_preserve_data)
 {
-    mp_pimpl->m_data->resize(size, to_preserve_data);
+    d_ptr->m_data->resize(size, to_preserve_data);
 }
 
 //---------
 int VectorF::size() const
 {
-    return(mp_pimpl->m_data->size());
+    return(d_ptr->m_data->size());
 }
 
 //---------
 double VectorF::at(int idx) const
 {
-    return((*mp_pimpl->m_data)[idx]);
+    return((*d_ptr->m_data)[idx]);
 }
 
 //---------
 double VectorF::operator[](int idx) const
 {
-    return((*mp_pimpl->m_data)[idx]);
+    return((*d_ptr->m_data)[idx]);
 }
 
 //---------
 double& VectorF::operator[](int idx)
 {
-    return((*mp_pimpl->m_data)[idx]);
+    return((*d_ptr->m_data)[idx]);
 }
 
 //---------
 void VectorF::set(const boost::numeric::ublas::vector<double>& data)
 {
-    *(mp_pimpl->m_data) = data;
+    *(d_ptr->m_data) = data;
 }
 
 //---------
 const boost::numeric::ublas::vector<double>& VectorF::data_const_ref() const
 {
-    return(*(mp_pimpl->m_data));
+    return(*(d_ptr->m_data));
 }
 
 //---------
 boost::numeric::ublas::vector<double>& VectorF::data()
 {
-    return(*(mp_pimpl->m_data));
+    return(*(d_ptr->m_data));
 }
 
 //---------

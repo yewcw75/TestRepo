@@ -87,7 +87,7 @@ public:
     int max_iteration() const;
 
 private:
-    QScopedPointer<GjkPrivate> mp_pimpl; // Private implementation pointer.
+    QScopedPointer<GjkPrivate> d_ptr; // Private implementation pointer.
 };
 
 /**

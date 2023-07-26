@@ -26,7 +26,7 @@ public:
 //##########################
 //----------
 Plan::Plan()
-    :mp_pimpl(new PlanPrivate())
+    :d_ptr(new PlanPrivate())
 {
 
 }
@@ -39,7 +39,7 @@ Plan::~Plan()
 
 //----------
 Plan::Plan(const Plan& other)
-    :mp_pimpl(other.mp_pimpl)
+    :d_ptr(other.d_ptr)
 {
 
 }
@@ -48,7 +48,7 @@ Plan::Plan(const Plan& other)
 Plan& Plan::operator=(const Plan& other)
 {
     if(this != &other){
-        mp_pimpl = other.mp_pimpl;
+        d_ptr = other.d_ptr;
     }
     return(*this);
 }
@@ -56,10 +56,10 @@ Plan& Plan::operator=(const Plan& other)
 //----------
 void Plan::clearPlan()
 {
-    mp_pimpl->m_segmentList.clear();
-    mp_pimpl->m_propertyFlags = Property::NONE;
-    mp_pimpl->m_crossTrack = 0.0;
-    mp_pimpl->m_id = 0.0;
+    d_ptr->m_segmentList.clear();
+    d_ptr->m_propertyFlags = Property::NONE;
+    d_ptr->m_crossTrack = 0.0;
+    d_ptr->m_id = 0.0;
 }
 
 //----------
@@ -99,25 +99,25 @@ bool  Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
 //----------
 void Plan::setId(int id)
 {
-    mp_pimpl->m_id = id;
+    d_ptr->m_id = id;
 }
 
 //----------
 int Plan::id() const
 {
-    return(mp_pimpl->m_id);
+    return(d_ptr->m_id);
 }
 
 //----------
 int Plan::nSegment() const
 {
-    return(mp_pimpl->m_segmentList.size());
+    return(d_ptr->m_segmentList.size());
 }
 
 //----------
 int Plan::nWaypt() const
 {
-    return(mp_pimpl->m_segmentList.size() + 1);
+    return(d_ptr->m_segmentList.size() + 1);
 }
 
 //----------
@@ -130,10 +130,10 @@ QVector<Waypt> Plan::wayptList() const
 {
     QVector<Waypt> res;
     QVector<Segment>::const_iterator it;
-    for(it = mp_pimpl->m_segmentList.begin();
-        it != mp_pimpl->m_segmentList.end();
+    for(it = d_ptr->m_segmentList.begin();
+        it != d_ptr->m_segmentList.end();
         ++it){
-        if(it == mp_pimpl->m_segmentList.begin()){
+        if(it == d_ptr->m_segmentList.begin()){
             res.append(it->wayptPrev());
         }
         res.append(it->wayptNext());
@@ -144,7 +144,7 @@ QVector<Waypt> Plan::wayptList() const
 //----------
 const QVector<Segment>& Plan::segmentList() const
 {
-    return(mp_pimpl->m_segmentList);
+    return(d_ptr->m_segmentList);
 }
 
 //----------
@@ -152,8 +152,8 @@ const QVector<Segment>& Plan::segmentList() const
 double Plan::length() const
 {
     double length = 0.0;
-    if(mp_pimpl->m_segmentList.size() > 0){
-        length = mp_pimpl->m_segmentList.last().lengthCumulative();
+    if(d_ptr->m_segmentList.size() > 0){
+        length = d_ptr->m_segmentList.last().lengthCumulative();
     }
     return(length);
 }
@@ -161,37 +161,37 @@ double Plan::length() const
 //----------
 void Plan::setCrossTrack(double crossTrack)
 {
-    mp_pimpl->m_crossTrack = crossTrack;
+    d_ptr->m_crossTrack = crossTrack;
 }
 
 //----------
 double Plan::crossTrack() const
 {
-    return(mp_pimpl->m_crossTrack);
+    return(d_ptr->m_crossTrack);
 }
 
 //----------
 void Plan::setProperty(const Property& property, bool on)
 {
-    mp_pimpl->m_propertyFlags.setFlag(property, on);
+    d_ptr->m_propertyFlags.setFlag(property, on);
 }
 
 //----------
 bool Plan::testProperty(const Property& property) const
 {
-    return(mp_pimpl->m_propertyFlags.testFlag(property));
+    return(d_ptr->m_propertyFlags.testFlag(property));
 }
 
 //----------
 void Plan::setPropertyFlags(const PropertyFlags& flags)
 {
-    mp_pimpl->m_propertyFlags = flags;
+    d_ptr->m_propertyFlags = flags;
 }
 
 //----------
 const Plan::PropertyFlags& Plan::propertyFlags() const
 {
-    return(mp_pimpl->m_propertyFlags);
+    return(d_ptr->m_propertyFlags);
 }
 
 //----------
@@ -244,7 +244,7 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
 
     //start to build plan if verify plan is ok
     if(res_ok){
-        mp_pimpl->m_segmentList.clear();
+        d_ptr->m_segmentList.clear();
 
         //form segment and append to segment list
         double lengthCumulative = 0;
@@ -261,7 +261,7 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
                 segment.setbVecPrev(segment.nVec());
             }
             else{
-                Segment& segmentPrev = mp_pimpl->m_segmentList.last();
+                Segment& segmentPrev = d_ptr->m_segmentList.last();
                 segment.setbVecPrev(segmentPrev);
                 segmentPrev.setbVecNext(segment.bVecPrev());
             }
@@ -271,7 +271,7 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
             }
 
             //add segment
-            mp_pimpl->m_segmentList.append(segment);
+            d_ptr->m_segmentList.append(segment);
 
             //for next iteration
             wayptPrev = wayptNext;
@@ -285,14 +285,14 @@ bool Plan::setPlan(const QVector<Waypt>& wayptList, //waypt list to set plan
 void Plan::appendSegment(const Segment& segment)
 {
     double lengthCumulative = this->length() + segment.length(); //expected cumulative length
-    mp_pimpl->m_segmentList.append(segment);
-    mp_pimpl->m_segmentList.last().setLengthCumulative(lengthCumulative);
+    d_ptr->m_segmentList.append(segment);
+    d_ptr->m_segmentList.last().setLengthCumulative(lengthCumulative);
 }
 
 //----------
 void Plan::setSegmentList(const QVector<Segment>& segmentList)
 {
-    mp_pimpl->m_segmentList = segmentList;
+    d_ptr->m_segmentList = segmentList;
 }
 //----------
 

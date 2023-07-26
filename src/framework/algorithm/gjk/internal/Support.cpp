@@ -20,14 +20,14 @@ public:
 //###################
 //----------
 Support::Support()
-    :mp_pimpl(new SupportPrivate)
+    :d_ptr(new SupportPrivate)
 {
 
 }
 
 //----------
 Support::Support(double eps_square)
-    :mp_pimpl(new SupportPrivate)
+    :d_ptr(new SupportPrivate)
 {
     set_eps_square(eps_square);
 }
@@ -41,13 +41,13 @@ Support::~Support()
 //----------
 void Support::set_eps_square(double eps_square)
 {
-    mp_pimpl->m_eps_square = eps_square;
+    d_ptr->m_eps_square = eps_square;
 }
 
 //----------
 double Support::eps_square() const
 {
-    return(mp_pimpl->m_eps_square);
+    return(d_ptr->m_eps_square);
 }
 
 
