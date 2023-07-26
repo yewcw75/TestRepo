@@ -6,6 +6,10 @@
 #include "VectorFQTests.h"
 #include "VectorFHelperQTests.h"
 #include "EllMapQTests.h"
+
+#include "VesRectangleQTests.h"
+#include "VesselQTests.h"
+
 #include "PolygonQTests.h"
 #include "SimplexQTests.h"
 #include "GjkQTests.h"
@@ -23,6 +27,10 @@ int main(int argc, char* argv[])
     PlanHelperQTests    planHelperQTests;
     UblasHelperQTests   linearAlgebraHelperQTests;
     EllMapQTests        ellMapQTests;
+
+    VesRectangleQTests  vesRectangleQTests;
+    VesselQTests        vesselQTests;
+
     PolygonQTests       polygonQTests;
     SimplexQTests       simplexQTests;
     GjkQTests           gjkQTests;
@@ -36,6 +44,10 @@ int main(int argc, char* argv[])
             QTest::qExec(&planHelperQTests, argc, argv) + \
             QTest::qExec(&linearAlgebraHelperQTests, argc, argv) + \
             QTest::qExec(&ellMapQTests, argc, argv) + \
+
+            QTest::qExec(&vesRectangleQTests, argc, argv) + \
+            QTest::qExec(&vesselQTests, argc, argv) + \
+
             QTest::qExec(&polygonQTests, argc, argv) + \
             QTest::qExec(&simplexQTests, argc, argv) + \
             QTest::qExec(&gjkQTests, argc, argv);
