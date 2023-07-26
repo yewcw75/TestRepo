@@ -18,8 +18,7 @@ public:
         :mp_parent(parent)
     {}
     SimplexBasicPrivate(const SimplexBasicPrivate& other) = delete; //non-copyable
-    ~SimplexBasicPrivate()
-    {}
+    ~SimplexBasicPrivate() = default;
 
     bool handle2D(VectorF& v);
     bool handle1D(VectorF& v);

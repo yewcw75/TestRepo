@@ -12,20 +12,13 @@ RRTPLANNER_FRAMEWORK_ALGORITHM_GJK_BEGIN_NAMESPACE
 class GjkPrivate
 {
 public:
-    GjkPrivate()
-        :m_eps_square(EPS_SQUARE),
-          m_maxIter(MAX_ITER)
-    {
-
-    }
-    ~GjkPrivate()
-    {}
+    GjkPrivate() = default;
+    GjkPrivate(const GjkPrivate& other) = delete;
+    ~GjkPrivate() = default;
 
 public:
-    QScopedPointer<Simplex> mp_simplex{};
-    QScopedPointer<Support> mp_support{};
-    double m_eps_square{};
-    int m_maxIter{}; //Max number of iterations
+    double m_eps_square{EPS_SQUARE};
+    int m_maxIter{MAX_ITER}; //Max number of iterations
 };
 
 //####################

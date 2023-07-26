@@ -20,20 +20,8 @@ public:
         m_bVecPrev.resize(DIM_COORD);
         m_bVecNext.resize(DIM_COORD);
     }
-    ~SegmentPrivate()
-    {}
-    SegmentPrivate(const SegmentPrivate& other)
-        : QSharedData(other),
-          m_wayptPrev(other.m_wayptPrev),
-          m_wayptNext(other.m_wayptNext),
-          m_tVec(other.m_tVec),
-          m_nVec(other.m_nVec),
-          m_bVecPrev(other.m_bVecPrev),
-          m_bVecNext(other.m_bVecNext),
-          m_length(other.m_length),
-          m_lengthCumulative(other.m_lengthCumulative),
-          m_id(other.m_id)
-    {}
+    ~SegmentPrivate() = default;
+    SegmentPrivate(const SegmentPrivate& other) = default;
     void calculateBisector(const Segment& seg1, const Segment& seg2, VectorF& bVec);
 
 public:

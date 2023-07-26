@@ -15,14 +15,8 @@ public:
     {
         m_coord.resize(DIM_COORD);
     }
-    ~WayptPrivate()
-    {}
-    WayptPrivate(const WayptPrivate& other)
-        : QSharedData(other),
-          m_coord(other.m_coord),
-          m_lon0_deg(other.m_lon0_deg),
-          m_id(other.m_id)
-    {}
+    ~WayptPrivate() = default;
+    WayptPrivate(const WayptPrivate& other) = default;
 
 public:
     VectorF m_coord;

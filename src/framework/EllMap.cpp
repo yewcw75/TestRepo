@@ -13,16 +13,9 @@ RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 class EllMapData : public QSharedData
 {
 public:
-    EllMapData()
-        :QSharedData()
-    {}
-    ~EllMapData()
-    {}
-    EllMapData(const EllMapData& rhs)
-        :QSharedData(rhs),
-          m_planSharedPtrList(rhs.m_planSharedPtrList),
-          mp_planNominal(rhs.mp_planNominal)
-    {}
+    EllMapData() = default;
+    ~EllMapData() = default;
+    EllMapData(const EllMapData& rhs) = default;
 
     bool buildEllMap(double crossTrackHorizon,
                              QString* results_desc);

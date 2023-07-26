@@ -14,10 +14,9 @@ RRTPLANNER_FRAMEWORK_ALGORITHM_GJK_BEGIN_NAMESPACE
 class GjkMinDistPrivate
 {
 public:
-    GjkMinDistPrivate()
-    {}
-    ~GjkMinDistPrivate()
-    {}
+    GjkMinDistPrivate() = default;
+    GjkMinDistPrivate(const GjkMinDistPrivate& other) = delete;
+    ~GjkMinDistPrivate() = default;
 
 public:
     QScopedPointer<Simplex> mp_simplex;

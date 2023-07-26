@@ -9,7 +9,7 @@ RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 class VectorFPrivate: public QSharedData
 {
 public:
-    VectorFPrivate(int size = 0)
+    explicit VectorFPrivate(int size = 0)
         :QSharedData(),
           m_data(new bnu::vector<double>(size))
     {}
@@ -21,7 +21,7 @@ public:
         : QSharedData(other),
           m_data(new bnu::vector<double>(*other.m_data))
     {}
-    ~VectorFPrivate(){}
+    ~VectorFPrivate() = default;
 
 public:
     QScopedPointer<bnu::vector<double>> m_data;

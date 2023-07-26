@@ -12,18 +12,9 @@ RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 class PlanPrivate: public QSharedData
 {
 public:
-    PlanPrivate()
-        :QSharedData()
-    {}
-    ~PlanPrivate()
-    {}
-    PlanPrivate(const PlanPrivate& other)
-        :QSharedData(other),
-          m_segmentList(other.m_segmentList),
-          m_propertyFlags(other.m_propertyFlags),
-          m_crossTrack(other.m_crossTrack),
-          m_id(other.m_id)
-    {}
+    PlanPrivate() = default;
+    ~PlanPrivate() = default;
+    PlanPrivate(const PlanPrivate& other) = default;
 
 public:
     QVector<Segment> m_segmentList;

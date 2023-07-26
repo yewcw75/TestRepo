@@ -9,11 +9,9 @@ RRTPLANNER_FRAMEWORK_ALGORITHM_GJK_BEGIN_NAMESPACE
 class SimplexPrivate
 {
 public:
-    SimplexPrivate()
-    {}
+    SimplexPrivate() = default;
     SimplexPrivate(const SimplexPrivate& other) = delete; //non-copyable
-    ~SimplexPrivate()
-    {}
+    ~SimplexPrivate() = default;
 
 public:
     double m_eps_square{EPS_SQUARE_DEFAULT};

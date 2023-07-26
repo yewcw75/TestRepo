@@ -9,11 +9,9 @@ RRTPLANNER_FRAMEWORK_ALGORITHM_GJK_BEGIN_NAMESPACE
 class SupportPrivate
 {
 public:
-    SupportPrivate()
-    {}
+    SupportPrivate() = default;
     SupportPrivate(const SupportPrivate& other) = delete; //non-copyable
-    ~SupportPrivate()
-    {}
+    ~SupportPrivate() = default;
 
 public:
     double m_eps_square{EPS_SQUARE_DEFAULT};

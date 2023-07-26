@@ -18,8 +18,7 @@ public:
         :mp_parent(parent)
     {}
     SimplexMinDistPrivate(const SimplexMinDistPrivate& other) = delete; //non-copyable
-    ~SimplexMinDistPrivate()
-    {}
+    ~SimplexMinDistPrivate() = default;
 
     bool handle2D(VectorF& v);
     bool handle1D(VectorF& v);

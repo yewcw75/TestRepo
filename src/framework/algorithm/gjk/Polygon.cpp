@@ -12,23 +12,16 @@ RRTPLANNER_FRAMEWORK_ALGORITHM_GJK_BEGIN_NAMESPACE
 class PolygonPrivate: public QSharedData
 {
 public:
-    PolygonPrivate()
-        :QSharedData(),
-          mp_vertexList(new QVector<VectorF>())
-    {}
+    PolygonPrivate() = default;
     PolygonPrivate(const std::initializer_list<VectorF>& list)
         :QSharedData(),
-          mp_vertexList(new QVector<VectorF>(list))
-    {}
-    ~PolygonPrivate()
-    {}
-    PolygonPrivate(const PolygonPrivate& other)
-        :QSharedData(other),
-          mp_vertexList(new QVector<VectorF>(*other.mp_vertexList))
-    {}
+          m_vertexList(list)
+    {}   
+    PolygonPrivate(const PolygonPrivate& other) = default;
+    ~PolygonPrivate() = default;
 
 public:
-    QScopedPointer<QVector<VectorF>> mp_vertexList;
+    QVector<VectorF> m_vertexList;
 
 };
 
@@ -83,24 +76,24 @@ Polygon* Polygon::clone() const
 //----------
 VectorF Polygon::centroid() const
 {
-    Q_ASSERT(mp_pimpl->mp_vertexList->size() > 0);
+    Q_ASSERT(mp_pimpl->m_vertexList.size() > 0);
 
     VectorF ret{0.0, 0.0};
-    for(const VectorF& vertex: *mp_pimpl->mp_vertexList){
+    for(const VectorF& vertex: mp_pimpl->m_vertexList){
         ret = VectorFHelper::add_vector(ret, vertex);
     }
-    ret = VectorFHelper::multiply_value(ret, 1.0/mp_pimpl->mp_vertexList->size());
+    ret = VectorFHelper::multiply_value(ret, 1.0/mp_pimpl->m_vertexList.size());
     return(ret);
 }
 
 //----------
 VectorF Polygon::support(const VectorF& dir) const
 {
-    Q_ASSERT(mp_pimpl->mp_vertexList->size() > 0);
+    Q_ASSERT(mp_pimpl->m_vertexList.size() > 0);
 
     VectorF ret;
     double maxVal = -std::numeric_limits<double>::max();
-    for(const VectorF& vertex: *mp_pimpl->mp_vertexList){
+    for(const VectorF& vertex: mp_pimpl->m_vertexList){
         double val = VectorFHelper::dot_product(vertex, dir);
         if(val > maxVal){
             ret = vertex;
@@ -113,38 +106,38 @@ VectorF Polygon::support(const VectorF& dir) const
 //----------
 int Polygon::size() const
 {
-    return(mp_pimpl->mp_vertexList->size());
+    return(mp_pimpl->m_vertexList.size());
 }
 
 //----------
 const VectorF& Polygon::at(int i) const
 {
-    return(mp_pimpl->mp_vertexList->at(i));
+    return(mp_pimpl->m_vertexList.at(i));
 }
 
 //----------
 VectorF& Polygon::operator[](int i)
 {
-    return(mp_pimpl->mp_vertexList->operator[](i));
+    return(mp_pimpl->m_vertexList[i]);
 }
 
 //----------
 const QVector<VectorF>& Polygon::vertexList_const_ref() const
 {
-    return(*mp_pimpl->mp_vertexList);
+    return(mp_pimpl->m_vertexList);
 }
 
 //----------
 QVector<VectorF>& Polygon::vertexList()
 {
-    return(*mp_pimpl->mp_vertexList);
+    return(mp_pimpl->m_vertexList);
 }
 
 //----------
 QString Polygon::debugPrint() const
 {
     QString ret("[");
-    for(const VectorF& vertex: *mp_pimpl->mp_vertexList){
+    for(const VectorF& vertex: mp_pimpl->m_vertexList){
         ret += QString(" <") + \
                QString::number(vertex.at(IDX_NORTHING), 'f', 2) + ", " + \
                QString::number(vertex.at(IDX_EASTING), 'f', 2) + \
