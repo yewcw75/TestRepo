@@ -28,9 +28,14 @@ class RRTPLANNER_LIB_EXPORT IShape
 {
 public:
     /**
-     * @brief Default constructor.
+     * @brief Default constructor
      */
     IShape() = default;
+
+    /**
+     * @brief Default copy constructor
+     */
+    IShape(const IShape& other) = default;
 
     /**
      * @brief Virtual destructor.

@@ -65,6 +65,12 @@ add_library(${PROJECT_NAME} SHARED
   src/framework/PlanHelper.cpp
   incl/${PROJECT_NAME}/framework/EllMap.h
   src/framework/EllMap.cpp
+  incl/${PROJECT_NAME}/framework/Vessel.h
+  src/framework/Vessel.cpp
+  incl/${PROJECT_NAME}/framework/VesShape.h
+  src/framework/VesShape.cpp
+  incl/${PROJECT_NAME}/framework/VesRectangle.h
+  src/framework/VesRectangle.cpp
 
   incl/${PROJECT_NAME}/framework/algorithm/gjk/GjkDefines.h
   incl/${PROJECT_NAME}/framework/algorithm/gjk/GjkFactory.h
