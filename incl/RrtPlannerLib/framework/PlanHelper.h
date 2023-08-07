@@ -99,10 +99,10 @@ public:
      * @param[out] results_desc Pointer to store a description of the operation result.
      * @return True if the operation is successful, false otherwise.
      */
-    static bool buildSingleSideEllMap(const QSharedPointer<Plan> p_planNominal,
+    static bool buildSingleSideEllMap(const Plan& planNominal,
                                        double side,
                                        double crossTrackHorizon,
-                                       QList<QSharedPointer<Plan>>& planList,
+                                       QList<Plan>& planList,
                                        QString* results_desc);
 
     /**
@@ -113,7 +113,7 @@ public:
      * Note: The approach assumes that if there are no missing segment, the segment ids should
      * run from 0 to (nSegmentNominal - 1).
      */
-    static void insertDummySegments(QSharedPointer<Plan>& plan, int nSegNominal);
+    static void insertDummySegments(Plan& plan, int nSegNominal);
 
     /**
      * @brief Pushes a plan to the planList based on the specified side.
@@ -121,9 +121,9 @@ public:
      * @param side The side to prepend or append the plan: -1.0 for prepend (port side), 1.0 for append (starboard side).
      * @param planList The list of plans to be prepended or appended.
      */
-    static void pushPlan(const QSharedPointer<Plan>& plan,
+    static void pushPlan(const Plan& plan,
                          double side,
-                         QList<QSharedPointer<Plan>>& planList);
+                         QList<Plan>& planList);
 
     /**
      * @brief Finds an offset point given params as illustrated.

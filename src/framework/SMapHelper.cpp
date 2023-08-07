@@ -34,7 +34,7 @@ SMap SMapHelper::create(const EllMap& ellMap,
     const QVector<double>& ellList = root_data.ell_list_const_ref();
 
     //first plan
-    Plan planPrev = *ellMap.at(0);
+    Plan planPrev = ellMap.at(0);
     SPlan sPlan;
     sPlan.setCrosstrack(planPrev.crossTrack());
     double lh{}, ellMaxPrev{};
@@ -46,11 +46,11 @@ SMap SMapHelper::create(const EllMap& ellMap,
     }
 
     //Subsequent plans
-    for (int idx_p = 1; idx_p < ellMap.nPlan(); ++idx_p){
+    for (int idx_p = 1; idx_p < ellMap.size(); ++idx_p){
         double lhNext{}, ellMaxNext{};
-        determineArcLengthHorizon(*ellMap.at(idx_p), ellList.at(idx_p), lh0, lhNext, ellMaxNext);
+        determineArcLengthHorizon(ellMap.at(idx_p), ellList.at(idx_p), lh0, lhNext, ellMaxNext);
 
-        Plan planNext = *ellMap.at(idx_p);
+        Plan planNext = ellMap.at(idx_p);
         appendSPlans(planPrev, ellMaxPrev,
                      planNext, lhNext, ellMaxNext,
                      lh0, th0, umin, umax, sMap);

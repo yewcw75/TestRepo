@@ -52,41 +52,34 @@ public:
     EllMap& operator=(const EllMap& rhs);
 
     /**
-     * @brief Sets the nominal plan for the EllMap.
-     * @param plan The nominal plan to set.
-     *
-     * Note: The plan ID of the stored nominal plan will be replaced with the index in EllMap's plan list after buildEllMap() is called.
-     */
-    void setNominalPlan(const Plan& plan);
-
-    /**
      * @brief Builds an EllMap based on the currently set nominal plan.
+     * @param plan The nominal plan to set.
      * @param crossTrackHorizon The maximum cross-track distance to generate offset plans [m].
      * @param results_desc Optional pointer to return the description of the result.
      * @return True if the map is successfully built, false otherwise.
      *
      * This function clears the current EllMap and builds a new EllMap based on the currently set nominal plan.
      */
-    bool buildEllMap(double crossTrackHorizon, QString* results_desc = nullptr);
+    bool buildEllMap(Plan plan, double crossTrackHorizon, QString* results_desc = nullptr);
 
     /**
      * @brief Gets the number of plans in the EllMap.
      * @return The number of plans.
      */
-    int nPlan() const;
+    int size() const;
 
     /**
      * @brief Gets the nominal plan of the EllMap.
-     * @return A shared pointer to the nominal plan.
+     * @return A const reference to the nominal plan.
      */
-    QSharedPointer<const Plan> nominalPlan() const;
+    Plan planNominal() const;
 
     /**
      * @brief Gets the plan at the specified index in the EllMap.
      * @param idx The index of the plan to get.
-     * @return A shared pointer to the plan at the specified index.
+     * @return A const reference to the plan at the specified index.
      */
-    QSharedPointer<const Plan> at(int idx) const;
+    const Plan& at(int idx) const;
 
     /**
      * @brief Locate the sector in EllMap given a position.
@@ -97,12 +90,19 @@ public:
      * @param[out] segIdx segment idx associated with the found sector.
      * @return bool True if sector is found. False if given position is out of the Ellmap boundaries.
      */
-    bool locateSector(const VectorF& posNE,
+    [[nodiscard]] bool locateSector(const VectorF& posNE,
                       int planIdx_0, int segIdx_0,
                       int& planIdx, int& segIdx
                       ) const;
 
-    bool getRootData(const VectorF& posNE, RootData& rootData) const;
+    /**
+     * @brief Get root data with given usv position.
+     * @param posNE usv position in [Northing, Easting] metres
+     * @param[in][out] rootData The planIdx and segIdx set upon input will be used as a starting point for search. Thereafter,
+     * upon output, it will be overwritten with the found planIdx and segIdx for the given posNE input.
+     * @return bool True if the sector for the given usv position can be found. If false => usv is out of EllMap boundaries.
+     */
+    [[nodiscard]] bool getRootData(const VectorF& posNE, RootData& rootData) const;
 
     /**
      * @brief Overloads the << operator to output the EllMap object to the debug stream.

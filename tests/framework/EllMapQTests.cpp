@@ -136,9 +136,8 @@ void EllMapQTests::verify_buildEllMap()
     QFETCH(QVector<MockPlan>, planList_expect);
 
     EllMap ellMap;
-    ellMap.setNominalPlan(planNominal);
     QString res_desc;
-    bool res_ok = ellMap.buildEllMap(crossTrackHorizon, &res_desc);
+    bool res_ok = ellMap.buildEllMap(planNominal, crossTrackHorizon, &res_desc);
 
     //qInfo() << "Results description: " << res_desc;
     QVERIFY(res_ok);
@@ -147,16 +146,16 @@ void EllMapQTests::verify_buildEllMap()
     //qInfo() << ellMap;
 
     //compare plans with expected results
-    QCOMPARE(ellMap.nPlan(), planList_expect.size());
-    for(int i = 0; i < ellMap.nPlan(); ++i){
+    QCOMPARE(ellMap.size(), planList_expect.size());
+    for(int i = 0; i < ellMap.size(); ++i){
         //qInfo() << "RESULTS : " << *planList.at(i);
         //qInfo() << "EXPECTED: " << planList_expected.at(i);
-        QCOMPARE(ellMap.at(i)->id(), planList_expect.at(i).id());
-        QCOMPARE(ellMap.at(i)->nSegment(), planList_expect.at(i).nSegment());
-        QVERIFY(UtilHelper::compare(ellMap.at(i)->crossTrack(), planList_expect.at(i).crossTrack()));
-        QVERIFY(UtilHelper::compare(ellMap.at(i)->length(), planList_expect.at(i).length()));
-        for(int j = 0; j < ellMap.at(i)->nSegment(); ++j){
-            const Segment& seg = ellMap.at(i)->segmentList().at(j);
+        QCOMPARE(ellMap.at(i).id(), planList_expect.at(i).id());
+        QCOMPARE(ellMap.at(i).nSegment(), planList_expect.at(i).nSegment());
+        QVERIFY(UtilHelper::compare(ellMap.at(i).crossTrack(), planList_expect.at(i).crossTrack()));
+        QVERIFY(UtilHelper::compare(ellMap.at(i).length(), planList_expect.at(i).length()));
+        for(int j = 0; j < ellMap.at(i).nSegment(); ++j){
+            const Segment& seg = ellMap.at(i).segmentList().at(j);
             const Segment& seg_expected = planList_expect.at(i).segmentList().at(j);
             QVERIFY(UtilHelper::compare(seg.wayptPrev().easting(), seg_expected.wayptPrev().easting()));
             QVERIFY(UtilHelper::compare(seg.wayptPrev().northing(), seg_expected.wayptPrev().northing()));
@@ -205,9 +204,8 @@ void EllMapQTests::verify_locateSector()
     QFETCH(int, segIdx_expect);
 
     EllMap ellMap;
-    ellMap.setNominalPlan(planNominal);
     QString res_desc;
-    bool res_ok = ellMap.buildEllMap(crossTrackHorizon, &res_desc);
+    bool res_ok = ellMap.buildEllMap(planNominal, crossTrackHorizon, &res_desc);
 
     //qInfo() << "Results description: " << res_desc;
     QVERIFY(res_ok);
@@ -274,9 +272,8 @@ void EllMapQTests::verify_getRootData()
     QFETCH(QVector<double>, ell_list_expect);
 
     EllMap ellMap;
-    ellMap.setNominalPlan(planNominal);
     QString res_desc;
-    bool res_ok = ellMap.buildEllMap(crossTrackHorizon, &res_desc);
+    bool res_ok = ellMap.buildEllMap(planNominal, crossTrackHorizon, &res_desc);
 
     //qInfo() << "Results description: " << res_desc;
     QVERIFY(res_ok);

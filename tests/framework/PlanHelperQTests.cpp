@@ -161,15 +161,15 @@ void PlanHelperQTests::verify_getCrossTrackPlan()
 //----------
 void PlanHelperQTests::verify_pushPlan()
 {
-    QSharedPointer<Plan> p_plan1(new Plan), p_plan2(new Plan), p_plan3(new Plan);
-    p_plan1->setId(1); p_plan2->setId(2); p_plan3->setId(3);
-    QList<QSharedPointer<Plan>> planList{p_plan2};
+    Plan p_plan1, p_plan2, p_plan3;
+    p_plan1.setId(1); p_plan2.setId(2); p_plan3.setId(3);
+    QList<Plan> planList{p_plan2};
     PlanHelper::pushPlan(p_plan1, -1.0, planList);
     PlanHelper::pushPlan(p_plan3, 1.0, planList);
 
-    QCOMPARE(planList.at(0)->id(), 1);
-    QCOMPARE(planList.at(1)->id(), 2);
-    QCOMPARE(planList.at(2)->id(), 3);
+    QCOMPARE(planList.at(0).id(), 1);
+    QCOMPARE(planList.at(1).id(), 2);
+    QCOMPARE(planList.at(2).id(), 3);
 }
 
 //----------
@@ -256,9 +256,9 @@ void PlanHelperQTests::verify_buildSingleSideEllMaps()
     QFETCH(double, crossTrackHorizon);
     QFETCH(QVector<MockPlan>, planList_expected);
 
-    QList<QSharedPointer<Plan>> planList;
+    QList<Plan> planList;
     QString results_desc;
-    bool result = PlanHelper::buildSingleSideEllMap(QSharedPointer<Plan>(new Plan(plan)), //nominal plan
+    bool result = PlanHelper::buildSingleSideEllMap(plan, //nominal plan
                                     side, //-1.0 : port side, 1.0 : stbd side
                                     crossTrackHorizon, //[m] always a positive variable
                                     planList, //planList to prepend/append
@@ -270,11 +270,11 @@ void PlanHelperQTests::verify_buildSingleSideEllMaps()
     for(int i = 0; i < planList.size(); ++i){
         //qInfo() << "RESULTS : " << *planList.at(i);
         //qInfo() << "EXPECTED: " << planList_expected.at(i);
-        QCOMPARE(planList.at(i)->nSegment(), planList_expected.at(i).nSegment());
-        QVERIFY(UtilHelper::compare(planList.at(i)->crossTrack(), planList_expected.at(i).crossTrack()));
-        QVERIFY(UtilHelper::compare(planList.at(i)->length(), planList_expected.at(i).length()));
-        for(int j = 0; j < planList.at(i)->nSegment(); ++j){
-            const Segment& seg = planList.at(i)->segmentList().at(j);
+        QCOMPARE(planList.at(i).nSegment(), planList_expected.at(i).nSegment());
+        QVERIFY(UtilHelper::compare(planList.at(i).crossTrack(), planList_expected.at(i).crossTrack()));
+        QVERIFY(UtilHelper::compare(planList.at(i).length(), planList_expected.at(i).length()));
+        for(int j = 0; j < planList.at(i).nSegment(); ++j){
+            const Segment& seg = planList.at(i).segmentList().at(j);
             const Segment& seg_expected = planList_expected.at(i).segmentList().at(j);
             QVERIFY(UtilHelper::compare(seg.wayptPrev().easting(), seg_expected.wayptPrev().easting()));
             QVERIFY(UtilHelper::compare(seg.wayptPrev().northing(), seg_expected.wayptPrev().northing()));

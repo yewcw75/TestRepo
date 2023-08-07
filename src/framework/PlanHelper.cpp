@@ -213,22 +213,23 @@ Plan PlanHelper::getCrossTrackPlan(const Plan& plan,
 }
 
 //----------
-bool PlanHelper::buildSingleSideEllMap(const QSharedPointer<Plan> p_planNominal, //nominal plan
-                                double side, //-1.0 : port side, 1.0 : stbd side
-                                double crossTrackHorizon, //[m] always a positive variable
-                                QList<QSharedPointer<Plan>>& planList, //planList to append
-                                QString* results_desc)
+bool PlanHelper::buildSingleSideEllMap(const Plan& planNominal,
+                                       double side,
+                                       double crossTrackHorizon,
+                                       QList<Plan>& planList,
+                                       QString* results_desc)
 {
     bool ret = true;
-    int nSegNominal = p_planNominal->nSegment();
+    int nSegNominal = planNominal.nSegment();
 
     //append nominal plan when side is stbd
     if(side > 0.0){
-        planList.push_back(p_planNominal);
+        planList.push_back(planNominal);
     }
 
     //while loop to build ellmap on one side
-    Plan planRef(*p_planNominal); //make a copy of nominal plan
+    Plan planRef(planNominal); //make a copy of nominal plan
+    planRef.setProperty(Plan::Property::IS_NOMINAL, false);
     int countWhileLoop = 0; //additional check to prevent infinite while loop
     //qInfo() << planRef;
     while( planRef.nSegment() > 1 && //need min of 2 segs to have edge event
@@ -256,7 +257,7 @@ bool PlanHelper::buildSingleSideEllMap(const QSharedPointer<Plan> p_planNominal,
                 break; //break while loop
             }
             //qInfo() << planRef;
-            QSharedPointer<Plan> plan2Append(new Plan(planRef));
+            Plan plan2Append(planRef);
             insertDummySegments(plan2Append, nSegNominal);
             pushPlan(plan2Append, side, planList);//push to plan list
         }
@@ -278,7 +279,7 @@ bool PlanHelper::buildSingleSideEllMap(const QSharedPointer<Plan> p_planNominal,
                                                     results_desc //results description
                                                     );
             planRef.setProperty(Plan::Property::IS_LIMIT);
-            QSharedPointer<Plan> plan2Append(new Plan(planRef));
+            Plan plan2Append(planRef);
             insertDummySegments(plan2Append, nSegNominal);
             pushPlan(plan2Append, side, planList);//push to plan list
         }
@@ -287,9 +288,9 @@ bool PlanHelper::buildSingleSideEllMap(const QSharedPointer<Plan> p_planNominal,
 }
 
 //----------
-void PlanHelper::insertDummySegments(QSharedPointer<Plan>& plan, int nSegNominal)
+void PlanHelper::insertDummySegments(Plan& plan, int nSegNominal)
 {
-    const QVector<Segment>& segList = plan->segmentList();
+    const QVector<Segment>& segList = plan.segmentList();
     int nSeg = segList.size();
     assert(nSeg > 0);
     QVector<Segment> segListOut;
@@ -318,13 +319,13 @@ void PlanHelper::insertDummySegments(QSharedPointer<Plan>& plan, int nSegNominal
        seg2Insert.setLengthCumulative(lengthCumulative);
        segListOut.push_back(seg2Insert); //append segment to segListOut
     } //for-loop
-    plan->setSegmentList(segListOut); //replace the segment list in plan
+    plan.setSegmentList(segListOut); //replace the segment list in plan
 }
 
 //----------
-void PlanHelper::pushPlan( const QSharedPointer<Plan>& plan,
+void PlanHelper::pushPlan( const Plan& plan,
                             double side,
-                            QList<QSharedPointer<Plan>>& planList //planList to prepend/append
+                            QList<Plan>& planList //planList to prepend/append
                          )
 {
     if(side < 0){

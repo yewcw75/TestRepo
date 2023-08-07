@@ -253,12 +253,12 @@ void SMapHelperQTests::verify_create()
     QFETCH(SMap, sMap_expect);
 
     EllMap ellMap;
-    ellMap.setNominalPlan(planNominal);
-    bool res = ellMap.buildEllMap(crossTrackHorizon);
+    bool res = ellMap.buildEllMap(planNominal, crossTrackHorizon);
     QVERIFY(res);
 
     RootData rootData;
-    ellMap.getRootData(posNE, rootData);
+    res = ellMap.getRootData(posNE, rootData);
+    QVERIFY(res);
 
     SMap sMap = SMapHelper::create(ellMap,       //ellmap input
                     rootData,  //data relevant to current usv's position
@@ -271,7 +271,7 @@ void SMapHelperQTests::verify_create()
     QCOMPARE(sMap.size(), nPlan_expect);
     QCOMPARE(sMap.idxNominal(), idxNominal_expect);
 
-    qInfo() << sMap;
+//    qInfo() << sMap;
 
     for(int i = 0; i < sMap.size(); ++i){
         QVERIFY(UtilHelper::compare(sMap.at(i).getCrosstrack(), sMap_expect.at(i).getCrosstrack(), 1e-3));
