@@ -14,9 +14,6 @@
 #include <QtGlobal>
 #include <QDebug>
 
-
-
-
 RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 
 using namespace algorithm::gjk;
@@ -30,65 +27,68 @@ public:
     ~EllMapPrivate() = default;
     EllMapPrivate(const EllMapPrivate& rhs);
 
-    bool buildEllMap(double crossTrackHorizon,
-                             QString* results_desc);
+    bool buildEllMap(Plan planNominal, //make a copy because we want to ensure some settings of property flags inside the function.
+                     double crossTrackHorizon,
+                     QString* results_desc);
     bool locateSector(const VectorF& posNE, //usv pos
                       int planIdx_0, int segIdx_0, //initial planIdx and segIdx to start searching
                       int& planIdx, int& segIdx //located sector's associated planIdx and segIdx
                       ) const;
+    Plan planNominal() const; //get nominal plan
 
 public:
-    QList<QSharedPointer<Plan>> m_planSharedPtrList; //plan id to be same as plan idx
-    QSharedPointer<Plan> mp_planNominal;
+    QList<Plan> m_planList; //plan id to be same as plan idx
     QScopedPointer<Gjk> mp_gjk;
+    int m_idxNominal{-1};
+    bool m_ellMapReady{};
 };
 
 //----------
 EllMapPrivate::EllMapPrivate(const EllMapPrivate& rhs)
-    : mp_planNominal(QSharedPointer<Plan>(new Plan(*rhs.mp_planNominal))),
-      mp_gjk(GjkFactory::getGjk(GjkFactory::GjkType::Basic))
+    : QSharedData(rhs),
+      m_planList(rhs.m_planList),
+      mp_gjk(GjkFactory::getGjk(GjkFactory::GjkType::Basic)),
+      m_idxNominal(rhs.m_idxNominal),
+      m_ellMapReady(rhs.m_ellMapReady)
 {
-    for(const QSharedPointer<Plan>& p_plan_rhs: rhs.m_planSharedPtrList){
-        QSharedPointer<Plan> p_plan(new Plan(*p_plan_rhs));
-        m_planSharedPtrList.append(p_plan);
-    }
+
 }
 
 //----------
-bool EllMapPrivate::buildEllMap(double crossTrackHorizon,
-                         QString* results_desc)
+bool EllMapPrivate::buildEllMap(Plan planNominal,
+                                double crossTrackHorizon,
+                                QString* results_desc)
 {
-    bool ret = true;
+    m_ellMapReady = true;
     QString results_desc_local;
+    planNominal.setProperty(Plan::Property::IS_NOMINAL); //ensure property is set properly.
 
-    if(mp_planNominal) { //pointer is not null
-        QList<double> sideList{-1.0, 1.0}; //use in for loop to find ellmaps for port side first, then stbd side.
-        for(const auto& side: sideList){
-            ret = PlanHelper::buildSingleSideEllMap(mp_planNominal,
-                                                    side,
-                                                    crossTrackHorizon,
-                                                    m_planSharedPtrList,
-                                                    &results_desc_local);
-            if(!ret){
-                break; //break for loop and returns if error
-            }
-        } //for(const auto& side: sideList)
-    }
-    else{ //d_ptr->mp_planNominal is null
-        ret = false;
-        results_desc_local = QString("[EllMap::buildEllMap] Build EllMap fails. Nominal plan is not set yet.");
-    }
+    QList<double> sideList{-1.0, 1.0}; //use in for loop to find ellmaps for port side first, then stbd side.
+    for(const auto& side: sideList){
+        m_ellMapReady = PlanHelper::buildSingleSideEllMap(planNominal,
+                                                side,
+                                                crossTrackHorizon,
+                                                m_planList,
+                                                &results_desc_local);
+        if(!m_ellMapReady){
+            break; //break for loop and returns if error
+        }
+    } //for(const auto& side: sideList)
 
-    //give the plans an id. //plan id to be same as plan idx
-    for(int i = 0; i < m_planSharedPtrList.size(); ++i){
-        m_planSharedPtrList.at(i)->setId(i);
+    //give the plans an id. //plan id to be same as plan idx.
+    //set m_idxNominal
+    for(int i = 0; i < m_planList.size(); ++i){
+        m_planList[i].setId(i);
+        if(m_planList[i].testProperty(Plan::Property::IS_NOMINAL)){
+            m_idxNominal = i;
+        }
     }
 
     //set output result description if input pointer is not null
     if(results_desc){
         *results_desc = results_desc_local;
     }
-    return(ret);
+    return(m_ellMapReady);
 }
 
 //----------
@@ -97,10 +97,14 @@ bool EllMapPrivate::locateSector(const VectorF& posNE,
                                  int& planIdx, int& segIdx
                                  ) const
 {
+    if(!m_ellMapReady){
+        qCritical() << "[EllMapPrivate::locateSector] cannot call this function before EllMapPrivate::buildEllMap() is called successfully!";
+        Q_ASSERT(false);
+    }
 
     bool isInPoly{false};
-    int nPlan = m_planSharedPtrList.size();
-    int nSeg = mp_planNominal->nSegment();
+    int nPlan = m_planList.size();
+    int nSeg = planNominal().nSegment();
     algorithm::gjk::PointShape usv(posNE);
     int np = 0;
     int side = 1;
@@ -110,16 +114,16 @@ bool EllMapPrivate::locateSector(const VectorF& posNE,
 
         //plan to check
         planIdx = UtilHelper::mod(planIdx_0 + side*static_cast<int>(ceil(0.5*np)), nPlan-1);
-        const Plan* planCurr = m_planSharedPtrList.at(planIdx).data();
-        const Plan* planRhs = m_planSharedPtrList.at(planIdx+1).data();
+        const Plan& planCurr = m_planList.at(planIdx);
+        const Plan& planRhs = m_planList.at(planIdx+1);
 
         int ns = 0;
         while(ns < nSeg){
             //segment to check
             segIdx = UtilHelper::mod(segIdx_0+ns, nSeg);
 
-            const Segment& segCurr = planCurr->segmentList().at(segIdx);
-            const Segment& segRhs = planRhs->segmentList().at(segIdx);
+            const Segment& segCurr = planCurr.segmentList().at(segIdx);
+            const Segment& segRhs = planRhs.segmentList().at(segIdx);
 
             //sector vertices
             Polygon polysec{segCurr.wayptPrev().coord_const_ref(),
@@ -142,6 +146,20 @@ bool EllMapPrivate::locateSector(const VectorF& posNE,
         ++np;
     } //while
     return(isInPoly);
+}
+
+//----------
+Plan EllMapPrivate::planNominal() const
+{
+    Plan ret;
+    if(!m_ellMapReady){
+        qCritical() << "[EllMapPrivate::locateSector] cannot call this function before EllMapPrivate::buildEllMap() is called successfully!";
+        Q_ASSERT(false);
+    }
+    else{
+        ret = m_planList.at(m_idxNominal);
+    }
+    return ret;
 }
 
 //#################
@@ -175,34 +193,29 @@ EllMap& EllMap::operator=(const EllMap& rhs)
 }
 
 //----------
-void EllMap::setNominalPlan(const Plan& plan)
-{
-    d_ptr->mp_planNominal = QSharedPointer<Plan>(new Plan(plan));
-}
-
-//----------
-bool EllMap::buildEllMap(double crossTrackHorizon,
+bool EllMap::buildEllMap(Plan plan,
+                         double crossTrackHorizon,
                          QString* results_desc)
 {
-    return(d_ptr->buildEllMap(crossTrackHorizon, results_desc));
+    return(d_ptr->buildEllMap(plan, crossTrackHorizon, results_desc));
 }
 
 //----------
-int EllMap::nPlan() const
+int EllMap::size() const
 {
-    return(d_ptr->m_planSharedPtrList.size());
+    return d_ptr->m_planList.size();
 }
 
 //----------
-QSharedPointer<const Plan> EllMap::nominalPlan() const
+Plan EllMap::planNominal() const
 {
-    return(d_ptr->mp_planNominal);
+    return d_ptr->planNominal();
 }
 
 //----------
-QSharedPointer<const Plan> EllMap::at(int idx) const
+const Plan& EllMap::at(int idx) const
 {
-    return(d_ptr->m_planSharedPtrList.at(idx));
+    return d_ptr->m_planList.at(idx);
 }
 
 //----------
@@ -224,16 +237,16 @@ bool EllMap::getRootData(const VectorF& posNE, RootData& rootData) const
     int planIdx, segIdx;
     bool ret = d_ptr->locateSector(posNE, planIdx_0, segIdx_0, planIdx, segIdx);
     if(ret){
-        auto plan_p = d_ptr->m_planSharedPtrList.at(planIdx);
-        auto plan_p_plus_1 = d_ptr->m_planSharedPtrList.at(planIdx + 1);
+        const Plan& plan_p = d_ptr->m_planList.at(planIdx);
+        const Plan& plan_p_plus_1 = d_ptr->m_planList.at(planIdx + 1);
 
         //determine crosstrack coordinates
-        auto planRef = planIdx < d_ptr->mp_planNominal->id()? \
+        const Plan& planRef = planIdx < d_ptr->m_idxNominal? \
                     plan_p_plus_1 :
                     plan_p;
-        double crossTrack_ref = planRef->crossTrack();
-        const VectorF& nodePrev_ref = planRef->segmentList().at(segIdx).wayptPrev().coord_const_ref();
-        const VectorF& nVec_ref = planRef->segmentList().at(segIdx).nVec();
+        double crossTrack_ref = planRef.crossTrack();
+        const VectorF& nodePrev_ref = planRef.segmentList().at(segIdx).wayptPrev().coord_const_ref();
+        const VectorF& nVec_ref = planRef.segmentList().at(segIdx).nVec();
         VectorF dPos = VectorFHelper::subtract_vector(posNE, nodePrev_ref);
         double dx_ref = VectorFHelper::dot_product(dPos, nVec_ref);
         double dx = dx_ref + crossTrack_ref;
@@ -241,7 +254,7 @@ bool EllMap::getRootData(const VectorF& posNE, RootData& rootData) const
         //get offset plan at posNE position
         bool results_out;
         QString results_desc;
-        Plan planOffset = PlanHelper::getCrossTrackPlan(*planRef, 2.0*abs(dx_ref), dx_ref, QVector<int>(), TOL_SMALL, &results_out, &results_desc);
+        Plan planOffset = PlanHelper::getCrossTrackPlan(planRef, 2.0*abs(dx_ref), dx_ref, QVector<int>(), TOL_SMALL, &results_out, &results_desc);
         if(!results_out){
             qCritical() << "[EllMap::getRootData] error getting cross track plan: " << results_desc;
             Q_ASSERT(false);
@@ -267,28 +280,11 @@ bool EllMap::getRootData(const VectorF& posNE, RootData& rootData) const
 
         //USV arclength baseline. Set ell_list
         rootData.ell_list().clear();
-        for(const auto& plan: d_ptr->m_planSharedPtrList){
-            double cumLength_curr = segIdx > 0? plan->segmentList().at(segIdx - 1).lengthCumulative() : 0.0;
-            double ell_curr= cumLength_curr + f_ell * plan->segmentList().at(segIdx).length();
+        for(const Plan& plan: d_ptr->m_planList){
+            double cumLength_curr = segIdx > 0? plan.segmentList().at(segIdx - 1).lengthCumulative() : 0.0;
+            double ell_curr= cumLength_curr + f_ell * plan.segmentList().at(segIdx).length();
             rootData.ell_list().append(ell_curr);
         }
-
-
-//        dx += crossTrack_ref;
-//
-//        //determine initial and final segment waypoints for determined crosstrack
-//        double fx   = (dx-plan_p->crossTrack())/(plan_p_plus_1->crossTrack()-plan_p->crossTrack());
-//        const VectorF& nodePrev_p = plan_p->segmentList().at(segIdx).wayptPrev().coord_const_ref();
-//        const VectorF& nodeNext_p = plan_p->segmentList().at(segIdx).wayptNext().coord_const_ref();
-//        const VectorF& nodePrev_p_plus_1 = plan_p_plus_1->segmentList().at(segIdx).wayptPrev().coord_const_ref();
-//        const VectorF& nodeNext_p_plus_1 = plan_p_plus_1->segmentList().at(segIdx).wayptNext().coord_const_ref();
-//        VectorF p0 = VectorFHelper::add_vector( VectorFHelper::multiply_value(nodePrev_p, 1-fx),
-//                                                VectorFHelper::multiply_value(nodePrev_p_plus_1, fx) );
-//        VectorF pF = VectorFHelper::add_vector( VectorFHelper::multiply_value(nodeNext_p, 1-fx),
-//                                                VectorFHelper::multiply_value(nodeNext_p_plus_1, fx) );
-
-//        //determine arclength from segment s
-//        double dell = VectorFHelper::norm2(VectorFHelper::subtract_vector(posNE, p0));
     }
     else{
         rootData.reset();
@@ -301,8 +297,8 @@ bool EllMap::getRootData(const VectorF& posNE, RootData& rootData) const
 QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::EllMap &data)
 {
     QDebugStateSaver saver(debug);
-    for(int i = 0; i < data.nPlan(); ++i){
-        debug.nospace() << *data.at(i);
+    for(int i = 0; i < data.size(); ++i){
+        debug.nospace() << data.at(i);
     }
     return debug;
 }
