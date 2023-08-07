@@ -138,13 +138,6 @@ int SMap::size() const
     return d_ptr->m_SPlanList.size();
 }
 
-
-//----------
-void SMap::append(const SPlan& sPlan)
-{
-    d_ptr->m_SPlanList.append(sPlan);
-}
-
 //----------
 const SPlan& SMap::at(int idx) const
 {
@@ -152,19 +145,7 @@ const SPlan& SMap::at(int idx) const
 }
 
 //----------
-SPlan& SMap::operator[](int idx)
-{
-    return d_ptr->m_SPlanList[idx];
-}
-
-//----------
 const SPlan& SMap::last() const
-{
-    return d_ptr->m_SPlanList.last();
-}
-
-//----------
-SPlan& SMap::last()
 {
     return d_ptr->m_SPlanList.last();
 }
@@ -176,15 +157,47 @@ const SPlan& SMap::first() const
 }
 
 //----------
-SPlan& SMap::first()
-{
-    return d_ptr->m_SPlanList.first();
-}
-
-//----------
 const QList<SPlan>& SMap::SPlanList_const_ref() const
 {
     return d_ptr->m_SPlanList;
+}
+
+//----------
+int SMap::idxNominal() const
+{
+    return d_ptr->m_idxNominal;
+}
+
+//----------
+QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::SMap &data)
+{
+    QDebugStateSaver saver(debug);
+    debug.nospace() << "\nidxNominal = " << data.idxNominal() << "\n" << data.SPlanList_const_ref();
+    return debug;
+}
+
+//----------
+void SMap::append(const SPlan& sPlan)
+{
+    d_ptr->m_SPlanList.append(sPlan);
+}
+
+//----------
+SPlan& SMap::operator[](int idx)
+{
+    return d_ptr->m_SPlanList[idx];
+}
+
+//----------
+SPlan& SMap::last()
+{
+    return d_ptr->m_SPlanList.last();
+}
+
+//----------
+SPlan& SMap::first()
+{
+    return d_ptr->m_SPlanList.first();
 }
 
 //----------
@@ -200,23 +213,9 @@ void SMap::setSPlanList(const QList<SPlan>& SPlanList)
 }
 
 //----------
-int SMap::idxNominal() const
-{
-    return d_ptr->m_idxNominal;
-}
-
-//----------
 void SMap::setIdxNominal(int idxNominal)
 {
     d_ptr->m_idxNominal = idxNominal;
-}
-
-//----------
-QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::SMap &data)
-{
-    QDebugStateSaver saver(debug);
-    debug.nospace() << "\nidxNominal = " << data.idxNominal() << "\n" << data.SPlanList_const_ref();
-    return debug;
 }
 
 //----------

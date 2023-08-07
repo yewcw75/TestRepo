@@ -156,7 +156,6 @@ void SMapHelper::appendSPlan(const double x_vec[2], const double lh_vec[2], doub
         splan2append.setArea_cum(area_cum);
         sPlanList.append(splan2append);
 
-
         SPlan splan2append_B;
         splan2append_B.setCrosstrack(x_vec[1]);
         splan2append_B.setLh(lh_vec[1]);

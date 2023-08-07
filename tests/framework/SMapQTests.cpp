@@ -17,6 +17,8 @@ public:
     MockSMap()
         :SMap(){}
     virtual ~MockSMap(){}
+    void append(const SPlan& sPlan){SMap::append(sPlan);}
+    void setIdxNominal(int idxNominal){SMap::setIdxNominal(idxNominal);}
     void setLh0(double lh0){SMap::setLh0(lh0);}
     void setTh0(double th0){SMap::setTh0(th0);}
     void setUmin(double umin){SMap::setUmin(umin);}
@@ -156,7 +158,8 @@ void SMapQTests::verify_reset()
     QFETCH(VectorF, posNE);
     QFETCH(SMap, sMap_expect);
 
-    sMap.reset(posNE);
+    bool res = sMap.reset(posNE);
+    QVERIFY(res);
     QVERIFY(UtilHelper::compare(sMap, sMap_expect, 1e-3));
 }
 

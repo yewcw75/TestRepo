@@ -31,6 +31,21 @@ public:
     }
 };
 
+class MockSMap: public SMap
+{
+public:
+    MockSMap()
+        :SMap(){}
+    virtual ~MockSMap(){}
+    void append(const SPlan& sPlan){SMap::append(sPlan);}
+    void setIdxNominal(int idxNominal){SMap::setIdxNominal(idxNominal);}
+    void setLh0(double lh0){SMap::setLh0(lh0);}
+    void setTh0(double th0){SMap::setTh0(th0);}
+    void setUmin(double umin){SMap::setUmin(umin);}
+    void setUmax(double umax){SMap::setUmax(umax);}
+
+};
+
 //----------
 SMapHelperQTests::SMapHelperQTests()
 {
@@ -225,7 +240,7 @@ void SMapHelperQTests::verify_create_data()
 
     int nPlan_expect = 7;
     int idxNominal_expect = 4;
-    SMap sMap_expect;
+    MockSMap sMap_expect;
     sMap_expect.append(SPlan{-2500, 2500, 0, 0});
     sMap_expect.append(SPlan{-2312.929715, 2500.000000, 0.069840, 0.053420});
     sMap_expect.append(SPlan{-2121.320344, 2375.735931, 0.137878, 0.106777});
@@ -235,7 +250,7 @@ void SMapHelperQTests::verify_create_data()
     sMap_expect.append(SPlan{2500.000000, 820.101013, 1.000000, 1.000000});
 
     QTest::newRow("Test 1") << planNominal << crossTrackHorizon << posNE << Th << Lh << Umin << Umax << \
-                               nPlan_expect << idxNominal_expect << sMap_expect;
+                               nPlan_expect << idxNominal_expect << (SMap)sMap_expect;
 }
 
 //----------
