@@ -11,7 +11,6 @@
 #include <RrtPlannerLib/RrtPlannerLibGlobal.h>
 #include <RrtPlannerLib/framework/SPlan.h>
 #include <RrtPlannerLib/framework/EllMap.h>
-#include <RrtPlannerLib/framework/RootData.h>
 #include <QSharedDataPointer>
 #include <QSharedPointer>
 
@@ -26,14 +25,26 @@ public:
     SMap& operator=(const SMap& other);
     virtual ~SMap();
 
-//    void create(const EllMap& ellMap,       //ellmap input
-//                const RootData& root_data,  //data relevant to current usv's position
-//                double lh0,                 //[m] desired arclength horizon
-//                double th0,                 //[s] desired time horizon
-//                double umin,                //[m/s] min speed
-//                double umax                 //[m/s] max speed
-//                );
+    //---Initial parameters for SMap--
+    void setEllMap(const EllMap &ellMap,
+                   double lh0, //arc-length horizon
+                   double th0,  //time-horizon
+                   double umin, //min speed
+                   double umax  //max speed
+                   );
+    const EllMap &ellMap() const;
+    double lh0() const;
+    double th0() const;
+    double umin() const;
+    double umax() const;
+    //----------------------------------
 
+    //---Create/Reset SMap----------------
+    bool reset(const VectorF& posNE);
+
+    //----------------------------------
+
+    //---getters to SMap----------------
     int size() const;
     void append(const SPlan& sPlan);
     const SPlan& at(int idx) const;
@@ -49,6 +60,7 @@ public:
 
     int idxNominal() const;
     void setIdxNominal(int idxNominal);
+    //----------------------------------
 
     /**
      * @brief Overloads the << operator to output the Plan object to the debug stream.
@@ -57,6 +69,13 @@ public:
      * @return The debug stream with the Plan object.
      */
     friend RRTPLANNER_LIB_EXPORT QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::SMap &data);
+
+protected:
+    //for testing
+    void setLh0(double lh0);
+    void setTh0(double th0);
+    void setUmin(double umin);
+    void setUmax(double umax);
 
 private:
     QSharedDataPointer<SMapPrivate> d_ptr;

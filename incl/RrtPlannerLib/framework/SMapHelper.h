@@ -13,6 +13,8 @@
 #include <RrtPlannerLib/framework/EllMap.h>
 #include <RrtPlannerLib/framework/Plan.h>
 #include <RrtPlannerLib/framework/SMap.h>
+#include <RrtPlannerLib/framework/SPlan.h>
+#include <QList>
 
 RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 
@@ -33,20 +35,21 @@ public:
      */
     ~SMapHelper();
 
-    static SMap create(const EllMap& ellMap,       //ellmap input
+    static void create(const EllMap& ellMap,       //ellmap input
                 const RootData& root_data,  //data relevant to current usv's position
                 double lh0,                 //[m] desired arclength horizon
                 double th0,                 //[s] desired time horizon
                 double umin,                //[m/s] min speed
-                double umax                 //[m/s] max speed
+                double umax,                //[m/s] max speed
+                QList<SPlan>& sPlanList,    //output SPlan list
+                int& idxNominal             //idx of nominal plan in sPlanList
                 );
 
     static void appendSPlans(const Plan& planPrev, double ellmaxPrev,
                       const Plan& planNext, double lhNext, double ellmaxNext,
                       double lh0, double th0, double umin, double umax,
-                      SMap& sMap);
-    static void appendSPlan(const double x_vec[2], const double lh_vec[2], double th0, double umin, double umax, SMap& sMap);
-
+                      QList<SPlan>& sPlanList);
+    static void appendSPlan(const double x_vec[2], const double lh_vec[2], double th0, double umin, double umax, QList<SPlan>& sPlanList);
 
     /**
      * @brief Determine arc length horizon to use for a plan given the arc length corresponding to current usv position.

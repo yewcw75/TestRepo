@@ -19,17 +19,18 @@ SMapHelper::~SMapHelper()
 }
 
 //----------
-SMap SMapHelper::create(const EllMap& ellMap,
-            const RootData& root_data,
-            double lh0,
-            double th0,
-            double umin,
-            double umax
-            )
+void SMapHelper::create(const EllMap& ellMap,       //ellmap input
+                const RootData& root_data,  //data relevant to current usv's position
+                double lh0,                 //[m] desired arclength horizon
+                double th0,                 //[s] desired time horizon
+                double umin,                //[m/s] min speed
+                double umax,                //[m/s] max speed
+                QList<SPlan>& sPlanList,    //output SPlan list
+                int& idxNominal             //idx of nominal plan in sPlanList
+                )
 {
     //qInfo() << "[SMapHelper::create] root_data:" << root_data;
-
-    SMap sMap;
+    sPlanList.clear();
 
     const QVector<double>& ellList = root_data.ell_list_const_ref();
 
@@ -40,9 +41,9 @@ SMap SMapHelper::create(const EllMap& ellMap,
     double lh{}, ellMaxPrev{};
     determineArcLengthHorizon(planPrev, ellList.at(0), lh0, lh, ellMaxPrev);
     sPlan.setLh(lh);
-    sMap.append(sPlan);
+    sPlanList.append(sPlan);
     if(planPrev.testProperty(Plan::Property::IS_NOMINAL)){
-        sMap.setIdxNominal(0);
+        idxNominal = 0;
     }
 
     //Subsequent plans
@@ -53,10 +54,10 @@ SMap SMapHelper::create(const EllMap& ellMap,
         Plan planNext = ellMap.at(idx_p);
         appendSPlans(planPrev, ellMaxPrev,
                      planNext, lhNext, ellMaxNext,
-                     lh0, th0, umin, umax, sMap);
+                     lh0, th0, umin, umax, sPlanList);
 
         if(planNext.testProperty(Plan::Property::IS_NOMINAL)){
-            sMap.setIdxNominal(sMap.size() - 1);
+            idxNominal = sPlanList.size() - 1;
         }
 
         //assign for next iter
@@ -65,18 +66,17 @@ SMap SMapHelper::create(const EllMap& ellMap,
     }
 
     //normalize volumes and areas
-    double tot_vol = sMap.last().getVol_cum();
-    double tot_area = sMap.last().getArea_cum();
-    sMap.last().setVol_cum(1.0);
-    sMap.last().setArea_cum(1.0);
-    for (int np = 1; np < sMap.size() - 1; ++np){
-        double vol_cum_curr = sMap.at(np).getVol_cum();
-        sMap[np].setVol_cum(vol_cum_curr/tot_vol);
+    double tot_vol = sPlanList.last().getVol_cum();
+    double tot_area = sPlanList.last().getArea_cum();
+    sPlanList.last().setVol_cum(1.0);
+    sPlanList.last().setArea_cum(1.0);
+    for (int np = 1; np < sPlanList.size() - 1; ++np){
+        double vol_cum_curr = sPlanList.at(np).getVol_cum();
+        sPlanList[np].setVol_cum(vol_cum_curr/tot_vol);
 
-        double area_cum_curr = sMap.at(np).getArea_cum();
-        sMap[np].setArea_cum(area_cum_curr/tot_area);
+        double area_cum_curr = sPlanList.at(np).getArea_cum();
+        sPlanList[np].setArea_cum(area_cum_curr/tot_area);
     }
-    return sMap;
 }
 
 //----------
@@ -85,7 +85,7 @@ SMap SMapHelper::create(const EllMap& ellMap,
  */
 void SMapHelper::appendSPlans(const Plan& planPrev, double ellmaxPrev,
                   const Plan& planNext, double lhNext, double ellmaxNext,
-                  double lh0, double th0, double umin, double umax, SMap& sMap)
+                  double lh0, double th0, double umin, double umax, QList<SPlan>& sPlanList)
 {
     //check whether arclength horizon is limited by final arclength at an intermediate crosstrack
     bool isLimitedOnPrevSide = ellmaxPrev < planPrev.length()  && ellmaxNext > planNext.length();
@@ -100,19 +100,19 @@ void SMapHelper::appendSPlans(const Plan& planPrev, double ellmaxPrev,
         double int_dx = planPrev.crossTrack() + buff_prev/(buff_prev-buff_next)*dx_prev2Next;
 
         double x_vec[2] = {planPrev.crossTrack(), int_dx};
-        double lh_vec[2] = {sMap.last().getLh(), lh0};
-        appendSPlan(x_vec, lh_vec, th0, umin, umax, sMap);
+        double lh_vec[2] = {sPlanList.last().getLh(), lh0};
+        appendSPlan(x_vec, lh_vec, th0, umin, umax, sPlanList);
 
         double x_vec_B[2] = {int_dx, planNext.crossTrack()};
         double lh_vec_B[2] = {lh0, lhNext};
-        appendSPlan(x_vec_B, lh_vec_B, th0, umin, umax, sMap);
+        appendSPlan(x_vec_B, lh_vec_B, th0, umin, umax, sPlanList);
     }
     else
     {
         //=== Arclength horizon NOT capped at intermediate crosstrack ==========
         double x_vec[2] = {planPrev.crossTrack(), planNext.crossTrack()};
-        double lh_vec[2] = {sMap.last().getLh(), lhNext};
-        appendSPlan(x_vec, lh_vec, th0, umin, umax, sMap);
+        double lh_vec[2] = {sPlanList.last().getLh(), lhNext};
+        appendSPlan(x_vec, lh_vec, th0, umin, umax, sPlanList);
     }
 }
 
@@ -120,10 +120,10 @@ void SMapHelper::appendSPlans(const Plan& planPrev, double ellmaxPrev,
 /**
  * @see matlab version: function [sMap] = DetermineSPlans(sMap,planPrev,aux_ellmaxPrev,planNext,aux_Lh,aux_ellmax,Lh,Th,Umin,Umax)
  */
-void SMapHelper::appendSPlan(const double x_vec[2], const double lh_vec[2], double th0, double umin, double umax, SMap& sMap)
+void SMapHelper::appendSPlan(const double x_vec[2], const double lh_vec[2], double th0, double umin, double umax, QList<SPlan>& sPlanList)
 {
-    double vol_cum = sMap.last().getVol_cum();
-    double area_cum = sMap.last().getArea_cum();
+    double vol_cum = sPlanList.last().getVol_cum();
+    double area_cum = sPlanList.last().getArea_cum();
     bool timeHorizonLimited_prev = lh_vec[0] <= th0*umin; //at min speed, time horizon is limited by arc length horizon
     bool timeHorizonLimited_next = lh_vec[1] <= th0*umin;
 
@@ -137,7 +137,7 @@ void SMapHelper::appendSPlan(const double x_vec[2], const double lh_vec[2], doub
         double area = 0.5 * ( lh_vec[0] + lh_vec[1] ) * ( x_vec[1] - x_vec[0] );
         area_cum += area;
         splan2append.setArea_cum(area_cum);
-        sMap.append(splan2append);
+        sPlanList.append(splan2append);
     }
     else if ( !timeHorizonLimited_prev && timeHorizonLimited_next ){
         Q_ASSERT(abs(lh_vec[1] - lh_vec[0]) > TOL_SMALL);
@@ -154,7 +154,7 @@ void SMapHelper::appendSPlan(const double x_vec[2], const double lh_vec[2], doub
         double area = 0.5* ( lh_vec[0] + th0*umin ) * ( intU_dx - x_vec[0] );
         area_cum += area;
         splan2append.setArea_cum(area_cum);
-        sMap.append(splan2append);
+        sPlanList.append(splan2append);
 
 
         SPlan splan2append_B;
@@ -167,7 +167,7 @@ void SMapHelper::appendSPlan(const double x_vec[2], const double lh_vec[2], doub
         double area_B = 0.5 * ( th0*umin + lh_vec[1] ) * ( x_vec[1] - intU_dx );
         area_cum += area_B;
         splan2append_B.setArea_cum(area_cum);
-        sMap.append(splan2append_B);
+        sPlanList.append(splan2append_B);
     }
     else if ( timeHorizonLimited_prev && !timeHorizonLimited_next ){
         Q_ASSERT(abs(lh_vec[1] - lh_vec[0]) > TOL_SMALL);
@@ -183,7 +183,7 @@ void SMapHelper::appendSPlan(const double x_vec[2], const double lh_vec[2], doub
         double area =0.5* ( lh_vec[0] + th0*umin ) * ( intU_dx - x_vec[0] );
         area_cum += area;
         splan2append.setArea_cum(area_cum);
-        sMap.append(splan2append);
+        sPlanList.append(splan2append);
 
         SPlan splan2append_B;
         splan2append_B.setCrosstrack(x_vec[1]);
@@ -195,7 +195,7 @@ void SMapHelper::appendSPlan(const double x_vec[2], const double lh_vec[2], doub
         double area_B = 0.5* ( th0*umin + lh_vec[1] ) * ( x_vec[1] - intU_dx );
         area_cum += area_B;
         splan2append_B.setArea_cum(area_cum);
-        sMap.append(splan2append_B);
+        sPlanList.append(splan2append_B);
     }
     else{
         SPlan splan2append;
@@ -207,9 +207,8 @@ void SMapHelper::appendSPlan(const double x_vec[2], const double lh_vec[2], doub
         double area = 0.5 * ( lh_vec[0] + lh_vec[1] ) * ( x_vec[1] - x_vec[0] );
         area_cum += area;
         splan2append.setArea_cum(area_cum);
-        sMap.append(splan2append);
+        sPlanList.append(splan2append);
     }
-
 }
 
 //----------

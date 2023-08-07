@@ -34,6 +34,8 @@ add_executable(${PROJECT_NAME}QTests
     tests/framework/UblasHelperQTests.cpp
     tests/framework/EllMapQTests.h
     tests/framework/EllMapQTests.cpp
+    tests/framework/SMapQTests.h
+    tests/framework/SMapQTests.cpp
     tests/framework/SMapHelperQTests.h
     tests/framework/SMapHelperQTests.cpp
 

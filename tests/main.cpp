@@ -6,6 +6,7 @@
 #include "VectorFQTests.h"
 #include "VectorFHelperQTests.h"
 #include "EllMapQTests.h"
+#include "SMapQTests.h"
 #include "SMapHelperQTests.h"
 
 #include "VesRectangleQTests.h"
@@ -29,6 +30,7 @@ int main(int argc, char* argv[])
     PlanHelperQTests    planHelperQTests;
     UblasHelperQTests   linearAlgebraHelperQTests;
     EllMapQTests        ellMapQTests;
+    SMapQTests          sMapQTests;
     SMapHelperQTests    sMapHelperQTests;
 
     VesRectangleQTests  vesRectangleQTests;
@@ -48,6 +50,7 @@ int main(int argc, char* argv[])
             QTest::qExec(&planHelperQTests, argc, argv) + \
             QTest::qExec(&linearAlgebraHelperQTests, argc, argv) + \
             QTest::qExec(&ellMapQTests, argc, argv) + \
+            QTest::qExec(&sMapQTests, argc, argv) + \
             QTest::qExec(&sMapHelperQTests, argc, argv) + \
 
             QTest::qExec(&vesRectangleQTests, argc, argv) + \

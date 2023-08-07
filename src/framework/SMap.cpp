@@ -1,7 +1,10 @@
-#include "RrtPlannerLib/framework/EllMap.h"
 #include "RrtPlannerLib/framework/SPlan.h"
 #include <RrtPlannerLib/framework/SMap.h>
+#include <RrtPlannerLib/framework/SMapHelper.h>
+#include <RrtPlannerLib/framework/RootData.h>
 #include <QList>
+#include <QtGlobal>
+#include <QDebug>
 
 RRTPLANNER_FRAMEWORK_BEGIN_NAMESPACE
 
@@ -12,47 +15,17 @@ public:
     SMapPrivate(const SMapPrivate& other) = default;
     ~SMapPrivate() = default;
 
-
-//    void appendSPlans(const Plan& planPrev, double ellmaxPrev,
-//                      const Plan& planNext, double lhNext, double ellmaxNext,
-//                      double lh0, double th0, double umin, double umax);
-
 public:
     QList<SPlan> m_SPlanList;
+    RootData m_rootData{};
+    EllMap m_ellMap{};
+    double m_lh0{};                 //[m] desired arclength horizon
+    double m_th0{};                 //[s] desired time horizon
+    double m_umin{};                //[m/s] min speed
+    double m_umax{};                 //[m/s] max speed
     int m_idxNominal{};
+    bool m_ellMapSet{};
 };
-
-
-
-//----------
-//void SMapPrivate::appendSPlans(const Plan& planPrev, double ellmaxPrev,
-//                  const Plan& planNext, double lhNext, double ellmaxNext,
-//                  double lh0, double th0, double umin, double umax)
-//{
-//    //check whether arclength horizon is limited by final arclength at an intermediate crosstrack
-//    bool isLimitedOnPrevSide = ellmaxPrev < planPrev.length()  && ellmaxNext > planNext.length();
-//    bool isLimitedOnNextSide = ellmaxPrev > planPrev.length()  && ellmaxNext < planNext.length();
-//    if (isLimitedOnPrevSide || isLimitedOnNextSide)
-//    {
-//        //=== Arclength horizon capped at intermediate crosstrack ==============
-//        //crosstrack intersection
-//        int_dx = planPrev.crosstrack + ((planPrev.length-aux_ellmaxPrev)/((planPrev.length-aux_ellmaxPrev)-(planNext.length-aux_ellmax)))*(planNext.crosstrack-planPrev.crosstrack);
-
-//        xvec  = [ planPrev.crosstrack           int_dx  planNext.crosstrack ];
-//        Lhvec = [ sMap.planList(sMap.nPlan).Lh  Lh      aux_Lh              ];
-
-//     }
-//    else
-//    {
-
-//        //=== Arclength horizon NOT capped at intermediate crosstrack ==========
-
-//        xvec  = [ planPrev.crosstrack           planNext.crosstrack ];
-//        Lhvec = [ sMap.planList(sMap.nPlan).Lh  aux_Lh              ];
-
-//    }
-//}
-
 
 //######################
 //----------
@@ -85,27 +58,79 @@ SMap::~SMap()
 }
 
 //----------
-//void SMap::create(const EllMap& ellMap,
-//            const RootData& root_data,
-//            double lh0,
-//            double th0,
-//            double umin,
-//            double umax
-//            )
-//{
-//    //first plan
-//    auto plan_first = ellMap.at(0);
-//    SPlan sPlan;
-//    sPlan.setCrosstrack(plan_first->crossTrack());
-//    double lh{}, ellMaxPrev{};
-//    d_ptr->determineArcLengthHorizon(*plan_first, root_data.ell(), lh0, lh, ellMaxPrev);
-//    sPlan.setLh(lh);
-//    d_ptr->m_SPlanList.push_back(sPlan);
-//    if(plan_first->testProperty(Plan::Property::IS_NOMINAL)){
-//        d_ptr->m_idxNominal = 0;
-//    }
+const EllMap& SMap::ellMap() const
+{
+    return d_ptr->m_ellMap;
+}
 
-//}
+//----------
+void SMap::setEllMap(const EllMap &ellMap,
+                     double lh0, //arc-length horizon
+                     double th0,  //time-horizon
+                     double umin, //min speed
+                     double umax  //max speed
+                     )
+{
+    d_ptr->m_ellMap = ellMap;
+    d_ptr->m_lh0 = lh0;
+    d_ptr->m_th0 = th0;
+    d_ptr->m_umin = umin;
+    d_ptr->m_umax = umax;
+    d_ptr->m_ellMapSet = true;
+}
+
+//----------
+double SMap::lh0() const
+{
+    return d_ptr->m_lh0;
+}
+
+//----------
+double SMap::th0() const
+{
+    return d_ptr->m_th0;
+}
+
+//----------
+double SMap::umin() const
+{
+    return d_ptr->m_umin;
+}
+
+//----------
+double SMap::umax() const
+{
+    return d_ptr->m_umax;
+}
+
+//----------
+bool SMap::reset(const VectorF& posNE)
+{
+    bool ret = false;
+    if(!d_ptr->m_ellMapSet){
+        qCritical() << "[SMap::reset] SMap::setEllMap needs to be set first!";
+        Q_ASSERT(false);
+    }
+    else{ //m_ellMapSet ok
+        bool foundRoot = d_ptr->m_ellMap.getRootData(posNE, d_ptr->m_rootData);
+        if(!foundRoot){
+            qCritical() << "[SMap::reset] posNE input is out of bounds of EllMap!";
+            Q_ASSERT(false);
+        }
+        else{ //foundRoot ok!
+            SMapHelper::create(d_ptr->m_ellMap,
+                               d_ptr->m_rootData,
+                               d_ptr->m_lh0,
+                               d_ptr->m_th0,
+                               d_ptr->m_umin,
+                               d_ptr->m_umax,
+                               d_ptr->m_SPlanList,
+                               d_ptr->m_idxNominal);
+            ret = true;
+        }
+    }
+    return ret;
+}
 
 //----------
 int SMap::size() const
@@ -192,6 +217,30 @@ QDebug operator<<(QDebug debug, const RRTPLANNER_NAMESPACE::framework::SMap &dat
     QDebugStateSaver saver(debug);
     debug.nospace() << "\nidxNominal = " << data.idxNominal() << "\n" << data.SPlanList_const_ref();
     return debug;
+}
+
+//----------
+void SMap::setLh0(double lh0)
+{
+    d_ptr->m_lh0 = lh0;
+}
+
+//----------
+void SMap::setTh0(double th0)
+{
+    d_ptr->m_th0 = th0;
+}
+
+//----------
+void SMap::setUmin(double umin)
+{
+    d_ptr->m_umin = umin;
+}
+
+//----------
+void SMap::setUmax(double umax)
+{
+    d_ptr->m_umax = umax;
 }
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

@@ -260,24 +260,27 @@ void SMapHelperQTests::verify_create()
     res = ellMap.getRootData(posNE, rootData);
     QVERIFY(res);
 
-    SMap sMap = SMapHelper::create(ellMap,       //ellmap input
+    QVector<SPlan> sPlanList;
+    int idxNominal;
+    SMapHelper::create(ellMap,       //ellmap input
                     rootData,  //data relevant to current usv's position
                     Lh,                 //[m] desired arclength horizon
                     Th,                 //[s] desired time horizon
                     Umin,                //[m/s] min speed
-                    Umax                //[m/s] max speed
-                    );
+                    Umax,                //[m/s] max speed
+                    sPlanList,
+                    idxNominal);
 
-    QCOMPARE(sMap.size(), nPlan_expect);
-    QCOMPARE(sMap.idxNominal(), idxNominal_expect);
+    QCOMPARE(sPlanList.size(), nPlan_expect);
+    QCOMPARE(idxNominal, idxNominal_expect);
 
 //    qInfo() << sMap;
 
-    for(int i = 0; i < sMap.size(); ++i){
-        QVERIFY(UtilHelper::compare(sMap.at(i).getCrosstrack(), sMap_expect.at(i).getCrosstrack(), 1e-3));
-        QVERIFY(UtilHelper::compare(sMap.at(i).getLh(), sMap_expect.at(i).getLh(), 1e-3));
-        QVERIFY(UtilHelper::compare(sMap.at(i).getVol_cum(), sMap_expect.at(i).getVol_cum(), 1e-3));
-        QVERIFY(UtilHelper::compare(sMap.at(i).getArea_cum(), sMap_expect.at(i).getArea_cum(), 1e-3));
+    for(int i = 0; i < sPlanList.size(); ++i){
+        QVERIFY(UtilHelper::compare(sPlanList.at(i).getCrosstrack(), sMap_expect.at(i).getCrosstrack(), 1e-3));
+        QVERIFY(UtilHelper::compare(sPlanList.at(i).getLh(), sMap_expect.at(i).getLh(), 1e-3));
+        QVERIFY(UtilHelper::compare(sPlanList.at(i).getVol_cum(), sMap_expect.at(i).getVol_cum(), 1e-3));
+        QVERIFY(UtilHelper::compare(sPlanList.at(i).getArea_cum(), sMap_expect.at(i).getArea_cum(), 1e-3));
     }
 
 }
