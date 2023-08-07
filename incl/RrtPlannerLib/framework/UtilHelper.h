@@ -25,6 +25,16 @@ public:
      * @return bool True => difference between d1 and d2 are smaller or equal to tol_small.
      */
     static bool compare(double d1, double d2, double tol_small = 1e-3);
+
+    /**
+     * @brief Modulus after division.
+     * Equivalent to matlab's mod(x, N).
+     * Will always return a value within [0, N) even if x is negative.
+     * @param x input integer
+     * @param N is the divisor
+     * @return results of mod(x, N)
+     */
+    static int mod(int x, int N);
 };
 
 RRTPLANNER_FRAMEWORK_END_NAMESPACE

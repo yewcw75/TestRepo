@@ -74,7 +74,7 @@ public:
     /**
      * @brief Generates a cross-track plan based on the input plan and edge events.
      * @param plan The input plan.
-     * @param crossTrackHorizon The maximum cross-track distance.
+     * @param crossTrackHorizon The maximum cross-track distance. Only used for checking if output plan is limit.
      * @param dx The cross-track offset.
      * @param eventSegIdxList The list of segment indices with edge events.
      * @param tol_small A small tolerance value.

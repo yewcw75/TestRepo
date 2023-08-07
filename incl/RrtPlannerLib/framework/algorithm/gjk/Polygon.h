@@ -21,9 +21,7 @@
 #include <QVector>
 #include <QSharedDataPointer>
 
-/**
- * @brief The namespace for the Gjk algorithm in the RRTPlanner framework.
- */
+
 RRTPLANNER_FRAMEWORK_ALGORITHM_GJK_BEGIN_NAMESPACE
 
 class PolygonPrivate;
@@ -136,9 +134,7 @@ private:
     QSharedDataPointer<PolygonPrivate> d_ptr;
 };
 
-/**
- * @brief The namespace for the Gjk algorithm in the RRTPlanner framework.
- */
+
 RRTPLANNER_FRAMEWORK_ALGORITHM_GJK_END_NAMESPACE
 
 #endif

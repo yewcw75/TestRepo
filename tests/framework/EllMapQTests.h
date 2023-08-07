@@ -20,6 +20,10 @@ private:
 private slots:
     void verify_buildEllMap_data();
     void verify_buildEllMap();
+    void verify_locateSector_data();
+    void verify_locateSector();
+    void verify_getRootData_data();
+    void verify_getRootData();
 };
 
 #endif

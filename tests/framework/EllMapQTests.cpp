@@ -1,8 +1,10 @@
 #include "EllMapQTests.h"
 #include <RrtPlannerLib/framework/FrameworkDefines.h>
 #include <RrtPlannerLib/framework/UtilHelper.h>
+#include <RrtPlannerLib/framework/VectorF.h>
 #include <QtTest/QtTest>
 #include <QtGlobal>
+#include <QVector>
 
 
 using namespace rrtplanner::framework;
@@ -169,7 +171,135 @@ void EllMapQTests::verify_buildEllMap()
             QVERIFY(UtilHelper::compare(seg.length(), seg_expected.length()));
             QVERIFY(UtilHelper::compare(seg.lengthCumulative(), seg_expected.lengthCumulative()));
         }
+    } 
+}
+
+//----------
+void EllMapQTests::verify_locateSector_data()
+{
+    QTest::addColumn<Plan>("planNominal");
+    QTest::addColumn<double>("crossTrackHorizon");
+    QTest::addColumn<VectorF>("posNE");
+    QTest::addColumn<int>("planIdx_expect");
+    QTest::addColumn<int>("segIdx_expect");
+
+    //set nominal plan
+    Plan planNominal;
+    planNominal.setPlan(QVector<Waypt>{Waypt{0.0, 0.0, 0.0, 0},
+                                Waypt{1000.0, 1000.0, 0.0, 1},
+                                Waypt{2000.0, 1000.0, 0.0, 2},
+                                Waypt{3000.0, 0.0, 0.0, 3},
+                                Waypt{4000.0, 0.0, 0.0, 4}},
+                 0);
+    planNominal.setProperty(Plan::Property::IS_NOMINAL);
+    QTest::newRow("Test 1") << planNominal << 2500.0 << VectorF{2200, 0} << 2 << 2;
+}
+
+//----------
+void EllMapQTests::verify_locateSector()
+{
+    QFETCH(Plan, planNominal);
+    QFETCH(double, crossTrackHorizon);
+    QFETCH(VectorF, posNE);
+    QFETCH(int, planIdx_expect);
+    QFETCH(int, segIdx_expect);
+
+    EllMap ellMap;
+    ellMap.setNominalPlan(planNominal);
+    QString res_desc;
+    bool res_ok = ellMap.buildEllMap(crossTrackHorizon, &res_desc);
+
+    //qInfo() << "Results description: " << res_desc;
+    QVERIFY(res_ok);
+
+    int planIdx, segIdx;
+    bool found = ellMap.locateSector(posNE, 0, 0, planIdx, segIdx);
+
+    QVERIFY(found);
+    QCOMPARE(planIdx, planIdx_expect);
+    QCOMPARE(segIdx, segIdx_expect);
+}
+
+//----------
+void EllMapQTests::verify_getRootData_data()
+{
+    QTest::addColumn<Plan>("planNominal");
+    QTest::addColumn<double>("crossTrackHorizon");
+    QTest::addColumn<VectorF>("posNE");
+    QTest::addColumn<int>("planIdx_expect");
+    QTest::addColumn<int>("segIdx_expect");
+    QTest::addColumn<double>("dx_expect");
+    QTest::addColumn<double>("ell_expect");
+    QTest::addColumn<double>("f_ell_expect");
+    QTest::addColumn<double>("L_expect");
+    QTest::addColumn<bool>("isInPoly_expect");
+    QTest::addColumn<QVector<double>>("ell_list_expect");
+
+    //set nominal plan
+    Plan planNominal;
+    planNominal.setPlan(QVector<Waypt>{Waypt{0.0, 0.0, 0.0, 0},
+                                Waypt{1000.0, 1000.0, 0.0, 1},
+                                Waypt{2000.0, 1000.0, 0.0, 2},
+                                Waypt{3000.0, 0.0, 0.0, 3},
+                                Waypt{4000.0, 0.0, 0.0, 4}},
+                 0);
+    double crossTrackHorizon = 2500.0;
+    VectorF posNE{2200, 00};
+    int planIdx_expect = 2;
+    int segIdx_expect = 2;
+    double dx_expect = -565.6854;
+    double ell_expect = 2325.4834;
+    double f_ell_expect = 0.4343;
+    double L_expect = 1414.2136;
+    bool isInPoly_expect = true;
+    QVector<double> ell_list_expect{449.7475, 381.6234, 1528.4271, 3028.4271, 6028.4271, 6150.4617};
+    planNominal.setProperty(Plan::Property::IS_NOMINAL);
+    QTest::newRow("Test 1") << planNominal << crossTrackHorizon << posNE << planIdx_expect << segIdx_expect << \
+                               dx_expect << ell_expect << f_ell_expect << L_expect << isInPoly_expect << ell_list_expect;
+}
+
+//----------
+void EllMapQTests::verify_getRootData()
+{
+    QFETCH(Plan, planNominal);
+    QFETCH(double, crossTrackHorizon);
+    QFETCH(VectorF, posNE);
+    QFETCH(int, planIdx_expect);
+    QFETCH(int, segIdx_expect);
+    QFETCH(double, dx_expect);
+    QFETCH(double, ell_expect);
+    QFETCH(double, f_ell_expect);
+    QFETCH(double, L_expect);
+    QFETCH(bool, isInPoly_expect);
+    QFETCH(QVector<double>, ell_list_expect);
+
+    EllMap ellMap;
+    ellMap.setNominalPlan(planNominal);
+    QString res_desc;
+    bool res_ok = ellMap.buildEllMap(crossTrackHorizon, &res_desc);
+
+    //qInfo() << "Results description: " << res_desc;
+    QVERIFY(res_ok);
+
+    RootData rootData;
+    bool found = ellMap.getRootData(posNE, rootData);
+
+    //qInfo() << "rootData:" << rootData;
+
+    QVERIFY(found);
+    QCOMPARE(rootData.planIdx(), planIdx_expect);
+    QCOMPARE(rootData.segIdx(), segIdx_expect);
+
+    QVERIFY(UtilHelper::compare(rootData.dx(), dx_expect, 1e-3));
+    QVERIFY(UtilHelper::compare(rootData.ell(), ell_expect, 1e-3));
+    QVERIFY(UtilHelper::compare(rootData.f_ell(), f_ell_expect, 1e-3));
+    QVERIFY(UtilHelper::compare(rootData.L(), L_expect, 1e-3));
+    QCOMPARE(rootData.isInPoly(), isInPoly_expect);
+
+    const QVector<double>& ell_list = rootData.ell_list_const_ref();
+    QCOMPARE(ell_list.size(), ell_list_expect.size());
+    for(int i = 0; i < ell_list.size(); ++i){
+        QVERIFY(UtilHelper::compare(ell_list.at(i), ell_list_expect.at(i), 1e-3));
     }
-    
 }
 

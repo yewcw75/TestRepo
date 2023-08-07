@@ -26,19 +26,29 @@ RRTPLANNER_FRAMEWORK_ALGORITHM_GJK_BEGIN_NAMESPACE
  */
 class RRTPLANNER_LIB_EXPORT IShape
 {
-public:
+protected:
     /**
      * @brief Default constructor
      */
     IShape() = default;
 
+public:
     /**
      * @brief Default copy constructor
+     * Actually copy constructor is not applicable for IShape since it does not contain any member data.
+     * But a default is defined for possible future addition of member data.
      */
     IShape(const IShape& other) = default;
 
     /**
-     * @brief Virtual destructor.
+     * @brief Default assignment operator
+     * Actually operator= is not applicable for IShape since it does not contain any member data.
+     * But a default is defined for possible future addition of member data.
+     */
+    IShape& operator=(const IShape& other) = default;
+
+    /**
+     * @brief Default virtual destructor.
      */
     virtual ~IShape() = default;
 

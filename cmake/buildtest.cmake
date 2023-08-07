@@ -34,11 +34,15 @@ add_executable(${PROJECT_NAME}QTests
     tests/framework/UblasHelperQTests.cpp
     tests/framework/EllMapQTests.h
     tests/framework/EllMapQTests.cpp
+    tests/framework/SMapHelperQTests.h
+    tests/framework/SMapHelperQTests.cpp
 
     tests/framework/VesRectangleQTests.h
     tests/framework/VesRectangleQTests.cpp
     tests/framework/VesselQTests.h
     tests/framework/VesselQTests.cpp
+    tests/framework/RootDataQTests.h
+    tests/framework/RootDataQTests.cpp
 
     tests/framework/algorithm/gjk/PolygonQTests.h
     tests/framework/algorithm/gjk/PolygonQTests.cpp

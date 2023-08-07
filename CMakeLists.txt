@@ -44,6 +44,8 @@ include(GNUInstallDirs)
 
 #############################
 #add project files to our exe/lib
+include(library_source_gjk)
+
 add_library(${PROJECT_NAME} SHARED
   incl/${PROJECT_NAME}/RrtPlannerLibGlobal.h
   incl/${PROJECT_NAME}/framework/FrameworkDefines.h
@@ -71,41 +73,16 @@ add_library(${PROJECT_NAME} SHARED
   src/framework/VesShape.cpp
   incl/${PROJECT_NAME}/framework/VesRectangle.h
   src/framework/VesRectangle.cpp
+  incl/${PROJECT_NAME}/framework/RootData.h
+  src/framework/RootData.cpp
+  incl/${PROJECT_NAME}/framework/SPlan.h
+  src/framework/SPlan.cpp
+  incl/${PROJECT_NAME}/framework/SMap.h
+  src/framework/SMap.cpp
+  incl/${PROJECT_NAME}/framework/SMapHelper.h
+  src/framework/SMapHelper.cpp
 
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/GjkDefines.h
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/GjkFactory.h
-  src/framework/algorithm/gjk/GjkFactory.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/Gjk.h
-  src/framework/algorithm/gjk/Gjk.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/IShape.h
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/Polygon.h
-  src/framework/algorithm/gjk/Polygon.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/GjkBasic.h
-  src/framework/algorithm/gjk/internal/GjkBasic.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/GjkMinDist.h
-  src/framework/algorithm/gjk/internal/GjkMinDist.cpp
-
-
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/GjkComponentFactory.h
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/GjkComponentFactoryCreator.h
-  src/framework/algorithm/gjk/internal/GjkComponentFactoryCreator.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/GjkComponentFactoryBasic.h
-  src/framework/algorithm/gjk/internal/GjkComponentFactoryBasic.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/GjkComponentFactoryMinDist.h
-  src/framework/algorithm/gjk/internal/GjkComponentFactoryMinDist.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/Simplex.h
-  src/framework/algorithm/gjk/internal/Simplex.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/SimplexBasic.h
-  src/framework/algorithm/gjk/internal/SimplexBasic.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/SimplexMinDist.h
-  src/framework/algorithm/gjk/internal/SimplexMinDist.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/Support.h
-  src/framework/algorithm/gjk/internal/Support.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/SupportBasic.h
-  src/framework/algorithm/gjk/internal/SupportBasic.cpp
-  incl/${PROJECT_NAME}/framework/algorithm/gjk/internal/SupportMinDist.h
-  src/framework/algorithm/gjk/internal/SupportMinDist.cpp
-
+  ${LIBRARY_SOURCES_GJK}
 )
 
 #############################

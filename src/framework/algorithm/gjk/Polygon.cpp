@@ -43,7 +43,7 @@ Polygon::Polygon(const std::initializer_list<VectorF>& list)
 
 //---------
 Polygon::Polygon(const Polygon& other)
-    :IShape(),
+    :IShape(other),
       d_ptr(other.d_ptr)
 {
 
@@ -54,6 +54,7 @@ Polygon::Polygon(const Polygon& other)
 Polygon& Polygon::operator=(const Polygon& other)
 {
     if(this != &other){
+        IShape::operator=(other);
         this->d_ptr = other.d_ptr;
     }
     return(*this);
